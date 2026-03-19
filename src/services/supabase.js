@@ -1,9 +1,38 @@
 import { createClient } from '@supabase/supabase-js'
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-export const signInWithGoogle = () => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard' } })
-export const signInWithEmail = (email, password) => supabase.auth.signInWithPassword({ email, password })
-export const signUpWithEmail = (email, password) => supabase.auth.signUp({ email, password })
-export const signOut = () => supabase.auth.signOut()
-export const getCurrentUser = () => supabase.auth.getUser()
+
+const SITE_URL = 'https://galileo-investors.vercel.app'
+
+export async function signInWithGoogle() {
+  return supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: SITE_URL + '/dashboard',
+      queryParams: { access_type: 'offline', prompt: 'consent' }
+    }
+  })
+}
+
+export async function signInWithEmail(email, password) {
+  return supabase.auth.signInWithPassword({ email, password })
+}
+
+export async function signUpWithEmail(email, password) {
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: SITE_URL + '/dashboard' }
+  })
+}
+
+export async function signOut() {
+  return supabase.auth.signOut()
+}
+
+export function onAuthStateChange(callback) {
+  return supabase.auth.onAuthStateChange(callback)
+}
