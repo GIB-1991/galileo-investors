@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { supabase, onAuthStateChange } from './services/supabase.js'
 import AppShell from './components/layout/AppShell.jsx'
 import Landing from './pages/Landing.jsx'
@@ -32,23 +32,21 @@ export default function App() {
   )
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={user ? <Navigate to='/dashboard'/> : <Landing/>}/>
-        <Route path='/auth' element={user ? <Navigate to='/dashboard'/> : <Auth/>}/>
-        {user ? (
-          <>
-            <Route path='/dashboard' element={<AppShell user={user}><Dashboard user={user}/></AppShell>}/>
-            <Route path='/academy' element={<AppShell user={user}><Academy/></AppShell>}/>
-            <Route path='/screener' element={<AppShell user={user}><Screener/></AppShell>}/>
-            <Route path='/portfolio' element={<AppShell user={user}><Portfolio/></AppShell>}/>
-            <Route path='/articles' element={<AppShell user={user}><Articles/></AppShell>}/>
-            <Route path='*' element={<Navigate to='/dashboard'/>}/>
-          </>
-        ) : (
-          <Route path='*' element={<Navigate to='/'/>}/>
-        )}
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={user ? <Navigate to="/dashboard"/> : <Landing/>}/>
+      <Route path="/auth" element={user ? <Navigate to="/dashboard"/> : <Auth/>}/>
+      {user ? (
+        <>
+          <Route path="/dashboard" element={<AppShell user={user}><Dashboard user={user}/></AppShell>}/>
+          <Route path="/academy" element={<AppShell user={user}><Academy/></AppShell>}/>
+          <Route path="/screener" element={<AppShell user={user}><Screener/></AppShell>}/>
+          <Route path="/portfolio" element={<AppShell user={user}><Portfolio/></AppShell>}/>
+          <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
+          <Route path="*" element={<Navigate to="/dashboard"/>}/>
+        </>
+      ) : (
+        <Route path="*" element={<Navigate to="/"/>}/>
+      )}
+    </Routes>
   )
 }
