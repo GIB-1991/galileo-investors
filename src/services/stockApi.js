@@ -1,18 +1,102 @@
-const MOCK_STOCKS = {
-AAPL:{ticker:'AAPL',name:'Apple Inc.',sector:'Technology',price:189.50,change:1.25,changePct:0.66,marketCap:2950000000000,beta:1.19,shortFloat:0.007,sharesFloat:15300000000,volume:52000000,analystTarget:215.00,peRatio:31.2},
-MSFT:{ticker:'MSFT',name:'Microsoft Corp.',sector:'Technology',price:415.30,change:3.10,changePct:0.75,marketCap:3080000000000,beta:0.90,shortFloat:0.005,sharesFloat:7440000000,volume:21000000,analystTarget:460.00,peRatio:36.8},
-NVDA:{ticker:'NVDA',name:'NVIDIA Corp.',sector:'Technology',price:875.40,change:-12.30,changePct:-1.38,marketCap:2160000000000,beta:1.66,shortFloat:0.011,sharesFloat:2460000000,volume:41000000,analystTarget:1000.00,peRatio:72.1},
-AMZN:{ticker:'AMZN',name:'Amazon.com Inc.',sector:'Consumer Discretionary',price:185.20,change:2.40,changePct:1.31,marketCap:1940000000000,beta:1.15,shortFloat:0.006,sharesFloat:10500000000,volume:35000000,analystTarget:225.00,peRatio:58.4},
-GOOGL:{ticker:'GOOGL',name:'Alphabet Inc.',sector:'Communication Services',price:163.50,change:1.80,changePct:1.11,marketCap:2050000000000,beta:1.06,shortFloat:0.004,sharesFloat:12600000000,volume:24000000,analystTarget:195.00,peRatio:24.7},
-META:{ticker:'META',name:'Meta Platforms',sector:'Communication Services',price:502.10,change:-3.20,changePct:-0.63,marketCap:1280000000000,beta:1.22,shortFloat:0.009,sharesFloat:2550000000,volume:18000000,analystTarget:560.00,peRatio:29.3},
-TSLA:{ticker:'TSLA',name:'Tesla Inc.',sector:'Consumer Discretionary',price:248.90,change:5.60,changePct:2.30,marketCap:792000000000,beta:2.31,shortFloat:0.031,sharesFloat:3180000000,volume:98000000,analystTarget:230.00,peRatio:68.2},
-JPM:{ticker:'JPM',name:'JPMorgan Chase',sector:'Financials',price:196.40,change:0.90,changePct:0.46,marketCap:565000000000,beta:0.92,shortFloat:0.005,sharesFloat:2880000000,volume:12000000,analystTarget:215.00,peRatio:11.8},
-JNJ:{ticker:'JNJ',name:'Johnson & Johnson',sector:'Healthcare',price:158.20,change:-0.40,changePct:-0.25,marketCap:381000000000,beta:0.55,shortFloat:0.004,sharesFloat:2410000000,volume:8000000,analystTarget:175.00,peRatio:23.1},
-QQQ:{ticker:'QQQ',name:'Invesco QQQ ETF',sector:'ETF',price:447.80,change:2.10,changePct:0.47,marketCap:null,beta:1.10,shortFloat:0.003,sharesFloat:null,volume:35000000,analystTarget:null,peRatio:null},
-SPY:{ticker:'SPY',name:'SPDR S&P 500 ETF',sector:'ETF',price:520.40,change:1.50,changePct:0.29,marketCap:null,beta:1.00,shortFloat:0.002,sharesFloat:null,volume:65000000,analystTarget:null,peRatio:null},
+
+// Yahoo Finance via proxy - real-time US stock data
+const PROXY = 'https://api.allorigins.win/get?url='
+
+export async function getStockQuote(ticker) {
+  const t = ticker.toUpperCase()
+  try {
+    const url = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1d&range=1d`)
+    const res = await fetch(PROXY + url)
+    const data = await res.json()
+    const parsed = JSON.parse(data.contents)
+    const q = parsed?.chart?.result?.[0]
+    if (!q) return fallback(t)
+    const meta = q.meta
+    const price = meta.regularMarketPrice
+    const prev = meta.previousClose || meta.chartPreviousClose
+    const change = price - prev
+    const changePct = (change / prev) * 100
+    return {
+      ticker: t,
+      name: meta.shortName || meta.symbol,
+      sector: meta.sector || getSector(t),
+      price: price,
+      change: change,
+      changePct: changePct,
+      marketCap: meta.marketCap || 0,
+      beta: meta.beta || 1,
+      shortFloat: 0,
+      sharesFloat: meta.sharesOutstanding || 0,
+      volume: meta.regularMarketVolume || 0,
+      analystTarget: meta.targetMeanPrice || null,
+      peRatio: meta.trailingPE || null,
+      fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh || null,
+      fiftyTwoWeekLow: meta.fiftyTwoWeekLow || null,
+    }
+  } catch(e) {
+    return fallback(t)
+  }
 }
-export async function getStockQuote(ticker){const u=ticker.toUpperCase();return MOCK_STOCKS[u]||{ticker:u,name:u,sector:'Unknown',price:0,change:0,changePct:0,marketCap:0,beta:1,shortFloat:0,sharesFloat:0,volume:0,analystTarget:0,peRatio:null}}
-export async function searchTicker(query){const u=query.toUpperCase();return Object.values(MOCK_STOCKS).filter(s=>s.ticker.includes(u)||s.name.toLowerCase().includes(query.toLowerCase()))}
-export function formatMarketCap(val){if(!val)return 'N/A';if(val>=1e12)return '$'+(val/1e12).toFixed(2)+'T';if(val>=1e9)return '$'+(val/1e9).toFixed(1)+'B';return '$'+val}
-export function getMarketCapCategory(mc){if(!mc)return 'ETF';if(mc>=1e12)return 'Mega Cap';if(mc>=200e9)return 'Large Cap';if(mc>=10e9)return 'Mid Cap';return 'Small Cap'}
-export function getMockNews(){return [{id:1,title:'Fed Holds Rates Steady, Signals Cautious Outlook for 2026',source:'Reuters',time:'לפני שעה',category:'מאקרו'},{id:2,title:'NVIDIA Reports Record Data Center Revenue',source:'Bloomberg',time:'לפני 2 שעות',category:'טכנולוגיה'},{id:3,title:'S&P 500 Closes at New High Amid Strong Earnings',source:'CNBC',time:'לפני 3 שעות',category:'שוק'},{id:4,title:'Apple Set to Launch New AI Features in iOS 20',source:'WSJ',time:'לפני 4 שעות',category:'טכנולוגיה'},{id:5,title:'Oil Prices Rise as Middle East Tensions Escalate',source:'FT',time:'לפני 5 שעות',category:'סחורות'},{id:6,title:'Amazon Expands AWS Infrastructure with $10B Investment',source:'TechCrunch',time:'לפני 6 שעות',category:'טכנולוגיה'}]}
+
+export async function searchTicker(query) {
+  if (!query || query.length < 1) return []
+  try {
+    const url = encodeURIComponent(`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&lang=en-US&region=US&quotesCount=10&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`)
+    const res = await fetch(PROXY + url)
+    const data = await res.json()
+    const parsed = JSON.parse(data.contents)
+    const quotes = parsed?.quotes || []
+    return quotes
+      .filter(q => q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
+      .map(q => ({
+        ticker: q.symbol,
+        name: q.longname || q.shortname || q.symbol,
+        sector: q.sector || getSector(q.symbol),
+        price: q.regularMarketPrice || 0,
+        change: q.regularMarketChange || 0,
+        changePct: q.regularMarketChangePercent || 0,
+        marketCap: q.marketCap || 0,
+        beta: 1, shortFloat: 0, sharesFloat: 0, volume: 0,
+        analystTarget: null, peRatio: null,
+      }))
+  } catch(e) {
+    return []
+  }
+}
+
+function getSector(ticker) {
+  const etfs = ['SPY','QQQ','IWM','DIA','VTI','VOO','GLD','SLV','TLT','HYG']
+  return etfs.includes(ticker) ? 'ETF' : 'Unknown'
+}
+
+function fallback(ticker) {
+  return { ticker, name: ticker, sector: 'Unknown', price: 0, change: 0, changePct: 0,
+    marketCap: 0, beta: 1, shortFloat: 0, sharesFloat: 0, volume: 0, analystTarget: null, peRatio: null }
+}
+
+export function formatMarketCap(val) {
+  if (!val) return 'N/A'
+  if (val >= 1e12) return '$' + (val/1e12).toFixed(2) + 'T'
+  if (val >= 1e9) return '$' + (val/1e9).toFixed(1) + 'B'
+  if (val >= 1e6) return '$' + (val/1e6).toFixed(0) + 'M'
+  return '$' + val
+}
+
+export function getMarketCapCategory(mc) {
+  if (!mc) return 'ETF'
+  if (mc >= 1e12) return 'Mega Cap'
+  if (mc >= 200e9) return 'Large Cap'
+  if (mc >= 10e9) return 'Mid Cap'
+  return 'Small Cap'
+}
+
+export function getMockNews() {
+  return [
+    {id:1,title:'Fed Holds Rates Steady, Signals Cautious Outlook for 2026',source:'Reuters',time:'לפני שעה',category:'מאקרו'},
+    {id:2,title:'NVIDIA Reports Record Data Center Revenue',source:'Bloomberg',time:'לפני 2 שעות',category:'טכנולוגיה'},
+    {id:3,title:'S&P 500 Closes at New High Amid Strong Earnings',source:'CNBC',time:'לפני 3 שעות',category:'שוק'},
+    {id:4,title:'Apple Set to Launch New AI Features in iOS 20',source:'WSJ',time:'לפני 4 שעות',category:'טכנולוגיה'},
+    {id:5,title:'Oil Prices Rise as Middle East Tensions Escalate',source:'FT',time:'לפני 5 שעות',category:'סחורות'},
+    {id:6,title:'Amazon Expands AWS Infrastructure with $10B Investment',source:'TechCrunch',time:'לפני 6 שעות',category:'טכנולוגיה'},
+  ]
+}
