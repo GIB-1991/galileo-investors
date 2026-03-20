@@ -21,7 +21,7 @@ export default function AppShell({user, children}) {
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',background:'var(--color-bg)'}}>
       <header style={{background:'rgba(13,15,20,0.9)',backdropFilter:'blur(20px)',borderBottom:'1px solid var(--color-border)',position:'sticky',top:0,zIndex:100}}>
         <div style={{maxWidth:1300,margin:'0 auto',padding:'0 1.5rem',height:62,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <Link to='/dashboard' style={{textDecoration:'none',display:'flex',alignItems:'center',gap:10}}>
+          <Link to="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:34,height:34,background:'linear-gradient(135deg,#f5a623,#e8871a)',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 14px rgba(245,166,35,0.35)'}}>
               <span style={{color:'#0d0f14',fontSize:17,fontWeight:800}}>G</span>
             </div>
@@ -50,7 +50,7 @@ export default function AppShell({user, children}) {
             <span style={{fontSize:'.78rem',color:'var(--color-text-muted)',background:'var(--color-surface)',padding:'4px 10px',borderRadius:8,border:'1px solid var(--color-border)'}}>
               {user?.email?.split('@')[0]}
             </span>
-            <button onClick={handleSignOut} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',display:'flex',alignItems:'center',padding:6,borderRadius:7,transition:'all 180ms'}}
+            <button onClick={handleSignOut} title="יציאה" style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',display:'flex',alignItems:'center',padding:6,borderRadius:7,transition:'all 180ms'}}
               onMouseEnter={e=>e.currentTarget.style.color='var(--color-danger)'}
               onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}>
               <LogOut size={15}/>
