@@ -1,34 +1,30 @@
 
-// Yahoo Finance via proxy - real-time US stock data
-const PROXY = 'https://api.allorigins.win/get?url='
+const PROXY = 'https://corsproxy.io/?url='
 
 export async function getStockQuote(ticker) {
-  const t = ticker.toUpperCase()
+  const t = ticker.toUpperCase().trim()
   try {
-    const url = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1d&range=1d`)
-    const res = await fetch(PROXY + url)
+    const url = PROXY + encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/' + t + '?interval=1d&range=1d')
+    const res = await fetch(url)
     const data = await res.json()
-    const parsed = JSON.parse(data.contents)
-    const q = parsed?.chart?.result?.[0]
+    const q = data?.chart?.result?.[0]
     if (!q) return fallback(t)
     const meta = q.meta
-    const price = meta.regularMarketPrice
-    const prev = meta.previousClose || meta.chartPreviousClose
+    const price = meta.regularMarketPrice || 0
+    const prev = meta.previousClose || meta.chartPreviousClose || price
     const change = price - prev
-    const changePct = (change / prev) * 100
+    const changePct = prev ? (change / prev) * 100 : 0
     return {
       ticker: t,
-      name: meta.shortName || meta.symbol,
+      name: meta.shortName || meta.longName || t,
       sector: meta.sector || getSector(t),
-      price: price,
-      change: change,
-      changePct: changePct,
+      price, change, changePct,
       marketCap: meta.marketCap || 0,
-      beta: meta.beta || 1,
+      beta: meta.beta || null,
       shortFloat: 0,
       sharesFloat: meta.sharesOutstanding || 0,
       volume: meta.regularMarketVolume || 0,
-      analystTarget: meta.targetMeanPrice || null,
+      analystTarget: null,
       peRatio: meta.trailingPE || null,
       fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh || null,
       fiftyTwoWeekLow: meta.fiftyTwoWeekLow || null,
@@ -41,22 +37,22 @@ export async function getStockQuote(ticker) {
 export async function searchTicker(query) {
   if (!query || query.length < 1) return []
   try {
-    const url = encodeURIComponent(`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&lang=en-US&region=US&quotesCount=10&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`)
-    const res = await fetch(PROXY + url)
+    const url = PROXY + encodeURIComponent('https://query1.finance.yahoo.com/v1/finance/search?q=' + encodeURIComponent(query) + '&lang=en-US&region=US&quotesCount=10&newsCount=0')
+    const res = await fetch(url)
     const data = await res.json()
-    const parsed = JSON.parse(data.contents)
-    const quotes = parsed?.quotes || []
+    const quotes = data?.quotes || []
     return quotes
       .filter(q => q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
+      .slice(0, 8)
       .map(q => ({
         ticker: q.symbol,
         name: q.longname || q.shortname || q.symbol,
-        sector: q.sector || getSector(q.symbol),
+        sector: q.sector || '',
         price: q.regularMarketPrice || 0,
         change: q.regularMarketChange || 0,
         changePct: q.regularMarketChangePercent || 0,
         marketCap: q.marketCap || 0,
-        beta: 1, shortFloat: 0, sharesFloat: 0, volume: 0,
+        beta: null, shortFloat: 0, sharesFloat: 0, volume: 0,
         analystTarget: null, peRatio: null,
       }))
   } catch(e) {
@@ -66,12 +62,13 @@ export async function searchTicker(query) {
 
 function getSector(ticker) {
   const etfs = ['SPY','QQQ','IWM','DIA','VTI','VOO','GLD','SLV','TLT','HYG']
-  return etfs.includes(ticker) ? 'ETF' : 'Unknown'
+  return etfs.includes(ticker) ? 'ETF' : ''
 }
 
 function fallback(ticker) {
-  return { ticker, name: ticker, sector: 'Unknown', price: 0, change: 0, changePct: 0,
-    marketCap: 0, beta: 1, shortFloat: 0, sharesFloat: 0, volume: 0, analystTarget: null, peRatio: null }
+  return { ticker, name: ticker, sector: '', price: 0, change: 0, changePct: 0,
+    marketCap: 0, beta: null, shortFloat: 0, sharesFloat: 0, volume: 0,
+    analystTarget: null, peRatio: null, fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null }
 }
 
 export function formatMarketCap(val) {
