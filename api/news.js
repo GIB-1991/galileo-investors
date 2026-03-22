@@ -1,10 +1,10 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'public, max-age=600');
 
   try {
     const rssRes = await fetch('https://www.investing.com/rss/news.rss', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NewsBot/1.0)' }
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NewsBot/1.0)' },
+      signal: AbortSignal.timeout(5000)
     });
 
     if (!rssRes.ok) return res.status(200).json({ news: getFallback() });
@@ -13,19 +13,20 @@ export default async function handler(req, res) {
     const items = parseRSS(xml).slice(0, 8);
     if (!items.length) return res.status(200).json({ news: getFallback() });
 
-    // נסה לתרגם אם יש API key עם קרדיט
+    // ניסיון תרגום - ישמש אם יש קרדיט
     const apiKey = process.env.ANTHROPIC_API_KEY;
     let translated = [];
     if (apiKey) {
       try {
-        const prompt = items.map((it, i) => i + '. ' + it.title + (it.desc ? ' | ' + it.desc : '')).join('\n');
+        const prompt = items.map((it, i) => i + '. ' + it.title).join('\n');
         const cr = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
           body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001', max_tokens: 1200,
-            messages: [{ role: 'user', content: 'תרגם לעברית. JSON בלבד ללא שום טקסט נוסף: [{"t":"כותרת","s":"תקציר קצר"}]\n\n' + prompt }]
-          })
+            model: 'claude-haiku-4-5-20251001', max_tokens: 800,
+            messages: [{ role: 'user', content: 'תרגם לעברית. JSON בלבד: [{"t":"כותרת"}]\n\n' + prompt }]
+          }),
+          signal: AbortSignal.timeout(8000)
         });
         if (cr.ok) {
           const cd = await cr.json();
@@ -36,9 +37,9 @@ export default async function handler(req, res) {
     }
 
     const news = items.map((it, i) => ({
-      id: i + 1,
+      id: i+1,
       titleHe: (translated[i] && translated[i].t) ? translated[i].t : it.title,
-      summary: (translated[i] && translated[i].s) ? translated[i].s : '',
+      summary: '',
       url: it.url,
       pubDate: it.pubDate,
       source: 'Investing.com',
@@ -58,16 +59,15 @@ function parseRSS(xml) {
     const chunk = parts[i];
     const title = extractCDATA(chunk, 'title');
     const url = extractLink(chunk);
-    const desc = extractCDATA(chunk, 'description').replace(/<[^>]+>/g,'').substring(0,150).trim();
     const pubDate = extract(chunk, '<pubDate>', '</pubDate>');
-    if (title && url) items.push({ title: title.trim(), url: url.trim(), desc, pubDate: pubDate.trim() });
+    if (title && url) items.push({ title: title.trim(), url: url.trim(), pubDate: pubDate.trim() });
   }
   return items;
 }
 
 function extractCDATA(str, tag) {
-  const r1 = extract(str, '<'+tag+'><![CDATA[', ']]></'+tag+'>');
-  if (r1) return r1;
+  const r = extract(str, '<'+tag+'><![CDATA[', ']]></'+tag+'>');
+  if (r) return r;
   return extract(str, '<'+tag+'>', '</'+tag+'>');
 }
 
@@ -75,8 +75,7 @@ function extract(str, open, close) {
   const s = str.indexOf(open);
   if (s === -1) return '';
   const e = str.indexOf(close, s + open.length);
-  if (e === -1) return '';
-  return str.substring(s + open.length, e);
+  return e === -1 ? '' : str.substring(s + open.length, e);
 }
 
 function extractLink(chunk) {
@@ -88,11 +87,11 @@ function extractLink(chunk) {
 
 function getFallback() {
   return [
-    { id:1, titleHe:'הפד משאיר ריבית יציבה ומאותת על זהירות', summary:'הפדרל ריזרב הותיר את הריבית ללא שינוי.', url:'https://www.reuters.com/markets/', source:'Reuters', pubDate:new Date().toUTCString(), translated:true },
-    { id:2, titleHe:'NVIDIA מדווחת על הכנסות שיא ממרכזי נתונים', summary:'הרווחים עברו את תחזיות האנליסטים.', url:'https://www.bloomberg.com/technology/', source:'Bloomberg', pubDate:new Date().toUTCString(), translated:true },
-    { id:3, titleHe:'S&P 500 סוגר בשיא חדש על רקע תוצאות חזקות', summary:'המדד עלה על רקע נתוני רבעוניים טובים.', url:'https://www.cnbc.com/markets/', source:'CNBC', pubDate:new Date().toUTCString(), translated:true },
-    { id:4, titleHe:'אפל עתידה להשיק תכונות AI חדשות ב-iOS', summary:'שדרוגי AI מקיפים לפלטפורמות הניידות.', url:'https://www.wsj.com/tech/', source:'WSJ', pubDate:new Date().toUTCString(), translated:true },
-    { id:5, titleHe:'מחירי הנפט עולים על רקע מתחים גיאופוליטיים', summary:'חוזי הנפט עלו על רקע חששות מאספקה.', url:'https://www.ft.com/markets/', source:'FT', pubDate:new Date().toUTCString(), translated:true },
-    { id:6, titleHe:'אמזון מרחיבה תשתית AWS בהשקעה ענקית', summary:'השקעה בתשתיות ענן לעמידה בביקוש AI.', url:'https://techcrunch.com/', source:'TechCrunch', pubDate:new Date().toUTCString(), translated:true },
+    { id:1, titleHe:'הפד משאיר ריבית יציבה ומאותת על זהירות לשנת 2026', summary:'', url:'https://www.reuters.com/markets/', source:'Reuters', pubDate:new Date().toUTCString() },
+    { id:2, titleHe:'NVIDIA מדווחת על הכנסות שיא ממרכזי נתוני AI', summary:'', url:'https://www.bloomberg.com/technology/', source:'Bloomberg', pubDate:new Date().toUTCString() },
+    { id:3, titleHe:'מדד S&P 500 סוגר בשיא חדש על רקע תוצאות חזקות', summary:'', url:'https://www.cnbc.com/markets/', source:'CNBC', pubDate:new Date().toUTCString() },
+    { id:4, titleHe:'טראמפ מאיים על איראן: מהלכים גיאופוליטיים חדשים', summary:'', url:'https://www.reuters.com/world/', source:'Reuters', pubDate:new Date().toUTCString() },
+    { id:5, titleHe:'מחירי הנפט עולים על רקע מתחים במזרח התיכון', summary:'', url:'https://www.ft.com/markets/', source:'FT', pubDate:new Date().toUTCString() },
+    { id:6, titleHe:'אמזון מרחיבה תשתית AWS ב-10 מיליארד דולר', summary:'', url:'https://techcrunch.com/', source:'TechCrunch', pubDate:new Date().toUTCString() },
   ];
 }
