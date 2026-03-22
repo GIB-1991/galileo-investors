@@ -109,7 +109,7 @@ export default function Dashboard({ user }) {
     const diff = Date.now() - new Date(pubDate).getTime()
     const mins = Math.floor(diff / 60000)
     const hours = Math.floor(diff / 3600000)
-    if (mins < 60) return 'לפני ' + mins + ' דק'
+    if (mins < 60) return 'לפני ' + mins + ' דקות'
     if (hours < 24) return 'לפני ' + hours + ' שעות'
     return 'לפני ' + Math.floor(hours / 24) + ' ימים'
   }
@@ -117,12 +117,13 @@ export default function Dashboard({ user }) {
   const today = new Date().toLocaleDateString('he-IL', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   })
+
   return (
-    <div>
-      <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+    <div dir='rtl'>
+      <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
-          <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px'}}>{'שלום, ' + name + ' 👋'}</h1>
-          <p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.85rem'}}>{today}</p>
+          <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
+          <p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.08)',border:'1px solid '+(status.open?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.2)'),borderRadius:20,padding:'6px 16px'}}>
           {status.open ? <Activity size={12} style={{color:status.color}}/> : <Moon size={12} style={{color:status.color}}/>}
@@ -138,7 +139,7 @@ export default function Dashboard({ user }) {
           <div key={m.ticker} style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,padding:'1.1rem 1.25rem'}}
             onMouseEnter={e=>e.currentTarget.style.borderColor='var(--color-border2)'}
             onMouseLeave={e=>e.currentTarget.style.borderColor='var(--color-border)'}>
-            <div style={{fontSize:'.75rem',color:'var(--color-text-muted)',marginBottom:6,fontWeight:600}}>{m.name}</div>
+            <div style={{fontSize:'.75rem',color:'var(--color-text-muted)',marginBottom:6,fontWeight:600,textAlign:'right'}}>{m.name}</div>
             <div style={{fontSize:'1.15rem',fontWeight:800,direction:'ltr',textAlign:'right',fontFamily:"'IBM Plex Mono',monospace",marginBottom:4}}>{fmtPrice(m.price)}</div>
             <div style={{display:'flex',alignItems:'center',gap:4,justifyContent:'flex-end'}}>
               {m.up ? <TrendingUp size={13} style={{color:'var(--color-success)'}}/> : <TrendingDown size={13} style={{color:'var(--color-danger)'}}/>}
@@ -151,9 +152,9 @@ export default function Dashboard({ user }) {
       </div>
 
       <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,overflow:'hidden'}}>
-        <div style={{padding:'1rem 1.5rem',borderBottom:'1px solid var(--color-border)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{padding:'1rem 1.5rem',borderBottom:'1px solid var(--color-border)',display:'flex',alignItems:'center',justifyContent:'space-between',direction:'rtl'}}>
           <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <h2 style={{fontSize:'.95rem',fontWeight:700,margin:0}}>חדשות פיננסיות</h2>
+            <h2 style={{fontSize:'.95rem',fontWeight:700,margin:0,textAlign:'right'}}>חדשות פיננסיות</h2>
             {translating && <span style={{fontSize:'.72rem',color:'var(--color-accent)',display:'flex',alignItems:'center',gap:4}}><RefreshCw size={10} style={{animation:'spin 1s linear infinite'}}/>מתרגם...</span>}
           </div>
           <button onClick={loadNews} disabled={newsLoading}
@@ -171,18 +172,18 @@ export default function Dashboard({ user }) {
         ) : (
           <div>{news.map((item, i) => (
             <a key={item.id} href={item.url} target='_blank' rel='noopener noreferrer'
-              style={{padding:'.95rem 1.5rem',borderBottom:i<news.length-1?'1px solid var(--color-border)':'none',display:'flex',alignItems:'flex-start',gap:'1rem',cursor:'pointer',transition:'background 150ms',textDecoration:'none',color:'inherit'}}
+              style={{padding:'.95rem 1.5rem',borderBottom:i<news.length-1?'1px solid var(--color-border)':'none',display:'flex',alignItems:'flex-start',gap:'1rem',textDecoration:'none',color:'inherit',direction:'rtl'}}
               onMouseEnter={e=>e.currentTarget.style.background='var(--color-bg2)'}
               onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-              <div style={{flex:1,direction:'rtl',textAlign:'right'}}>
-                <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,justifyContent:'flex-end',flexDirection:'row-reverse'}}>
+              <ExternalLink size={13} style={{color:'var(--color-accent)',flexShrink:0,marginTop:6}}/>
+              <div style={{flex:1}}>
+                <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,justifyContent:'flex-start',flexWrap:'wrap'}}>
                   <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-muted)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
                   {item.pubDate && <span style={{fontSize:'.7rem',color:'var(--color-text-muted)'}}>{timeAgo(item.pubDate)}</span>}
                 </div>
-                <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.55,color:'var(--color-text-primary)'}}>{item.titleHe}</p>
-                {item.summary && <p style={{margin:0,fontSize:'.8rem',color:'var(--color-text-muted)',lineHeight:1.5}}>{item.summary}</p>}
+                <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.titleHe}</p>
+                {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-muted)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
               </div>
-              <ExternalLink size={13} style={{color:'var(--color-accent)',flexShrink:0,marginTop:6}}/>
             </a>
           ))}</div>
         )}
