@@ -140,7 +140,7 @@ export default function Calculator() {
                 return (
                   <div key={d.rate} style={{flex:1,padding:'12px',borderRadius:12,background:isCurrent?'rgba(79,142,247,0.12)':'var(--color-bg2)',border:'1px solid '+(isCurrent?'rgba(79,142,247,0.35)':'var(--color-border)'),textAlign:'center'}}>
                     <div style={{fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)',marginBottom:6}}>{d.rate}%{isCurrent?' (נוכחי)':''}</div>
-                    <div style={{fontSize:'1.15rem',fontWeight:800,fontFamily:"'IBM Plex Mono',monospace"}}>₪{fmtShort(d.final)}</div>
+                    <div style={{fontSize:'1.15rem',fontWeight:800,fontFamily:"'IBM Plex Mono',monospace"}}>₪{Math.round(d.final).toLocaleString('en-US')}</div>
                     {!isCurrent && <div style={{fontSize:'.75rem',color:diff>0?'var(--color-success)':'var(--color-danger)',marginTop:3}}>{diff>0?'+':''}{fmt(diff)}</div>}
                     {isCurrent && <div style={{fontSize:'.72rem',color:'var(--color-accent)',marginTop:3}}>בסיס</div>}
                   </div>
@@ -156,7 +156,7 @@ export default function Calculator() {
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data} margin={{top:4,right:4,left:0,bottom:0}} barCategoryGap="20%">
                 <XAxis dataKey="year" tick={{fontSize:11,fill:'var(--color-text-muted)'}} tickLine={false} axisLine={false}/>
-                <YAxis tickFormatter={v => '₪'+fmtShort(v)} tick={{fontSize:10,fill:'var(--color-text-muted)'}} tickLine={false} axisLine={false} width={58}/>
+                <YAxis tickFormatter={v => '₪'+Math.round(v).toLocaleString('en-US')} tick={{fontSize:10,fill:'var(--color-text-muted)'}} tickLine={false} axisLine={false} width={58}/>
                 <Tooltip content={<CT/>}/>
                 <Legend wrapperStyle={{fontSize:'.78rem',paddingTop:8}} formatter={v => v==='deposits'?'סך הפקדות':'ריבית'}/>
                 <Bar dataKey="deposits" name="deposits" stackId="a" fill="#4f8ef7" radius={[0,0,0,0]}/>
