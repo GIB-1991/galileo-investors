@@ -70,7 +70,7 @@ export default function Calculator() {
 
   const inp = (label, value, setter, min, max, step, suffix, hint) => (
     <div style={{marginBottom:'1.25rem'}}>
-      <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-secondary)',marginBottom:6}}>{label}</label>
+      <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-primary)',marginBottom:6,fontSize:'.88rem'}}>{label}</label>
       <div style={{position:'relative',display:'flex',alignItems:'center'}}>
         {suffix === 'ils' && <span style={{position:'absolute',right:10,color:'var(--color-text-muted)',fontSize:'.85rem',fontWeight:600}}>₪</span>}
         <input
@@ -95,14 +95,14 @@ export default function Calculator() {
 
         {/* Left: inputs */}
         <div className="card" style={{padding:'1.5rem'}}>
-          <h3 style={{margin:'0 0 1.25rem',fontSize:'.95rem',fontWeight:700,color:'var(--color-accent)'}}>פרטי ההשקעה</h3>
+          <h3 style={{margin:'0 0 1.25rem',fontSize:'.95rem',fontWeight:700,color:'var(--color-text-primary)',fontSize:'1rem',letterSpacing:'.01em'}}>פרטי ההשקעה</h3>
           {inp('השקעה ראשונית', initial, setInitial, 0, 10000000, 1000, 'ils', 'הסכום שאיתו אתה מתחיל היום')}
           {inp('הפקדה חודשית', monthly, setMonthly, 0, 100000, 100, 'ils', 'כמה אתה מתכנן להפקיד כל חודש')}
           {inp('ריבית שנתית', rate, setRate, 0, 50, 0.5, '%', 'תשואה שנתית צפויה על ההשקעה')}
           {inp('תקופת השקעה (שנים)', years, setYears, 1, 50, 1, 'years', 'כמה שנים אתה מתכנן להשקיע')}
 
           <div style={{borderTop:'1px solid var(--color-border)',paddingTop:'1.25rem',marginTop:'.25rem'}}>
-            <h3 style={{margin:'0 0 1rem',fontSize:'.85rem',fontWeight:700,color:'var(--color-text-muted)'}}>דמי ניהול (אופציונלי)</h3>
+            <h3 style={{margin:'0 0 1rem',fontSize:'.85rem',fontWeight:700,color:'var(--color-text-secondary)',fontSize:'.88rem'}}>דמי ניהול (אופציונלי)</h3>
             {inp('דמי ניהול שנתיים', mgmtFee, setMgmtFee, 0, 5, 0.1, '%', 'אחוז הנגבה שנתית מהיתרה')}
             {inp('עמלת הפקדה', depositFee, setDepositFee, 0, 5, 0.1, '%', 'אחוז המנוכה מכל הפקדה')}
           </div>
@@ -113,7 +113,7 @@ export default function Calculator() {
 
           {/* Summary */}
           <div className="card" style={{padding:'1.25rem'}}>
-            <h3 style={{margin:'0 0 1rem',fontSize:'.9rem',fontWeight:700}}>סיכום ההשקעה</h3>
+            <h3 style={{margin:'0 0 1rem',fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)'}}>סיכום ההשקעה</h3>
             <div style={{display:'flex',flexDirection:'column',gap:8}}>
               {[
                 ['סך הפקדות', fmt(last.deposits||0), null],
@@ -131,7 +131,7 @@ export default function Calculator() {
 
           {/* Rate comparison */}
           <div className="card" style={{padding:'1.25rem'}}>
-            <h3 style={{margin:'0 0 .5rem',fontSize:'.9rem',fontWeight:700}}>השפעת שיעור הריבית</h3>
+            <h3 style={{margin:'0 0 .5rem',fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)'}}>השפעת שיעור הריבית</h3>
             <p style={{fontSize:'.78rem',color:'var(--color-text-muted)',margin:'0 0 1rem'}}>השוואה בין שיעורי ריבית שונים</p>
             <div style={{display:'flex',gap:12}}>
               {compareData.map(d => {
@@ -151,7 +151,7 @@ export default function Calculator() {
 
           {/* Chart */}
           <div className="card" style={{padding:'1.25rem'}}>
-            <h3 style={{margin:'0 0 .5rem',fontSize:'.9rem',fontWeight:700}}>גרף צמיחה</h3>
+            <h3 style={{margin:'0 0 .5rem',fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)'}}>גרף צמיחה</h3>
             <p style={{fontSize:'.78rem',color:'var(--color-text-muted)',margin:'0 0 1rem'}}>עבר עם העכבר מעל העמודות לפרטים</p>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data} margin={{top:4,right:4,left:0,bottom:0}} barCategoryGap="20%">
@@ -168,7 +168,7 @@ export default function Calculator() {
           {/* Table */}
           <div className="card" style={{padding:0,overflowX:'auto'}}>
             <div style={{padding:'1rem 1.25rem',borderBottom:'1px solid var(--color-border)'}}>
-              <h3 style={{margin:0,fontSize:'.9rem',fontWeight:700}}>תחזית לפי שנה</h3>
+              <h3 style={{margin:0,fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)'}}>תחזית לפי שנה</h3>
             </div>
             <table style={{width:'100%',borderCollapse:'collapse',fontSize:'.82rem'}}>
               <thead>
