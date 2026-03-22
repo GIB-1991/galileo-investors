@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Build 1774014068627 - force cache invalidation
+// Build 1774172261841 - news translation enabled
 export default defineConfig({
   plugins: [react()],
   base: '/',
