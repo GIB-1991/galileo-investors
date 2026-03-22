@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// build-1774177491845
+// build-1774182409136 - ANTHROPIC_API_KEY active
 export default defineConfig({
   plugins: [react()],
   base: '/',
