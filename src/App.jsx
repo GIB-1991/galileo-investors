@@ -9,6 +9,7 @@ import Academy from './pages/Academy.jsx'
 import Screener from './pages/Screener.jsx'
 import Portfolio from './pages/Portfolio.jsx'
 import Articles from './pages/Articles.jsx'
+import Calculator from './pages/Calculator.jsx'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -38,9 +39,10 @@ export default function App() {
       {user ? (
         <>
           <Route path="/dashboard" element={<AppShell user={user}><Dashboard user={user}/></AppShell>}/>
-          <Route path="/academy" element={<AppShell user={user}><Academy/></AppShell>}/>
           <Route path="/screener" element={<AppShell user={user}><Screener/></AppShell>}/>
           <Route path="/portfolio" element={<AppShell user={user}><Portfolio/></AppShell>}/>
+          <Route path="/calculator" element={<AppShell user={user}><Calculator/></AppShell>}/>
+          <Route path="/academy" element={<AppShell user={user}><Academy/></AppShell>}/>
           <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
           <Route path="*" element={<Navigate to="/dashboard"/>}/>
         </>
