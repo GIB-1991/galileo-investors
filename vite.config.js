@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// v1774175652142 - Hebrew news translation active
+// build-1774177491845
 export default defineConfig({
   plugins: [react()],
   base: '/',
@@ -9,9 +9,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+          vendor: ['react','react-dom','react-router-dom'],
           charts: ['recharts'],
-          supabase: ['@supabase/supabase-js'],
+          supabase: ['@supabase/supabase-js']
         }
       }
     }
