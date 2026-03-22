@@ -139,8 +139,8 @@ export default function Calculator() {
                 const diff = d.final - baseline
                 return (
                   <div key={d.rate} style={{flex:1,padding:'12px',borderRadius:12,background:isCurrent?'rgba(79,142,247,0.12)':'var(--color-bg2)',border:'1px solid '+(isCurrent?'rgba(79,142,247,0.35)':'var(--color-border)'),textAlign:'center'}}>
-                    <div style={{fontSize:'.82rem',fontWeight:600,color:'var(--color-text-muted)',marginBottom:4}}>{d.rate}%{isCurrent?' (נוכחי)':''}</div>
-                    <div style={{fontSize:'1rem',fontWeight:800,fontFamily:"'IBM Plex Mono',monospace"}}>₪{fmtShort(d.final)}</div>
+                    <div style={{fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)',marginBottom:6}}>{d.rate}%{isCurrent?' (נוכחי)':''}</div>
+                    <div style={{fontSize:'1.15rem',fontWeight:800,fontFamily:"'IBM Plex Mono',monospace"}}>₪{fmtShort(d.final)}</div>
                     {!isCurrent && <div style={{fontSize:'.75rem',color:diff>0?'var(--color-success)':'var(--color-danger)',marginTop:3}}>{diff>0?'+':''}{fmt(diff)}</div>}
                     {isCurrent && <div style={{fontSize:'.72rem',color:'var(--color-accent)',marginTop:3}}>בסיס</div>}
                   </div>
