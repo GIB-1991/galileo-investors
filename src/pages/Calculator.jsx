@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-const fmt = (n) => new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(n)
+const fmt = (n) => { const abs = Math.round(Math.abs(n)); const s = abs.toLocaleString('en-US'); return (n < 0 ? '-' : '') + '\u20AA' + s }
 const fmtShort = (n) => {
   if (n >= 1000000) return (n/1000000).toFixed(1) + 'M'
   if (n >= 1000) return (n/1000).toFixed(0) + 'K'
