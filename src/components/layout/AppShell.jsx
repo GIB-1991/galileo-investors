@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator } from 'lucide-react'
 import { signOut } from '../../services/supabase.js'
 import { useTrialTimer } from '../../hooks/useAuth.js'
 
@@ -7,6 +7,7 @@ const NAV = [
   {path:'/dashboard', label:'לוח בקרה', icon:LayoutDashboard},
   {path:'/screener', label:'סקרינר', icon:Search},
   {path:'/portfolio', label:'תיק השקעות', icon:PieChart},
+  {path:'/calculator', label:'מחשבון', icon:Calculator},
   {path:'/academy', label:'אקדמיה', icon:BookOpen},
   {path:'/articles', label:'מאמרים', icon:FileText},
 ]
