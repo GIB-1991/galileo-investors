@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Build 1774172261841 - news translation enabled
+// v1774175652142 - Hebrew news translation active
 export default defineConfig({
   plugins: [react()],
   base: '/',
