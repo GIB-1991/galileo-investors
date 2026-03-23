@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon, Shield } from 'lucide-react'
 import { signOut } from '../../services/supabase.js'
 import { useTrialTimer } from '../../hooks/useAuth.js'
 import GalileoLogo from '../GalileoLogo.jsx'
@@ -107,6 +107,14 @@ export default function AppShell({user, children}) {
               {darkMode ? <Sun size={13}/> : <Moon size={13}/>}
               {darkMode ? 'בהיר' : 'כהה'}
             </button>
+            {user?.email === 'gilbitan2000@gmail.com' && (
+              <a href="/admin"
+                style={{display:'flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:'1px solid rgba(245,166,35,0.4)',background:'rgba(245,166,35,0.15)',color:'#f5a623',textDecoration:'none',fontSize:'.75rem',fontWeight:700,flexShrink:0}}
+                onMouseEnter={e=>e.currentTarget.style.background='rgba(245,166,35,0.3)'}
+                onMouseLeave={e=>e.currentTarget.style.background='rgba(245,166,35,0.15)'}>
+                <Shield size={12}/> ניהול
+              </a>
+            )}
 
             {daysLeft <= 7 && (
               <div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.3)',borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:'#f5a623'}}>
