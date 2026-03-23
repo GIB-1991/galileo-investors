@@ -5,61 +5,65 @@ export default async function handler(req, res) {
 
   const sym = ticker.toUpperCase();
   const AV  = 'T8VBPQ82S0O7VFSQ';
+  const r   = range || '3mo';
 
-  // Map range to Alpha Vantage function
-  const r = range || '3mo';
+  // Alpha Vantage time series mapping
   let avFunc, avInterval, avOutputSize;
-  if (r === '1d') {
-    avFunc = 'TIME_SERIES_INTRADAY'; avInterval = '5min'; avOutputSize = 'compact';
-  } else if (r === '5d') {
-    avFunc = 'TIME_SERIES_INTRADAY'; avInterval = '60min'; avOutputSize = 'full';
-  } else if (r === '1mo' || r === '3mo') {
-    avFunc = 'TIME_SERIES_DAILY'; avInterval = null; avOutputSize = r==='1mo'?'compact':'full';
-  } else {
-    avFunc = 'TIME_SERIES_WEEKLY'; avInterval = null; avOutputSize = 'full';
-  }
+  if (r === '1d') { avFunc='TIME_SERIES_INTRADAY'; avInterval='5min'; avOutputSize='compact'; }
+  else if (r === '5d') { avFunc='TIME_SERIES_INTRADAY'; avInterval='60min'; avOutputSize='full'; }
+  else if (r === '1mo') { avFunc='TIME_SERIES_DAILY'; avInterval=null; avOutputSize='compact'; }
+  else if (r === '3mo') { avFunc='TIME_SERIES_DAILY'; avInterval=null; avOutputSize='full'; }
+  else { avFunc='TIME_SERIES_WEEKLY'; avInterval=null; avOutputSize='full'; }
 
   const base = 'https://www.alphavantage.co/query?apikey='+AV;
   let tsUrl = base+'&function='+avFunc+'&symbol='+sym+'&outputsize='+avOutputSize;
   if (avInterval) tsUrl += '&interval='+avInterval;
-  const overviewUrl = base+'&function=OVERVIEW&symbol='+sym;
-  const quoteUrl    = base+'&function=GLOBAL_QUOTE&symbol='+sym;
 
   try {
     const [tsRes, ovRes, qRes] = await Promise.allSettled([
       fetch(tsUrl).then(r=>r.json()),
-      fetch(overviewUrl).then(r=>r.json()),
-      fetch(quoteUrl).then(r=>r.json()),
+      fetch(base+'&function=OVERVIEW&symbol='+sym).then(r=>r.json()),
+      fetch(base+'&function=GLOBAL_QUOTE&symbol='+sym).then(r=>r.json()),
     ]);
 
-    const ts  = tsRes.status==='fulfilled'  ? tsRes.value  : {};
-    const ov  = ovRes.status==='fulfilled'  ? ovRes.value  : {};
-    const gq  = qRes.status==='fulfilled'   ? qRes.value['Global Quote'] || {} : {};
+    const ts = tsRes.value || {};
+    const ov = ovRes.value || {};
+    const gqData = qRes.value || {};
+    const gq = gqData['Global Quote'] || {};
 
+    // Debug: log what we got
+    const gqKeys = Object.keys(gq);
+    
     // Parse time series
-    const tsKey = Object.keys(ts).find(k=>k.startsWith('Time Series'));
+    const tsKey = Object.keys(ts).find(k => k.startsWith('Time Series'));
     const series = tsKey ? ts[tsKey] : {};
     const entries = Object.entries(series).sort((a,b)=>a[0]<b[0]?-1:1);
 
     // Filter by range
-    const now  = Date.now();
-    const ms   = { '1d':86400000,'5d':432000000,'1mo':2592000000,'3mo':7776000000,'1y':31536000000,'5y':157680000000 };
-    const cutoff = now - (ms[r]||7776000000);
-    const filtered = entries.filter(([d])=> new Date(d).getTime() >= cutoff);
+    const ms = {'1d':86400000,'5d':432000000,'1mo':2592000000,'3mo':7776000000,'1y':31536000000,'5y':157680000000};
+    const cutoff = Date.now() - (ms[r] || 7776000000);
+    const filtered = entries.filter(([d]) => new Date(d).getTime() >= cutoff);
 
-    const timestamps = filtered.map(([d])=>Math.floor(new Date(d).getTime()/1000));
-    const closes     = filtered.map(([,v])=>parseFloat(v['4. close']));
-    const highs      = filtered.map(([,v])=>parseFloat(v['2. high']));
-    const lows       = filtered.map(([,v])=>parseFloat(v['3. low']));
-    const opens      = filtered.map(([,v])=>parseFloat(v['1. open']));
-    const volumes    = filtered.map(([,v])=>parseFloat(v['5. volume']||0));
+    const timestamps = filtered.map(([d]) => Math.floor(new Date(d).getTime()/1000));
+    const closes  = filtered.map(([,v]) => parseFloat(v['4. close']));
+    const highs   = filtered.map(([,v]) => parseFloat(v['2. high']));
+    const lows    = filtered.map(([,v]) => parseFloat(v['3. low']));
+    const opens   = filtered.map(([,v]) => parseFloat(v['1. open']));
+    const volumes = filtered.map(([,v]) => parseFloat(v['5. volume']||0));
 
-    const lastClose  = closes[closes.length-1] || 0;
-    const prevClose  = closes[closes.length-2] || lastClose;
-    const livePrice  = gq['05. price']   ? parseFloat(gq['05. price'])   : lastClose;
-    const liveChange = gq['09. change']  ? parseFloat(gq['09. change'])  : livePrice-prevClose;
-    const livePct    = gq['10. change percent'] ? parseFloat(gq['10. change percent'])/100 : (prevClose?liveChange/prevClose:0);
-    const liveVol    = gq['06. volume']  ? parseInt(gq['06. volume'])     : volumes[volumes.length-1];
+    // Price from GLOBAL_QUOTE (real-time)
+    const livePrice  = gq['05. price']            ? parseFloat(gq['05. price'])   : (closes[closes.length-1]||0);
+    const liveChange = gq['09. change']            ? parseFloat(gq['09. change'])  : 0;
+    const livePctRaw = gq['10. change percent']    ? gq['10. change percent'].replace('%','') : '0';
+    const livePct    = parseFloat(livePctRaw) / 100;
+    const prevClose  = gq['08. previous close']    ? parseFloat(gq['08. previous close']) : (closes[closes.length-2]||livePrice);
+    const liveOpen   = gq['02. open']              ? parseFloat(gq['02. open'])    : opens[opens.length-1];
+    const liveHigh   = gq['03. high']              ? parseFloat(gq['03. high'])    : highs[highs.length-1];
+    const liveLow    = gq['04. low']               ? parseFloat(gq['04. low'])     : lows[lows.length-1];
+    const liveVol    = gq['06. volume']            ? parseInt(gq['06. volume'])     : volumes[volumes.length-1];
+
+    const p = n => n ? parseFloat(n) : undefined;
+    const i = n => n ? parseInt(n)   : undefined;
 
     const meta = {
       symbol:                     sym,
@@ -77,49 +81,43 @@ export default async function handler(req, res) {
       regularMarketPrice:         livePrice,
       regularMarketChange:        +liveChange.toFixed(4),
       regularMarketChangePercent: +livePct.toFixed(6),
-      regularMarketOpen:          opens[opens.length-1],
-      regularMarketDayHigh:       highs[highs.length-1],
-      regularMarketDayLow:        lows[lows.length-1],
+      regularMarketOpen:          liveOpen,
+      regularMarketDayHigh:       liveHigh,
+      regularMarketDayLow:        liveLow,
       regularMarketVolume:        liveVol,
       chartPreviousClose:         prevClose,
       // 52W
-      fiftyTwoWeekHigh:           ov['52WeekHigh']  ? parseFloat(ov['52WeekHigh'])  : undefined,
-      fiftyTwoWeekLow:            ov['52WeekLow']   ? parseFloat(ov['52WeekLow'])   : undefined,
-      fiftyDayAverage:            ov['50DayMovingAverage']  ? parseFloat(ov['50DayMovingAverage'])  : undefined,
-      twoHundredDayAverage:       ov['200DayMovingAverage'] ? parseFloat(ov['200DayMovingAverage']) : undefined,
+      fiftyTwoWeekHigh:     p(ov['52WeekHigh']),
+      fiftyTwoWeekLow:      p(ov['52WeekLow']),
+      fiftyDayAverage:      p(ov['50DayMovingAverage']),
+      twoHundredDayAverage: p(ov['200DayMovingAverage']),
       // Fundamentals
-      marketCap:                  ov.MarketCapitalization   ? parseFloat(ov.MarketCapitalization)   : undefined,
-      trailingPE:                 ov.TrailingPE             ? parseFloat(ov.TrailingPE)             : undefined,
-      forwardPE:                  ov.ForwardPE              ? parseFloat(ov.ForwardPE)              : undefined,
-      trailingEps:                ov.EPS                    ? parseFloat(ov.EPS)                    : undefined,
-      beta:                       ov.Beta                   ? parseFloat(ov.Beta)                   : undefined,
-      priceToBook:                ov.PriceToBookRatio       ? parseFloat(ov.PriceToBookRatio)       : undefined,
-      priceToSales:               ov.PriceToSalesRatioTTM   ? parseFloat(ov.PriceToSalesRatioTTM)   : undefined,
-      // Volume
-      averageVolume:              parseInt(gq['06. volume']||0) || undefined,
-      sharesOutstanding:          ov.SharesOutstanding      ? parseFloat(ov.SharesOutstanding)      : undefined,
-      sharesFloat:                ov.SharesFloat            ? parseFloat(ov.SharesFloat)            : undefined,
-      // Financials
-      revenue:                    ov.RevenueTTM             ? parseFloat(ov.RevenueTTM)             : undefined,
-      grossProfit:                ov.GrossProfitTTM         ? parseFloat(ov.GrossProfitTTM)         : undefined,
-      ebitda:                     ov.EBITDA                 ? parseFloat(ov.EBITDA)                 : undefined,
-      returnOnEquity:             ov.ReturnOnEquityTTM      ? parseFloat(ov.ReturnOnEquityTTM)      : undefined,
-      returnOnAssets:             ov.ReturnOnAssetsTTM      ? parseFloat(ov.ReturnOnAssetsTTM)      : undefined,
-      revenueGrowth:              ov.QuarterlyRevenueGrowthYOY ? parseFloat(ov.QuarterlyRevenueGrowthYOY) : undefined,
-      profitMargin:               ov.ProfitMargin           ? parseFloat(ov.ProfitMargin)           : undefined,
-      operatingMargin:            ov.OperatingMarginTTM     ? parseFloat(ov.OperatingMarginTTM)     : undefined,
-      // Dividends
-      dividendYield:              ov.DividendYield          ? parseFloat(ov.DividendYield)          : undefined,
-      dividendRate:               ov.DividendPerShare       ? parseFloat(ov.DividendPerShare)       : undefined,
-      exDividendDate:             ov.ExDividendDate,
-      // EV
-      enterpriseValue:            ov.EVToEBITDA && ov.EBITDA ? parseFloat(ov.EVToEBITDA)*parseFloat(ov.EBITDA) : undefined,
-      enterpriseToRevenue:        ov.EVToRevenue            ? parseFloat(ov.EVToRevenue)            : undefined,
-      enterpriseToEbitda:         ov.EVToEBITDA             ? parseFloat(ov.EVToEBITDA)             : undefined,
-      // Analyst
-      targetMeanPrice:            ov.AnalystTargetPrice     ? parseFloat(ov.AnalystTargetPrice)     : undefined,
-      recommendationKey:          ov.AnalystRatingStrongBuy||ov.AnalystRatingBuy ? 'buy' : undefined,
-      numberOfAnalystOpinions:    ov.AnalystRatingStrongBuy ? parseInt(ov.AnalystRatingStrongBuy) + parseInt(ov.AnalystRatingBuy||0) : undefined,
+      marketCap:            p(ov.MarketCapitalization),
+      trailingPE:           p(ov.TrailingPE),
+      forwardPE:            p(ov.ForwardPE),
+      trailingEps:          p(ov.EPS),
+      beta:                 p(ov.Beta),
+      priceToBook:          p(ov.PriceToBookRatio),
+      priceToSales:         p(ov.PriceToSalesRatioTTM),
+      sharesOutstanding:    p(ov.SharesOutstanding),
+      sharesFloat:          p(ov.SharesFloat),
+      revenue:              p(ov.RevenueTTM),
+      grossProfit:          p(ov.GrossProfitTTM),
+      ebitda:               p(ov.EBITDA),
+      returnOnEquity:       p(ov.ReturnOnEquityTTM),
+      returnOnAssets:       p(ov.ReturnOnAssetsTTM),
+      revenueGrowth:        p(ov.QuarterlyRevenueGrowthYOY),
+      profitMargin:         p(ov.ProfitMargin),
+      operatingMargin:      p(ov.OperatingMarginTTM),
+      dividendYield:        p(ov.DividendYield),
+      dividendRate:         p(ov.DividendPerShare),
+      exDividendDate:       ov.ExDividendDate,
+      enterpriseValue:      p(ov.MarketCapitalization) ? p(ov.EVToEBITDA)*p(ov.EBITDA)||undefined : undefined,
+      enterpriseToRevenue:  p(ov.EVToRevenue),
+      enterpriseToEbitda:   p(ov.EVToEBITDA),
+      targetMeanPrice:      p(ov.AnalystTargetPrice),
+      recommendationKey:    ov.AnalystRatingStrongBuy||ov.AnalystRatingBuy ? 'buy' : ov.AnalystRatingStrongSell||ov.AnalystRatingSell ? 'sell' : 'hold',
+      numberOfAnalystOpinions: ov.AnalystRatingStrongBuy ? (parseInt(ov.AnalystRatingStrongBuy||0)+parseInt(ov.AnalystRatingBuy||0)+parseInt(ov.AnalystRatingHold||0)) : undefined,
     };
 
     res.status(200).json({
