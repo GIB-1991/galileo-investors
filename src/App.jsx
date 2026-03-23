@@ -10,6 +10,9 @@ import Screener from './pages/Screener.jsx'
 import Portfolio from './pages/Portfolio.jsx'
 import Articles from './pages/Articles.jsx'
 import Calculator from './pages/Calculator.jsx'
+import Admin from './pages/Admin.jsx'
+
+const ADMIN_EMAIL = 'gilbitan2000@gmail.com'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -27,8 +30,8 @@ export default function App() {
   }, [])
 
   if (loading) return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--color-bg)'}}>
-      <div style={{color:'var(--color-accent)',fontSize:'1.5rem',fontWeight:800}}>G</div>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#080c14'}}>
+      <div style={{color:'#f5a623',fontSize:'1.5rem',fontWeight:800}}>G</div>
     </div>
   )
 
@@ -44,6 +47,9 @@ export default function App() {
           <Route path="/calculator" element={<AppShell user={user}><Calculator/></AppShell>}/>
           <Route path="/academy" element={<AppShell user={user}><Academy/></AppShell>}/>
           <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
+          {user.email === ADMIN_EMAIL && (
+            <Route path="/admin" element={<AppShell user={user}><Admin user={user}/></AppShell>}/>
+          )}
           <Route path="*" element={<Navigate to="/dashboard"/>}/>
         </>
       ) : (
