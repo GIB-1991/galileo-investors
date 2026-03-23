@@ -1,107 +1,88 @@
-import { useState } from 'react'
-import { ExternalLink, Clock, Tag } from 'lucide-react'
-
-const ARTICLES = [
-  {
-    id:1, title:'למה וורן באפט מעדיף לקנות מניות צמיחה לטווח ארוך',
-    summary:'אסטרטגיית הקנייה והחזקה של וורן באפט: למה לקנות חברות עם יתרון תחרותי בר קיימא ולהחזיק אותן לשנים.',
-    author:'וורן באפט', date:'מרץ 2024', category:'אסטרטגיה', readTime:'8 דק', color:'#f5a623',
-    url:'https://www.berkshirehathaway.com/letters/letters.html'
-  },
-  {
-    id:2, title:'הבנת ביזור סיכונים בתיק השקעות',
-    summary:'מדוע פיזור אינו רק על מניות שונות, אלא גם על מגזרים, גודל הפירמה ואזורים גיאוגרפיים.',
-    author:'גלילאו', date:'אפריל 2024', category:'ניהול סיכון', readTime:'5 דק', color:'#2dd87a',
-    url:'https://www.investopedia.com/terms/d/diversification.asp'
-  },
-  {
-    id:3, title:'נסרטי 2 — סוד ההשקעה לקרנות סל',
-    summary:'קרנות בסל כמו QQQ ו-SPY נתנו למשקיעים פשוטים גישה לתשואות מקצועיות בעלויות נמוכות.',
-    author:'גלילאו', date:'מאי 2024', category:'ETF', readTime:'6 דק', color:'#4f8ef7',
-    url:'https://www.investopedia.com/terms/e/etf.asp'
-  },
-  {
-    id:4, title:'איך לקרוא דוח רבעוני באופן נכון',
-    summary:'דוחות רבעוניים עלולים לגרום תנודותיות גדולה. מדריך מעשי לקריאת הנתונים והבנת מה עומד מאחורי המספרים.',
-    author:'גלילאו', date:'יוני 2024', category:'ניתוח פונדמנטלי', readTime:'10 דק', color:'#a855f7',
-    url:'https://www.investopedia.com/terms/e/eps.asp'
-  },
-  {
-    id:5, title:'הפד ושוק המניות: חיבור שאתה חייב להכיר',
-    summary:'כיצד החלטות הפד משפיעות ישירות על מחירי מניות, ולמה יום הפד הוא אחד הימים הכי תנודותיים בשנה.',
-    author:'גלילאו', date:'יולי 2024', category:'מאקרו', readTime:'7 דק', color:'#fbbf24',
-    url:'https://www.federalreserve.gov/monetarypolicy.htm'
-  },
-  {
-    id:6, title:'שגיאות נפוצות שמשקיעים מתחילים עושים',
-    summary:'הפסדות רגשיות, מכירה בשיעורי שוק יורד ופיצור תפקיד על הסיכון — איך להימנע מהן.',
-    author:'גלילאו', date:'אוגוסט 2024', category:'פסיכולוגיה', readTime:'9 דק', color:'#f05252',
-    url:'https://www.investopedia.com/articles/trading/02/110502.asp'
-  },
-]
-
-const ALL_CATS = ['הכל', ...[...new Set(ARTICLES.map(a=>a.category))]]
+import { useState, useEffect } from 'react'
+import { ExternalLink, RefreshCw, Tag } from 'lucide-react'
+import { supabase } from '../services/supabase.js'
 
 export default function Articles() {
-  const [cat, setCat] = useState('הכל')
-  const [search, setSearch] = useState('')
+  const [articles, setArticles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeCategory, setActiveCategory] = useState('הכל')
 
-  const filtered = ARTICLES.filter(a =>
-    (cat === 'הכל' || a.category === cat) &&
-    (!search || a.title.includes(search) || a.summary.includes(search))
-  )
+  useEffect(() => {
+    loadArticles()
+  }, [])
+
+  async function loadArticles() {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+    if (data) setArticles(data)
+    setLoading(false)
+  }
+
+  const categories = ['הכל', ...new Set(articles.map(a => a.category).filter(Boolean))]
+  const filtered = activeCategory === 'הכל' ? articles : articles.filter(a => a.category === activeCategory)
 
   return (
     <div>
       <div style={{marginBottom:'2rem'}}>
-        <h1 style={{fontSize:'1.5rem',fontWeight:800,margin:'0 0 6px',color:'var(--color-text-primary)'}}>מאמרים</h1>
-        <p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.875rem'}}>קריאה מעמיקת על השקעות ושוק ההון</p>
+        <h1 style={{fontSize:'1.5rem',fontWeight:800,margin:'0 0 6px'}}>מאמרים</h1>
+        <p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.875rem'}}>תוכן עדכני על שוק ההון והשקעות</p>
       </div>
 
-      <div style={{marginBottom:'1rem'}}>
-        <input className='input' placeholder='חפש מאמר...' value={search} onChange={e=>setSearch(e.target.value)} style={{marginBottom:'1rem'}}/>
-        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-          {ALL_CATS.map(c=>(
-            <button key={c} onClick={()=>setCat(c)} style={{padding:'5px 14px',borderRadius:20,fontSize:'.82rem',fontWeight:500,border:'1px solid',cursor:'pointer',fontFamily:'Heebo,sans-serif',transition:'all 180ms',
-              background:cat===c?'var(--color-accent)':'transparent',
-              color:cat===c?'#0d0f14':'var(--color-text-secondary)',
-              borderColor:cat===c?'var(--color-accent)':'var(--color-border2)'}}>
-              {c}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:'1.25rem'}}>
-        {filtered.map(a=>(
-          <a key={a.id} href={a.url} target='_blank' rel='noopener noreferrer' style={{textDecoration:'none',display:'block'}}>
-            <div className='card' style={{height:'100%',cursor:'pointer',transition:'all 250ms',borderLeft:'3px solid '+a.color}}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)';e.currentTarget.style.borderColor=a.color}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.75rem',flexWrap:'wrap'}}>
-                <span style={{fontSize:'.72rem',fontWeight:700,background:a.color+'20',color:a.color,padding:'3px 10px',borderRadius:20,border:'1px solid '+a.color+'40'}}>
-                  {a.category}
-                </span>
-                <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.72rem',color:'var(--color-text-muted)'}}>
-                  <Clock size={11}/>{a.readTime}
-                </span>
-              </div>
-              <h3 style={{margin:'0 0 .625rem',fontSize:'.95rem',fontWeight:700,color:'var(--color-text-primary)',lineHeight:1.45}}>{a.title}</h3>
-              <p style={{margin:'0 0 1rem',fontSize:'.83rem',color:'var(--color-text-secondary)',lineHeight:1.65}}>{a.summary}</p>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:'auto'}}>
-                <span style={{fontSize:'.75rem',color:'var(--color-text-muted)'}}>{a.author} · {a.date}</span>
-                <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.75rem',color:a.color,fontWeight:600}}>
-                  קרא עוד <ExternalLink size={11}/>
-                </span>
-              </div>
-            </div>
-          </a>
+      {/* Category filter */}
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:'1.5rem'}}>
+        {categories.map(cat => (
+          <button key={cat} onClick={() => setActiveCategory(cat)}
+            style={{padding:'5px 14px',borderRadius:20,border:'1px solid '+(activeCategory===cat?'rgba(245,166,35,0.5)':'var(--color-border)'),background:activeCategory===cat?'rgba(245,166,35,0.12)':'transparent',color:activeCategory===cat?'#f5a623':'var(--color-text-secondary)',cursor:'pointer',fontFamily:'inherit',fontSize:'.8rem',fontWeight:activeCategory===cat?700:400,transition:'all 180ms'}}>
+            {cat}
+          </button>
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {loading ? (
         <div style={{textAlign:'center',padding:'3rem',color:'var(--color-text-muted)'}}>
-          לא נמצאו מאמרים
+          <RefreshCw size={20} style={{animation:'spin 1s linear infinite',marginBottom:8}}/>
+          <p style={{margin:0}}>טוען מאמרים...</p>
+        </div>
+      ) : (
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(340px,1fr))',gap:'1.25rem'}}>
+          {filtered.map(article => (
+            <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer"
+              style={{display:'block',background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,padding:'1.25rem',textDecoration:'none',color:'inherit',transition:'all 200ms'}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(245,166,35,0.3)';e.currentTarget.style.transform='translateY(-2px)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--color-border)';e.currentTarget.style.transform='translateY(0)'}}>
+              {article.image_url && (
+                <div style={{height:160,borderRadius:8,overflow:'hidden',marginBottom:'1rem',background:'var(--color-bg2)'}}>
+                  <img src={article.image_url} alt={article.title} style={{width:'100%',height:'100%',objectFit:'cover'}} onError={e=>e.target.parentElement.style.display='none'}/>
+                </div>
+              )}
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+                {article.category && (
+                  <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.72rem',fontWeight:600,color:'#f5a623',background:'rgba(245,166,35,0.1)',padding:'2px 8px',borderRadius:8}}>
+                    <Tag size={10}/>{article.category}
+                  </span>
+                )}
+                {article.created_at && (
+                  <span style={{fontSize:'.72rem',color:'var(--color-text-muted)'}}>
+                    {new Date(article.created_at).toLocaleDateString('he-IL')}
+                  </span>
+                )}
+              </div>
+              <h3 style={{margin:'0 0 8px',fontSize:'1rem',fontWeight:700,lineHeight:1.45,color:'var(--color-text-primary)'}}>{article.title}</h3>
+              {article.summary && <p style={{margin:'0 0 12px',fontSize:'.84rem',color:'var(--color-text-secondary)',lineHeight:1.6}}>{article.summary}</p>}
+              <div style={{display:'flex',alignItems:'center',gap:4,fontSize:'.8rem',color:'#f5a623',fontWeight:600}}>
+                <ExternalLink size={13}/> קרא עוד
+              </div>
+            </a>
+          ))}
+          {filtered.length === 0 && (
+            <div style={{gridColumn:'1/-1',textAlign:'center',padding:'3rem',color:'var(--color-text-muted)'}}>
+              אין מאמרים בקטגוריה זו
+            </div>
+          )}
         </div>
       )}
     </div>
