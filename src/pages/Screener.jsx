@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, X } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, BarChart2, Activity, DollarSign, Globe, X, Target, Users } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 
 const QUICK = [
@@ -147,6 +147,18 @@ export default function Screener() {
   const isUp     = dayChange >= 0
   const rngUp    = (rangeReturn ?? 0) >= 0
   const chartColor = rngUp ? '#2dd87a' : '#e05252'
+  const nowUTC=new Date(),dayUTC=nowUTC.getUTCDay(),hUTC=nowUTC.getUTCHours()*60+nowUTC.getUTCMinutes()
+  const marketOpen=dayUTC>=1&&dayUTC<=5&&hUTC>=810&&hUTC<1200
+  const displayReturn=marketOpen?changePct:rangeReturn
+  const displayLabel=marketOpen?'יומי':(PERIODS.find(p=>p.range===period)?.label||period)
+  const mc=stock?.marketCap,qt=stock?.quoteType,sym=stock?.symbol||''
+  const isETF=qt==='ETF'||qt==='MUTUALFUND'||ETF_LIST.includes(sym)
+  let capLabel=null,capColor='#f5a623',capBg='rgba(245,166,35,.12)',capBorder='rgba(245,166,35,.3)',capIcon='',capMax=null
+  if(isETF){capLabel='קרן סל / ETF';capColor='#60a5fa';capBg='rgba(96,165,250,.12)';capBorder='rgba(96,165,250,.3)';capIcon='📊';capMax='ניתן להחזיק עד 100%'}
+  else if(mc>=1e12){capLabel='מגה קאפ';capColor='#2dd87a';capBg='rgba(45,216,122,.12)';capBorder='rgba(45,216,122,.3)';capIcon='🟢';capMax='חשיפה מקסימלית: 20%'}
+  else if(mc>=5e10){capLabel='לארג׳ קאפ';capColor='#f5a623';capBg='rgba(245,166,35,.12)';capBorder='rgba(245,166,35,.3)';capIcon='🟡';capMax='חשיפה מקסימלית: 10%'}
+  else if(mc>=1e10){capLabel='סמול קאפ';capColor='#fb923c';capBg='rgba(251,146,60,.12)';capBorder='rgba(251,146,60,.3)';capIcon='🟠';capMax='חשיפה מקסימלית: 5%'}
+  else if(mc){capLabel='מיקרו קאפ';capColor='#e05252';capBg='rgba(224,82,82,.12)';capBorder='rgba(224,82,82,.3)';capIcon='🔴';capMax='חשיפה מקסימלית: 3–4%'}
   const startPx  = chart[0]?.price || 0
   const capInfo  = stock ? getCapInfo(stock.marketCap, stock.quoteType, stock.symbol) : null
 
