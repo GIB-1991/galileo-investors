@@ -1,54 +1,51 @@
 import { useState, useEffect, useRef } from 'react'
-import { Search, TrendingUp, TrendingDown, BarChart2, Activity, DollarSign, Globe, X, Target, Users } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 
 const QUICK = [
-  {t:'AAPL',n:'Apple'},{t:'NVDA',n:'Nvidia'},{t:'TSLA',n:'Tesla'},
-  {t:'MSFT',n:'Microsoft'},{t:'GOOGL',n:'Alphabet'},{t:'AMZN',n:'Amazon'},
-  {t:'META',n:'Meta'},{t:'SPY',n:'S&P 500'},{t:'QQQ',n:'Nasdaq'},{t:'JPM',n:'JPMorgan'},
+  {t:'SPY',n:'S&P 500'},{t:'META',n:'Meta'},{t:'AMZN',n:'Amazon'},
+  {t:'GOOGL',n:'Alphabet'},{t:'MSFT',n:'Microsoft'},{t:'TSLA',n:'Tesla'},
+  {t:'NVDA',n:'Nvidia'},{t:'AAPL',n:'Apple'},{t:'JPM',n:'JPMorgan'},{t:'QQQ',n:'Nasdaq'},
 ]
 
 const PERIODS = [
-  {label:'יום',   range:'1d',  interval:'5m'},
-  {label:'שבוע',  range:'5d',  interval:'1h'},
-  {label:'חודש',  range:'1mo', interval:'1d'},
-  {label:'3 חודשים', range:'3mo', interval:'1d'},
-  {label:'שנה',   range:'1y',  interval:'1wk'},
-  {label:'5 שנים',range:'5y',  interval:'1mo'},
+  {label:'5 שנים', range:'5y',  interval:'1mo'},
+  {label:'שנה',    range:'1y',  interval:'1wk'},
+  {label:'6 חודשים',range:'6mo',interval:'1d'},
+  {label:'3 חודשים',range:'3mo',interval:'1d'},
+  {label:'חודש',   range:'1mo', interval:'1d'},
+  {label:'שבוע',   range:'5d',  interval:'1h'},
+  {label:'יום',    range:'1d',  interval:'5m'},
 ]
 
-const RECS = {
-  strongbuy:'קנייה חזקה', buy:'קנייה', hold:'המתנה', sell:'מכירה', strongsell:'מכירה חזקה'
-}
-const REC_COLOR = {
-  strongbuy:'#2dd87a', buy:'#7ae8a8', hold:'#f5a623', sell:'#e07a52', strongsell:'#e05252'
+const ETF_LIST = new Set(['SPY','QQQ','IVV','VTI','VOO','DIA','GLD','SLV','TLT','IEF','LQD','EEM','VEA','IEFA','IWM','MDY','IJH','IJR','ARKK','ARKG','ARKW','ARKF','ARKQ','SOXX','SMH','XLK','XLF','XLE','XLV','XLP','XLU','XLI','XLB','XLY','XLRE','VNQ','BND','AGG','HYG'])
+
+function getCapInfo(mc, qt, sym) {
+  const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.has(sym)
+  if (isETF) return { label:'קרן סל / ETF', pct:'ללא הגבלה — עד 100% מהתיק', color:'#60a5fa', bg:'rgba(96,165,250,.15)', border:'rgba(96,165,250,.35)' }
+  if (!mc) return null
+  if (mc >= 1e12) return { label:'מגה קאפ', pct:'חשיפה מקס׳: 20% מהתיק', color:'#2dd87a', bg:'rgba(45,216,122,.13)', border:'rgba(45,216,122,.35)' }
+  if (mc >= 5e10) return { label:'לארג׳ קאפ', pct:'חשיפה מקס׳: 10% מהתיק', color:'#f5a623', bg:'rgba(245,166,35,.13)', border:'rgba(245,166,35,.35)' }
+  if (mc >= 1e10) return { label:'סמול קאפ', pct:'חשיפה מקס׳: 5% מהתיק', color:'#fb923c', bg:'rgba(251,146,60,.13)', border:'rgba(251,146,60,.35)' }
+  return { label:'מיקרו קאפ', pct:'חשיפה מקס׳: 3–4% מהתיק', color:'#e05252', bg:'rgba(224,82,82,.13)', border:'rgba(224,82,82,.35)' }
 }
 
-function fmtN(n, pre='$', suffix='') {
-  const v = parseFloat(n)
-  if (!n && n !== 0 || isNaN(v)) return 'N/A'
-  let s
-  if (Math.abs(v) >= 1e12) s = pre + (v/1e12).toFixed(2) + 'T'
-  else if (Math.abs(v) >= 1e9) s = pre + (v/1e9).toFixed(2) + 'B'
-  else if (Math.abs(v) >= 1e6) s = pre + (v/1e6).toFixed(2) + 'M'
-  else s = pre + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
-  return s + suffix
+function fmtN(n, pre='$') {
+  const v = parseFloat(n); if (!n && n !== 0 || isNaN(v)) return 'N/A'
+  if (Math.abs(v) >= 1e12) return pre+(v/1e12).toFixed(2)+'T'
+  if (Math.abs(v) >= 1e9)  return pre+(v/1e9).toFixed(2)+'B'
+  if (Math.abs(v) >= 1e6)  return pre+(v/1e6).toFixed(2)+'M'
+  if (Math.abs(v) >= 1e3)  return pre+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
+  return pre+v.toFixed(2)
 }
-
-function fmtPct(n) {
-  const v = parseFloat(n)
-  if (isNaN(v)) return 'N/A'
-  return (v*100).toFixed(2)+'%'
-}
-
 function fmtVol(n) {
-  const v = parseFloat(n)
-  if (!v || isNaN(v)) return 'N/A'
+  const v = parseFloat(n); if (!v||isNaN(v)) return 'N/A'
   if (v>=1e9) return (v/1e9).toFixed(2)+'B'
   if (v>=1e6) return (v/1e6).toFixed(1)+'M'
   if (v>=1e3) return (v/1e3).toFixed(0)+'K'
   return v.toFixed(0)
 }
+function fmtPct(n) { const v=parseFloat(n); return isNaN(v)?'N/A':(v*100).toFixed(2)+'%' }
 
 export default function Screener() {
   const [query,    setQuery]    = useState('')
@@ -59,22 +56,22 @@ export default function Screener() {
   const [period,   setPeriod]   = useState('3mo')
   const [loading,  setLoading]  = useState(false)
   const [chartLoad,setChartLoad]= useState(false)
-  const [rangeReturn, setRangeReturn] = useState(null)
   const [err,      setErr]      = useState(null)
-  const debRef   = useRef(null)
-  const inputRef = useRef(null)
-  const wrapRef  = useRef(null)
+  const [rangeReturn, setRangeReturn] = useState(null)
+  const debRef  = useRef(null)
+  const inputRef= useRef(null)
+  const wrapRef = useRef(null)
 
   useEffect(()=>{
     const h = e => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setShowSugg(false) }
     document.addEventListener('mousedown', h)
-    return () => document.removeEventListener('mousedown', h)
+    return ()=>document.removeEventListener('mousedown', h)
   },[])
 
   useEffect(()=>{
-    if (!query || query.length < 1) { setSugg([]); return }
+    if (!query||query.length<1){setSugg([]);return}
     clearTimeout(debRef.current)
-    debRef.current = setTimeout(async ()=>{
+    debRef.current = setTimeout(async()=>{
       try {
         const r = await fetch('/api/search?q='+encodeURIComponent(query))
         const d = await r.json()
@@ -86,23 +83,29 @@ export default function Screener() {
 
   useEffect(()=>{ if (stock) loadChart(stock.symbol, period) },[period])
 
+  function calcReturn(pts) {
+    if (pts.length < 2) return null
+    const fp = pts.find(x=>x.price)?.price
+    const lp = [...pts].reverse().find(x=>x.price)?.price
+    return fp && lp && fp > 0 ? (lp - fp) / fp : null
+  }
+
   async function loadStock(ticker) {
     setLoading(true); setErr(null); setShowSugg(false); setSugg([])
     try {
-      const per = PERIODS.find(p=>p.range==='3mo')
       const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range=3mo&interval=1d')
       const d = await r.json()
       const result = d.chart?.result?.[0]
       if (!result) { setErr('לא נמצאו נתונים עבור '+ticker); setLoading(false); return }
-      const meta   = result.meta
-      const ts     = result.timestamp || []
+      const meta = result.meta
+      const ts   = result.timestamp || []
       const closes = result.indicators?.quote?.[0]?.close || []
-      const pts    = ts.map((t,i)=>({
+      const pts = ts.map((t,i)=>({
         date: new Date(t*1000).toLocaleDateString('he-IL',{month:'short',day:'numeric'}),
         price: closes[i] ? parseFloat(closes[i].toFixed(2)) : null
       })).filter(p=>p.price)
       setChart(pts)
-      if(pts.length>1){const fp=pts.find(x=>x.price)?.price,lp=[...pts].reverse().find(x=>x.price)?.price;setRangeReturn(fp&&lp&&fp>0?(lp-fp)/fp:null)}else setRangeReturn(null)
+      setRangeReturn(calcReturn(pts))
       setStock(meta)
       setQuery(meta.symbol)
       setPeriod('3mo')
@@ -118,55 +121,46 @@ export default function Screener() {
       const d = await r.json()
       const result = d.chart?.result?.[0]
       if (!result) { setChartLoad(false); return }
-      const ts     = result.timestamp || []
+      const ts   = result.timestamp || []
       const closes = result.indicators?.quote?.[0]?.close || []
-      const isIntraday = per.range==='1d'||per.range==='5d'
+      const isIntra = per.range==='1d'||per.range==='5d'
       const pts = ts.map((t,i)=>({
-        date: new Date(t*1000).toLocaleDateString('he-IL',{
-          month:'short', day:'numeric',
-          ...(isIntraday ? {hour:'2-digit',minute:'2-digit'} : {})
-        }),
+        date: new Date(t*1000).toLocaleDateString('he-IL',{month:'short',day:'numeric',...(isIntra?{hour:'2-digit',minute:'2-digit'}:{})}),
         price: closes[i] ? parseFloat(closes[i].toFixed(2)) : null
       })).filter(p=>p.price)
       setChart(pts)
-      if(pts.length>1){const fp=pts.find(x=>x.price)?.price,lp=[...pts].reverse().find(x=>x.price)?.price;setRangeReturn(fp&&lp&&fp>0?(lp-fp)/fp:null)}else setRangeReturn(null)
+      setRangeReturn(calcReturn(pts))
     } catch {}
     setChartLoad(false)
   }
 
   function clearAll() {
     setQuery(''); setSugg([]); setShowSugg(false)
-    setStock(null); setChart([]); setErr(null)
+    setStock(null); setChart([]); setErr(null); setRangeReturn(null)
     inputRef.current?.focus()
   }
 
-  const price    = stock?.regularMarketPrice || 0
-  const prev     = stock?.chartPreviousClose || price
-  const change   = stock?.regularMarketChange ?? (price - prev)
-  const changePct= stock?.regularMarketChangePercent ?? (prev ? (price-prev)/prev : 0)
-  const isUp     = change >= 0
-  const clr      = isUp ? '#2dd87a' : '#e05252'
-  // Market hours: NYSE open 9:30-16:00 ET (13:30-20:00 UTC), Mon-Fri
-  const nowUTC   = new Date()
-  const dayUTC   = nowUTC.getUTCDay()
-  const hUTC     = nowUTC.getUTCHours()*60 + nowUTC.getUTCMinutes()
-  const isMarketOpen = dayUTC>=1 && dayUTC<=5 && hUTC>=810 && hUTC<1200
-  // Display daily return when market is open, range return otherwise
-  const displayReturn = isMarketOpen ? changePct : rangeReturn
-  const displayLabel  = isMarketOpen ? 'יומי' : (PERIODS.find(p=>p.range===period)?.label||period)
+  const price    = parseFloat(stock?.regularMarketPrice || 0)
+  const prev     = parseFloat(stock?.chartPreviousClose || price)
+  const dayChange= stock?.regularMarketChange ?? (price - prev)
+  const dayPct   = stock?.regularMarketChangePercent ?? (prev ? (price-prev)/prev : 0)
+  const isUp     = dayChange >= 0
+  const rngUp    = (rangeReturn ?? 0) >= 0
+  const chartColor = rngUp ? '#2dd87a' : '#e05252'
   const startPx  = chart[0]?.price || 0
+  const capInfo  = stock ? getCapInfo(stock.marketCap, stock.quoteType, stock.symbol) : null
 
-  const Tip = ({active,payload,label}) => {
+  const Tip = ({active,payload,label})=>{
     if (!active||!payload?.length) return null
     return (
       <div style={{background:'rgba(8,12,22,.95)',border:'1px solid rgba(245,166,35,.3)',borderRadius:8,padding:'8px 12px'}}>
         <p style={{margin:0,fontSize:'.72rem',color:'rgba(245,166,35,.6)'}}>{label}</p>
-        <p style={{margin:'2px 0 0',fontSize:'1rem',fontWeight:700,color:clr,fontFamily:'monospace'}}>${payload[0].value?.toFixed(2)}</p>
+        <p style={{margin:'2px 0 0',fontSize:'1rem',fontWeight:700,color:chartColor,fontFamily:'monospace'}}>${payload[0].value?.toFixed(2)}</p>
       </div>
     )
   }
 
-  const Row = ({label,val,color:c}) => val && val!=='N/A' ? (
+  const Row = ({label,val,color:c})=> val&&val!=='N/A' ? (
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,.04)'}}>
       <span style={{fontSize:'.8rem',color:'var(--color-text-muted)'}}>{label}</span>
       <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:'monospace',color:c||'var(--color-text-primary)'}}>{val}</span>
@@ -175,13 +169,13 @@ export default function Screener() {
 
   return (
     <div style={{maxWidth:1100,margin:'0 auto'}}>
-      {/* Header */}
+      {/* Title */}
       <div style={{textAlign:'center',marginBottom:'2rem'}}>
         <h1 style={{fontSize:'2rem',fontWeight:800,margin:'0 0 6px'}}>סקרינר מניות</h1>
         <p style={{color:'var(--color-text-muted)',margin:0}}>חפש כל מניה בארה"ב — נתונים בזמן אמת</p>
       </div>
 
-      {/* Search */}
+      {/* ── 1. Search bar ── */}
       <div ref={wrapRef} style={{position:'relative',marginBottom:'1.5rem'}}>
         <div style={{display:'flex',alignItems:'center',gap:12,background:'var(--color-surface)',border:'2px solid '+(showSugg&&sugg.length?'rgba(245,166,35,.55)':'rgba(245,166,35,.2)'),borderRadius:18,padding:'12px 20px',boxShadow:'0 6px 30px rgba(0,0,0,.18)',transition:'border-color 200ms'}}>
           <Search size={22} style={{color:'#f5a623',flexShrink:0}}/>
@@ -192,12 +186,12 @@ export default function Screener() {
             placeholder="חפש מניה — AAPL, Tesla, Nvidia..."
             style={{flex:1,background:'none',border:'none',outline:'none',fontSize:'1.2rem',fontWeight:500,color:'var(--color-text-primary)',fontFamily:'inherit',direction:'ltr',textAlign:'left',minWidth:0}}
             autoComplete="off" spellCheck="false"/>
-          {query && <button onClick={clearAll} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:4,display:'flex',borderRadius:6}} onMouseEnter={e=>e.currentTarget.style.color='#e05252'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><X size={18}/></button>}
+          {query&&<button onClick={clearAll} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:4,display:'flex',borderRadius:6}} onMouseEnter={e=>e.currentTarget.style.color='#e05252'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><X size={18}/></button>}
           <button onClick={()=>query.trim()&&loadStock(query.trim().toUpperCase())}
             style={{background:'linear-gradient(135deg,#f5a623,#e8901a)',border:'none',borderRadius:12,padding:'9px 22px',color:'#0d0f14',fontWeight:700,fontSize:'.95rem',cursor:'pointer',fontFamily:'inherit',flexShrink:0}}
             onMouseEnter={e=>e.currentTarget.style.opacity='.82'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>חפש</button>
         </div>
-        {showSugg && sugg.length>0 && (
+        {showSugg&&sugg.length>0&&(
           <div style={{position:'absolute',top:'calc(100% + 6px)',left:0,right:0,background:'var(--color-surface)',border:'1px solid rgba(245,166,35,.22)',borderRadius:14,zIndex:200,boxShadow:'0 12px 40px rgba(0,0,0,.25)',overflow:'hidden'}}>
             {sugg.map((s,i)=>(
               <div key={i} onMouseDown={e=>{e.preventDefault();setQuery(s.symbol);loadStock(s.symbol)}}
@@ -216,7 +210,7 @@ export default function Screener() {
       </div>
 
       {/* Quick picks */}
-      {!stock && !loading && (
+      {!stock&&!loading&&(
         <>
           <p style={{textAlign:'center',fontSize:'.78rem',fontWeight:600,color:'var(--color-text-muted)',letterSpacing:'.1em',marginBottom:10}}>בחירות מהירות</p>
           <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center',marginBottom:'2.5rem'}}>
@@ -237,8 +231,7 @@ export default function Screener() {
         </>
       )}
 
-      {/* Loading */}
-      {loading && (
+      {loading&&(
         <div style={{textAlign:'center',padding:'5rem 0'}}>
           <div style={{width:44,height:44,border:'3px solid rgba(245,166,35,.2)',borderTop:'3px solid #f5a623',borderRadius:'50%',animation:'spin .75s linear infinite',margin:'0 auto 16px'}}/>
           <p style={{color:'var(--color-text-muted)',margin:0}}>טוען נתונים...</p>
@@ -246,115 +239,97 @@ export default function Screener() {
         </div>
       )}
 
-      {/* Error */}
-      {err && !loading && (
+      {err&&!loading&&(
         <div style={{textAlign:'center',padding:'2.5rem',background:'rgba(224,82,82,.07)',border:'1px solid rgba(224,82,82,.2)',borderRadius:14,color:'#e05252'}}>
           <p style={{margin:0}}>{err}</p>
         </div>
       )}
 
       {/* ── Stock Card ── */}
-      {stock && !loading && (
+      {stock&&!loading&&(
         <div style={{animation:'fadeUp .3s ease'}}>
           <style>{'@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}'}</style>
 
-          {/* Hero */}
           <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:20,padding:'1.5rem 1.75rem',marginBottom:'1rem'}}>
+
+            {/* ── Top row: price (left) + identity (right) ── */}
             <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:'1.25rem'}}>
+
+              {/* LEFT: price + daily change */}
               <div>
-                <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
-                  <h2 style={{margin:0,fontSize:'2rem',fontWeight:800,fontFamily:'monospace',color:'#f5a623',lineHeight:1}}>{stock.symbol}</h2>
-                  {stock.fullExchangeName && <span style={{fontSize:'.72rem',background:'rgba(245,166,35,.1)',color:'rgba(245,166,35,.7)',padding:'3px 9px',borderRadius:7,border:'1px solid rgba(245,166,35,.2)',fontWeight:600}}>{stock.fullExchangeName}</span>}
-                </div>
-                <p style={{margin:0,fontSize:'1.05rem',color:'var(--color-text-secondary)',fontWeight:500}}>{stock.longName||stock.shortName||''}</p>
-                {(()=>{
-                  const mc  = stock.marketCap
-                  const qt  = stock.quoteType
-                  const sym = stock.symbol || ''
-                  // Detect ETF by quoteType or known ETF tickers
-                  const ETF_LIST = ['SPY','QQQ','IVV','VTI','VOO','DIA','GLD','SLV','TLT','IEF','LQD','EEM','VEA','IEFA','IWM','MDY','IJH','IJR','ARKK','ARKG','ARKW','ARKF','ARKQ','SOXX','SMH','XLK','XLF','XLE','XLV','XLP','XLU','XLI','XLB','XLY','XLRE','VNQ','REIT','BND','AGG','HYG','VCIT','BSV']
-                  const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.includes(sym)
-                  if (!mc && !isETF) return null
-                  let label, color, bg, border, maxPct, icon
-                  if (isETF) {
-                    label='קרן סל / ETF'; color='#60a5fa'; bg='rgba(96,165,250,.12)'; border='rgba(96,165,250,.3)'; maxPct='ניתן להחזיק עד 100% מהתיק'; icon='📊'
-                  } else if (mc >= 1e12) {
-                    label='מגה קאפ'; color='#2dd87a'; bg='rgba(45,216,122,.12)'; border='rgba(45,216,122,.3)'; maxPct='חשיפה מקסימלית: 20% מהתיק'; icon='🟢'
-                  } else if (mc >= 5e10) {
-                    label='לארג׳ קאפ'; color='#f5a623'; bg='rgba(245,166,35,.12)'; border='rgba(245,166,35,.3)'; maxPct='חשיפה מקסימלית: 10% מהתיק'; icon='🟡'
-                  } else if (mc >= 1e10) {
-                    label='סמול קאפ'; color='#fb923c'; bg='rgba(251,146,60,.12)'; border='rgba(251,146,60,.3)'; maxPct='חשיפה מקסימלית: 5% מהתיק'; icon='🟠'
-                  } else {
-                    label='מיקרו קאפ'; color='#e05252'; bg='rgba(224,82,82,.12)'; border='rgba(224,82,82,.3)'; maxPct='חשיפה מקסימלית: 3–4% מהתיק'; icon='🔴'
-                  }
-                  return (
-                    <div style={{display:'flex',alignItems:'center',gap:8,marginTop:7,flexWrap:'wrap'}}>
-                      <span style={{fontSize:'.78rem',fontWeight:700,color,background:bg,border:'1px solid '+border,padding:'3px 12px',borderRadius:20,display:'flex',alignItems:'center',gap:4}}>
-                        {icon} {label}
-                      </span>
-                      <span style={{fontSize:'.73rem',color:'var(--color-text-muted)'}}>⚠️ {maxPct}</span>
-                    </div>
-                  )
-                })()}
-                {stock.recommendationKey && (
-                  <div style={{marginTop:8,display:'inline-flex',alignItems:'center',gap:6,background:'rgba(245,166,35,.08)',border:'1px solid rgba(245,166,35,.18)',borderRadius:8,padding:'3px 10px'}}>
-                    <Users size={12} style={{color:'#f5a623'}}/>
-                    <span style={{fontSize:'.75rem',fontWeight:700,color:REC_COLOR[stock.recommendationKey]||'#f5a623'}}>{RECS[stock.recommendationKey]||stock.recommendationKey}</span>
-                    {stock.numberOfAnalystOpinions && <span style={{fontSize:'.72rem',color:'var(--color-text-muted)'}}>({stock.numberOfAnalystOpinions} אנליסטים)</span>}
-                  </div>
-                )}
-              </div>
-              <div style={{textAlign:'right'}}>
                 <div style={{fontSize:'2.6rem',fontWeight:800,lineHeight:1,fontFamily:'monospace'}}>${price.toFixed(2)}</div>
-                <div style={{marginTop:6,display:'flex',alignItems:'center',gap:8,justifyContent:'flex-end'}}>
-                  <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'1.1rem',fontWeight:700,color:clr}}>
-                    {isUp?<TrendingUp size={16}/>:<TrendingDown size={16}/>}
-                    {isUp?'+':''}{change.toFixed(2)} ({isUp?'+':''}{(changePct*100).toFixed(2)}%)
+                {/* ── 8. Daily live return ── */}
+                <div style={{marginTop:6,display:'flex',alignItems:'center',gap:6}}>
+                  <span style={{
+                    fontSize:'1.05rem',fontWeight:700,
+                    color: dayChange===0&&dayPct===0 ? 'var(--color-text-muted)' : (isUp?'#2dd87a':'#e05252')
+                  }}>
+                    {dayChange===0&&dayPct===0 ? 'המסחר טרם נפתח' : ((isUp?'+':'')+dayChange.toFixed(2)+' ('+((isUp?'+':'')+( dayPct*100).toFixed(2))+'%)')}
                   </span>
                 </div>
-                <p style={{margin:'4px 0 0',fontSize:'.75rem',color:'var(--color-text-muted)'}}>סגירה קודמת: ${prev.toFixed(2)}</p>
-                {stock.targetMeanPrice && (
-                  <div style={{marginTop:4,display:'flex',alignItems:'center',gap:4,justifyContent:'flex-end'}}>
-                    <Target size={12} style={{color:'#f5a623'}}/>
-                    <span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>יעד: </span>
-                    <span style={{fontSize:'.8rem',fontWeight:700,color:'#f5a623',fontFamily:'monospace'}}>${parseFloat(stock.targetMeanPrice).toFixed(2)}</span>
+              </div>
+
+              {/* RIGHT: ticker, exchange, name, cap warning */}
+              <div style={{textAlign:'right'}}>
+                {/* ── 2. Ticker + exchange ── */}
+                <div style={{display:'flex',alignItems:'center',gap:10,justifyContent:'flex-end',marginBottom:4}}>
+                  {stock.exchangeName&&<span style={{fontSize:'.72rem',background:'rgba(245,166,35,.1)',color:'rgba(245,166,35,.7)',padding:'3px 9px',borderRadius:7,border:'1px solid rgba(245,166,35,.2)',fontWeight:600}}>{stock.fullExchangeName||stock.exchangeName}</span>}
+                  <h2 style={{margin:0,fontSize:'2rem',fontWeight:800,fontFamily:'monospace',color:'#f5a623',lineHeight:1}}>{stock.symbol}</h2>
+                </div>
+                {/* ── 3. Company name ── */}
+                <p style={{margin:0,fontSize:'1.05rem',color:'var(--color-text-secondary)',fontWeight:500}}>{stock.longName||stock.shortName||''}</p>
+                {/* ── 4. Cap warning ── */}
+                {capInfo&&(
+                  <div style={{display:'flex',alignItems:'center',gap:8,marginTop:7,justifyContent:'flex-end',flexWrap:'wrap'}}>
+                    <span style={{fontSize:'.78rem',fontWeight:700,color:capInfo.color,background:capInfo.bg,border:'1px solid '+capInfo.border,padding:'3px 12px',borderRadius:20}}>{capInfo.label}</span>
+                    <span style={{fontSize:'.73rem',color:'var(--color-text-muted)'}}>⚠️ {capInfo.pct}</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Period tabs */}
-            <div style={{display:'flex',gap:6,marginBottom:'0.9rem',flexWrap:'wrap'}}>
-              {PERIODS.map(p=>(
-                <button key={p.range} onClick={()=>setPeriod(p.range)}
-                  style={{padding:'5px 14px',borderRadius:10,border:'1px solid '+(period===p.range?'rgba(245,166,35,.5)':'var(--color-border)'),background:period===p.range?'rgba(245,166,35,.13)':'transparent',color:period===p.range?'#f5a623':'var(--color-text-muted)',cursor:'pointer',fontFamily:'inherit',fontSize:'.82rem',fontWeight:period===p.range?700:400,transition:'all 150ms'}}>
-                  {p.label}
-                </button>
-              ))}
+            {/* ── Period selector + range return (right) ── */}
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.9rem',flexWrap:'wrap',gap:8}}>
+              <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                {PERIODS.map(p=>(
+                  <button key={p.range} onClick={()=>setPeriod(p.range)}
+                    style={{padding:'5px 14px',borderRadius:10,border:'1px solid '+(period===p.range?'rgba(245,166,35,.5)':'var(--color-border)'),background:period===p.range?'rgba(245,166,35,.13)':'transparent',color:period===p.range?'#f5a623':'var(--color-text-muted)',cursor:'pointer',fontFamily:'inherit',fontSize:'.82rem',fontWeight:period===p.range?700:400,transition:'all 150ms'}}>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              {/* ── 5. Range return (right side) ── */}
+              {rangeReturn!==null&&(
+                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                  <span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{PERIODS.find(p=>p.range===period)?.label||period}:</span>
+                  <span style={{fontSize:'1rem',fontWeight:800,fontFamily:'monospace',color:rngUp?'#2dd87a':'#e05252',background:rngUp?'rgba(45,216,122,.12)':'rgba(224,82,82,.12)',border:'1px solid '+(rngUp?'rgba(45,216,122,.3)':'rgba(224,82,82,.3)'),padding:'3px 14px',borderRadius:20}}>
+                    {(rngUp?'+':'')+( rangeReturn*100).toFixed(2)+'%'}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {displayReturn!==null&&(<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'.5rem'}}><span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{'תשואה ('+displayLabel+'):'}</span><span style={{fontSize:'1rem',fontWeight:800,fontFamily:'monospace',color:displayReturn>=0?'#2dd87a':'#e05252',background:displayReturn>=0?'rgba(45,216,122,.12)':'rgba(224,82,82,.12)',border:'1px solid '+(displayReturn>=0?'rgba(45,216,122,.3)':'rgba(224,82,82,.3)'),padding:'3px 14px',borderRadius:20}}>{(rangeReturn>=0?'+':'')+(rangeReturn*100).toFixed(2)+'%'}</span></div>)}
-            {/* Chart */}
+            {/* ── 6. Chart ── */}
             <div style={{height:230,position:'relative',borderRadius:12,overflow:'hidden'}}>
-              {chartLoad && (
+              {chartLoad&&(
                 <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.12)',zIndex:2}}>
                   <div style={{width:26,height:26,border:'2px solid rgba(245,166,35,.25)',borderTop:'2px solid #f5a623',borderRadius:'50%',animation:'spin .7s linear infinite'}}/>
                 </div>
               )}
-              {chart.length>1 ? (
+              {chart.length>1?(
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chart} margin={{top:6,right:2,bottom:0,left:2}}>
                     <defs>
                       <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={clr} stopOpacity={0.28}/>
-                        <stop offset="95%" stopColor={clr} stopOpacity={0}/>
+                        <stop offset="5%"  stopColor={chartColor} stopOpacity={0.28}/>
+                        <stop offset="95%" stopColor={chartColor} stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <XAxis dataKey="date" tick={{fontSize:10,fill:'var(--color-text-muted)'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/>
                     <YAxis domain={['auto','auto']} tick={{fontSize:10,fill:'var(--color-text-muted)'}} axisLine={false} tickLine={false} tickFormatter={v=>'$'+v.toFixed(0)} width={58}/>
                     <Tooltip content={<Tip/>} cursor={{stroke:'rgba(245,166,35,.3)',strokeWidth:1}}/>
                     {startPx>0&&<ReferenceLine y={startPx} stroke="rgba(255,255,255,.1)" strokeDasharray="4 4"/>}
-                    <Area type="monotone" dataKey="price" stroke={clr} strokeWidth={2.2} fill="url(#cg)" dot={false} activeDot={{r:4,fill:clr,strokeWidth:0}}/>
+                    <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={2.2} fill="url(#cg)" dot={false} activeDot={{r:4,fill:chartColor,strokeWidth:0}}/>
                   </AreaChart>
                 </ResponsiveContainer>
               ):(
@@ -365,146 +340,57 @@ export default function Screener() {
             </div>
           </div>
 
-          {/* ── Stats Grid ── */}
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:'1rem',marginBottom:'1rem'}}>
+          {/* ── Bottom cards ── */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:'1rem'}}>
 
-            {/* Price & Range */}
+            {/* ── Card 1: Price data ── */}
             <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.9rem'}}>
-                <BarChart2 size={16} style={{color:'#f5a623'}}/>
-                <span style={{fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>נתוני מחיר</span>
-              </div>
-              {(()=>{
-                const hi=stock.fiftyTwoWeekHigh||0, lo=stock.fiftyTwoWeekLow||0
-                const pct=hi>lo?Math.min(100,Math.max(0,((price-lo)/(hi-lo))*100)):50
-                return (<>
-                  <Row label="פתיחה"          val={fmtN(stock.regularMarketOpen||stock.chartPreviousClose)}/>
-                  <Row label="שיא יומי"       val={fmtN(stock.regularMarketDayHigh)}/>
-                  <Row label="שפל יומי"       val={fmtN(stock.regularMarketDayLow)}/>
-                  <Row label="שיא 52 שבועות" val={fmtN(stock.fiftyTwoWeekHigh)}/>
-                  <Row label="שפל 52 שבועות" val={fmtN(stock.fiftyTwoWeekLow)}/>
-                  {hi>0&&lo>0&&<div style={{marginTop:10}}>
-                    <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'var(--color-text-muted)',marginBottom:4}}>
+              <p style={{margin:'0 0 .9rem',fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>נתוני מחיר</p>
+              <Row label="פתיחה"           val={fmtN(stock.regularMarketOpen)}/>
+              <Row label="שיא יומי"        val={fmtN(stock.regularMarketDayHigh)}/>
+              <Row label="שפל יומי"        val={fmtN(stock.regularMarketDayLow)}/>
+              <Row label="שיא 52 שבועות"  val={fmtN(stock.fiftyTwoWeekHigh)}/>
+              <Row label="שפל 52 שבועות"  val={fmtN(stock.fiftyTwoWeekLow)}/>
+              <Row label="ממוצע 50 יום"   val={fmtN(stock.fiftyDayAverage)}/>
+              <Row label="ממוצע 200 יום"  val={fmtN(stock.twoHundredDayAverage)}/>
+              {/* 52W Range bar */}
+              {stock.fiftyTwoWeekHigh&&stock.fiftyTwoWeekLow&&(()=>{
+                const hi=stock.fiftyTwoWeekHigh,lo=stock.fiftyTwoWeekLow
+                const pct=Math.min(100,Math.max(0,((price-lo)/(hi-lo))*100))
+                return(
+                  <div style={{marginTop:10}}>
+                    <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'var(--color-text-muted)',marginBottom:5}}>
                       <span>{fmtN(lo)}</span><span style={{color:'rgba(245,166,35,.7)',fontWeight:600}}>52W Range</span><span>{fmtN(hi)}</span>
                     </div>
                     <div style={{height:6,background:'rgba(255,255,255,.08)',borderRadius:3,position:'relative'}}>
                       <div style={{position:'absolute',top:0,left:0,width:pct+'%',height:'100%',background:'linear-gradient(90deg,#e05252,#f5a623,#2dd87a)',borderRadius:3}}/>
                       <div style={{position:'absolute',top:'50%',left:pct+'%',transform:'translate(-50%,-50%)',width:10,height:10,borderRadius:'50%',background:'#fff',boxShadow:'0 0 5px rgba(0,0,0,.4)'}}/>
                     </div>
-                  </div>}
-                </>)
+                  </div>
+                )
               })()}
             </div>
 
-            {/* Fundamentals */}
+            {/* ── Card 2: Fundamentals ── */}
             <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.9rem'}}>
-                <Activity size={16} style={{color:'#f5a623'}}/>
-                <span style={{fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>פונדמנטלס</span>
-              </div>
-              <Row label="שווי שוק"        val={fmtN(stock.marketCap,'')}/>
-              <Row label="P/E Trailing"    val={stock.trailingPE?parseFloat(stock.trailingPE).toFixed(1):'N/A'}/>
-              <Row label="P/E Forward"     val={stock.forwardPE?parseFloat(stock.forwardPE).toFixed(1):'N/A'}/>
-              <Row label="EPS"             val={fmtN(stock.trailingEps)}/>
-              <Row label="EPS Forward"     val={fmtN(stock.forwardEps)}/>
-              <Row label="Beta"            val={stock.beta?parseFloat(stock.beta).toFixed(2):'N/A'}/>
-              <Row label="מחיר/הון (P/B)" val={stock.priceToBook?parseFloat(stock.priceToBook).toFixed(2):'N/A'}/>
-              <Row label="מחיר/מכירות"    val={stock.priceToSales?parseFloat(stock.priceToSales).toFixed(2):'N/A'}/>
+              <p style={{margin:'0 0 .9rem',fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>פונדמנטלס</p>
+              <Row label="שווי שוק"         val={fmtN(stock.marketCap,'')}/>
+              <Row label="P/E Ratio"         val={stock.trailingPE?parseFloat(stock.trailingPE).toFixed(1):'N/A'}/>
+              <Row label="P/E Forward"       val={stock.forwardPE?parseFloat(stock.forwardPE).toFixed(1):'N/A'}/>
+              <Row label="EPS"               val={fmtN(stock.trailingEps)}/>
+              <Row label="Beta"              val={stock.beta?parseFloat(stock.beta).toFixed(2):'N/A'}/>
+              <Row label="מניות צפות"       val={fmtVol(stock.sharesOutstanding)}/>
+              <Row label="אחוז שורט"        val={stock.shortRatio?parseFloat(stock.shortRatio).toFixed(1)+'%':'N/A'}/>
+              <Row label="נפח ממוצע"        val={fmtVol(stock.averageVolume)}/>
+              <Row label="נפח מסחר היום"   val={fmtVol(stock.regularMarketVolume)} color={(() => {
+                const v = parseFloat(stock.regularMarketVolume), a = parseFloat(stock.averageVolume)
+                return (!v||!a) ? 'var(--color-text-primary)' : v > a*1.5 ? '#2dd87a' : v < a*0.5 ? '#e05252' : 'var(--color-text-primary)'
+              })()}/>
+              <Row label="דיבידנד"          val={stock.dividendYield && parseFloat(stock.dividendYield) > 0 ? (parseFloat(stock.dividendYield)*100).toFixed(2)+'%' : 'לא'}/>
+              {stock.dividendRate&&parseFloat(stock.dividendRate)>0&&<Row label="דיבידנד לשנה"   val={fmtN(stock.dividendRate)}/>}
+              <Row label="יעד אנליסטים"    val={fmtN(stock.targetMeanPrice)} color="#f5a623"/>
             </div>
 
-            {/* Volume & Trading */}
-            <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.9rem'}}>
-                <DollarSign size={16} style={{color:'#f5a623'}}/>
-                <span style={{fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>מסחר ונפח</span>
-              </div>
-              <Row label="נפח מסחר היום"   val={fmtVol(stock.regularMarketVolume)}/>
-              <Row label="ממוצע נפח 3M"    val={fmtVol(stock.averageVolume)}/>
-              <Row label="ממוצע נפח 10D"   val={fmtVol(stock.averageVolume10Day)}/>
-              <Row label="ממוצע 50 יום"    val={fmtN(stock.fiftyDayAverage)}/>
-              <Row label="ממוצע 200 יום"   val={fmtN(stock.twoHundredDayAverage)}/>
-              <Row label="בורסה"            val={stock.fullExchangeName||stock.exchangeName||'N/A'}/>
-            </div>
-          </div>
-
-          {/* Row 2: Financials + Dividends + Analyst */}
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:'1rem',marginBottom:'1rem'}}>
-
-            {/* Financials */}
-            <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.9rem'}}>
-                <Globe size={16} style={{color:'#f5a623'}}/>
-                <span style={{fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>נתונים פיננסיים</span>
-              </div>
-              <Row label="הכנסות"           val={fmtN(stock.revenue,'')}/>
-              <Row label="רווח גולמי"       val={fmtN(stock.grossProfits,'')}/>
-              <Row label="EBITDA"           val={fmtN(stock.ebitda,'')}/>
-              <Row label="ROE"             val={stock.returnOnEquity?fmtPct(stock.returnOnEquity):'N/A'}/>
-              <Row label="ROA"             val={stock.returnOnAssets?fmtPct(stock.returnOnAssets):'N/A'}/>
-              <Row label="חוב/הון"         val={stock.debtToEquity?parseFloat(stock.debtToEquity).toFixed(2):'N/A'}/>
-              <Row label="יחס שוטף"        val={stock.currentRatio?parseFloat(stock.currentRatio).toFixed(2):'N/A'}/>
-              <Row label="צמיחת הכנסות"    val={stock.revenueGrowth?fmtPct(stock.revenueGrowth):'N/A'}/>
-            </div>
-
-            {/* Dividends */}
-            <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.9rem'}}>
-                <DollarSign size={16} style={{color:'#f5a623'}}/>
-                <span style={{fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>דיבידנד</span>
-              </div>
-              <Row label="תשואת דיבידנד"   val={stock.dividendYield?fmtPct(stock.dividendYield):'0%'}/>
-              <Row label="דיבידנד שנתי"    val={fmtN(stock.dividendRate)}/>
-              <Row label="תאריך אקס-דיב"   val={stock.exDividendDate||'N/A'}/>
-              <Row label="יחס חלוקה"       val={stock.payoutRatio?fmtPct(stock.payoutRatio):'N/A'}/>
-              <Row label="ממוצע דיב 5Y"    val={stock.fiveYearAvgDividendYield?stock.fiveYearAvgDividendYield.toFixed(2)+'%':'N/A'}/>
-              <Row label="מניות במחזור"    val={fmtVol(stock.sharesOutstanding)}/>
-              <Row label="מניות צף"        val={fmtVol(stock.floatShares)}/>
-              <Row label="Short Ratio"      val={stock.shortRatio?parseFloat(stock.shortRatio).toFixed(2):'N/A'}/>
-            </div>
-
-            {/* Analyst targets */}
-            <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.9rem'}}>
-                <Target size={16} style={{color:'#f5a623'}}/>
-                <span style={{fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>יעדי אנליסטים</span>
-              </div>
-              {stock.recommendationKey && (
-                <div style={{textAlign:'center',padding:'12px 0 8px',marginBottom:8,borderBottom:'1px solid var(--color-border)'}}>
-                  <span style={{fontSize:'1.1rem',fontWeight:800,color:REC_COLOR[stock.recommendationKey]||'#f5a623'}}>
-                    {RECS[stock.recommendationKey]||stock.recommendationKey}
-                  </span>
-                  {stock.numberOfAnalystOpinions&&<p style={{margin:'2px 0 0',fontSize:'.75rem',color:'var(--color-text-muted)'}}>{stock.numberOfAnalystOpinions} אנליסטים</p>}
-                </div>
-              )}
-              <Row label="יעד ממוצע"       val={fmtN(stock.targetMeanPrice)} color="#f5a623"/>
-              <Row label="יעד גבוה"         val={fmtN(stock.targetHighPrice)} color="#2dd87a"/>
-              <Row label="יעד נמוך"         val={fmtN(stock.targetLowPrice)}  color="#e05252"/>
-              {stock.targetMeanPrice&&price&&(
-                <div style={{marginTop:10}}>
-                  <div style={{display:'flex',justifyContent:'space-between',fontSize:'.75rem',color:'var(--color-text-muted)',marginBottom:4}}>
-                    <span>מחיר נוכחי</span>
-                    <span style={{color:'#f5a623',fontWeight:700}}>
-                      {((stock.targetMeanPrice-price)/price*100).toFixed(1)}% {stock.targetMeanPrice>price?'פוטנציאל עלייה':'ירידה'}
-                    </span>
-                  </div>
-                  <div style={{height:6,background:'rgba(255,255,255,.08)',borderRadius:3,position:'relative'}}>
-                    {(()=>{
-                      const lo=stock.targetLowPrice||price*0.8, hi=stock.targetHighPrice||price*1.2
-                      const pPct=Math.min(100,Math.max(0,((price-lo)/(hi-lo))*100))
-                      const tPct=Math.min(100,Math.max(0,((stock.targetMeanPrice-lo)/(hi-lo))*100))
-                      return (<>
-                        <div style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',background:'linear-gradient(90deg,#e05252,#f5a623,#2dd87a)',borderRadius:3,opacity:.4}}/>
-                        <div style={{position:'absolute',top:'50%',left:pPct+'%',transform:'translate(-50%,-50%)',width:10,height:10,borderRadius:'50%',background:'#fff',boxShadow:'0 0 4px rgba(0,0,0,.5)',zIndex:2}}/>
-                        <div style={{position:'absolute',top:'50%',left:tPct+'%',transform:'translate(-50%,-50%)',width:8,height:8,borderRadius:'50%',background:'#f5a623',boxShadow:'0 0 4px rgba(245,166,35,.6)',zIndex:1}}/>
-                      </>)
-                    })()}
-                  </div>
-                  <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'var(--color-text-muted)',marginTop:4}}>
-                    <span>⚪ מחיר נוכחי</span><span>🟠 יעד אנליסטים</span>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       )}
