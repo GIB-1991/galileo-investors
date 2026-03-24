@@ -59,6 +59,7 @@ export default function Screener() {
   const [period,   setPeriod]   = useState('3mo')
   const [loading,  setLoading]  = useState(false)
   const [chartLoad,setChartLoad]= useState(false)
+  const [rangeReturn, setRangeReturn] = useState(null)
   const [err,      setErr]      = useState(null)
   const debRef   = useRef(null)
   const inputRef = useRef(null)
@@ -101,6 +102,7 @@ export default function Screener() {
         price: closes[i] ? parseFloat(closes[i].toFixed(2)) : null
       })).filter(p=>p.price)
       setChart(pts)
+      if(pts.length>1){const fp=pts.find(x=>x.price)?.price,lp=[...pts].reverse().find(x=>x.price)?.price;setRangeReturn(fp&&lp&&fp>0?(lp-fp)/fp:null)}else setRangeReturn(null)
       setStock(meta)
       setQuery(meta.symbol)
       setPeriod('3mo')
@@ -127,6 +129,7 @@ export default function Screener() {
         price: closes[i] ? parseFloat(closes[i].toFixed(2)) : null
       })).filter(p=>p.price)
       setChart(pts)
+      if(pts.length>1){const fp=pts.find(x=>x.price)?.price,lp=[...pts].reverse().find(x=>x.price)?.price;setRangeReturn(fp&&lp&&fp>0?(lp-fp)/fp:null)}else setRangeReturn(null)
     } catch {}
     setChartLoad(false)
   }
@@ -293,6 +296,7 @@ export default function Screener() {
               ))}
             </div>
 
+            {rangeReturn!==null&&(<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'.5rem'}}><span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{'תשואה ('+(PERIODS.find(p=>p.range===period)?.label||period)+'):'}</span><span style={{fontSize:'1rem',fontWeight:800,fontFamily:'monospace',color:rangeReturn>=0?'#2dd87a':'#e05252',background:rangeReturn>=0?'rgba(45,216,122,.12)':'rgba(224,82,82,.12)',border:'1px solid '+(rangeReturn>=0?'rgba(45,216,122,.3)':'rgba(224,82,82,.3)'),padding:'3px 14px',borderRadius:20}}>{(rangeReturn>=0?'+':'')+(rangeReturn*100).toFixed(2)+'%'}</span></div>)}
             {/* Chart */}
             <div style={{height:230,position:'relative',borderRadius:12,overflow:'hidden'}}>
               {chartLoad && (
