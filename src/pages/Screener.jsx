@@ -21,7 +21,8 @@ const PERIODS = [
 const ETF_LIST = new Set(['SPY','QQQ','IVV','VTI','VOO','DIA','GLD','SLV','TLT','IEF','LQD','EEM','VEA','IEFA','IWM','MDY','IJH','IJR','ARKK','ARKG','ARKW','ARKF','ARKQ','SOXX','SMH','XLK','XLF','XLE','XLV','XLP','XLU','XLI','XLB','XLY','XLRE','VNQ','BND','AGG','HYG'])
 
 function getCapInfo(mc, qt, sym) {
-  const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.has(sym)
+  // safe ETF check
+                  const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.has(sym)
   if (isETF) return { label:'קרן סל / ETF', pct:'ללא הגבלה — עד 100% מהתיק', color:'#60a5fa', bg:'rgba(96,165,250,.15)', border:'rgba(96,165,250,.35)' }
   if (!mc) return null
   if (mc >= 1e12) return { label:'מגה קאפ', pct:'חשיפה מקס׳: 20% מהתיק', color:'#2dd87a', bg:'rgba(45,216,122,.13)', border:'rgba(45,216,122,.35)' }
@@ -152,7 +153,7 @@ export default function Screener() {
   const displayReturn=marketOpen?changePct:rangeReturn
   const displayLabel=marketOpen?'יומי':(PERIODS.find(p=>p.range===period)?.label||period)
   const mc=stock?.marketCap,qt=stock?.quoteType,sym=stock?.symbol||''
-  const isETF=qt==='ETF'||qt==='MUTUALFUND'||ETF_LIST.includes(sym)
+  const isETF=qt==='ETF'||qt==='MUTUALFUND'||(sym && ETF_LIST.includes(sym))
   let capLabel=null,capColor='#f5a623',capBg='rgba(245,166,35,.12)',capBorder='rgba(245,166,35,.3)',capIcon='',capMax=null
   if(isETF){capLabel='קרן סל / ETF';capColor='#60a5fa';capBg='rgba(96,165,250,.12)';capBorder='rgba(96,165,250,.3)';capIcon='📊';capMax='ניתן להחזיק עד 100%'}
   else if(mc>=1e12){capLabel='מגה קאפ';capColor='#2dd87a';capBg='rgba(45,216,122,.12)';capBorder='rgba(45,216,122,.3)';capIcon='🟢';capMax='חשיפה מקסימלית: 20%'}
