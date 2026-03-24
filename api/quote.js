@@ -141,6 +141,7 @@ export default async function handler(req, res) {
       priceToBook:                p(ov.PriceToBookRatio),
       priceToSales:               p(ov.PriceToSalesRatioTTM),
       sharesOutstanding:          p(ov.SharesOutstanding),
+      quoteType:                  ov.AssetType==='ETF'?'ETF':ov.AssetType==='MUTUAL FUND'?'MUTUALFUND':'EQUITY',
       revenue:                    p(ov.RevenueTTM),
       grossProfit:                p(ov.GrossProfitTTM),
       ebitda:                     p(ov.EBITDA),
