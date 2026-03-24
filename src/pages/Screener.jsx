@@ -146,6 +146,14 @@ export default function Screener() {
   const changePct= stock?.regularMarketChangePercent ?? (prev ? (price-prev)/prev : 0)
   const isUp     = change >= 0
   const clr      = isUp ? '#2dd87a' : '#e05252'
+  // Market hours: NYSE open 9:30-16:00 ET (13:30-20:00 UTC), Mon-Fri
+  const nowUTC   = new Date()
+  const dayUTC   = nowUTC.getUTCDay()
+  const hUTC     = nowUTC.getUTCHours()*60 + nowUTC.getUTCMinutes()
+  const isMarketOpen = dayUTC>=1 && dayUTC<=5 && hUTC>=810 && hUTC<1200
+  // Display daily return when market is open, range return otherwise
+  const displayReturn = isMarketOpen ? changePct : rangeReturn
+  const displayLabel  = isMarketOpen ? 'יומי' : (PERIODS.find(p=>p.range===period)?.label||period)
   const startPx  = chart[0]?.price || 0
 
   const Tip = ({active,payload,label}) => {
@@ -259,6 +267,31 @@ export default function Screener() {
                   {stock.fullExchangeName && <span style={{fontSize:'.72rem',background:'rgba(245,166,35,.1)',color:'rgba(245,166,35,.7)',padding:'3px 9px',borderRadius:7,border:'1px solid rgba(245,166,35,.2)',fontWeight:600}}>{stock.fullExchangeName}</span>}
                 </div>
                 <p style={{margin:0,fontSize:'1.05rem',color:'var(--color-text-secondary)',fontWeight:500}}>{stock.longName||stock.shortName||''}</p>
+                {(()=>{
+                  const mc = stock.marketCap
+                  const qt = stock.quoteType
+                  if (!mc && qt !== 'ETF') return null
+                  let label, color, bg, border, maxPct
+                  if (qt==='ETF'||qt==='MUTUALFUND') {
+                    label='קרן סל ETF'; color='#60a5fa'; bg='rgba(96,165,250,.12)'; border='rgba(96,165,250,.3)'; maxPct='ללא הגבלה (עד 100%)'
+                  } else if (mc >= 1e12) {
+                    label='מגה קאפ'; color='#2dd87a'; bg='rgba(45,216,122,.12)'; border='rgba(45,216,122,.3)'; maxPct='חשיפה מקסימלית: 20% מהתיק'
+                  } else if (mc >= 5e10) {
+                    label='לארג׳ קאפ'; color='#f5a623'; bg='rgba(245,166,35,.12)'; border='rgba(245,166,35,.3)'; maxPct='חשיפה מקסימלית: 10% מהתיק'
+                  } else if (mc >= 1e10) {
+                    label='סמול קאפ'; color='#fb923c'; bg='rgba(251,146,60,.12)'; border='rgba(251,146,60,.3)'; maxPct='חשיפה מקסימלית: 5% מהתיק'
+                  } else {
+                    label='מיקרו קאפ'; color='#e05252'; bg='rgba(224,82,82,.12)'; border='rgba(224,82,82,.3)'; maxPct='חשיפה מקסימלית: 3-4% מהתיק'
+                  }
+                  return (
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6,flexWrap:'wrap'}}>
+                      <span style={{fontSize:'.75rem',fontWeight:700,color,background:bg,border:'1px solid '+border,padding:'2px 10px',borderRadius:20}}>
+                        {label}
+                      </span>
+                      <span style={{fontSize:'.73rem',color:'var(--color-text-muted)'}}>⚠️ {maxPct}</span>
+                    </div>
+                  )
+                })()}
                 {stock.recommendationKey && (
                   <div style={{marginTop:8,display:'inline-flex',alignItems:'center',gap:6,background:'rgba(245,166,35,.08)',border:'1px solid rgba(245,166,35,.18)',borderRadius:8,padding:'3px 10px'}}>
                     <Users size={12} style={{color:'#f5a623'}}/>
@@ -296,7 +329,7 @@ export default function Screener() {
               ))}
             </div>
 
-            {rangeReturn!==null&&(<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'.5rem'}}><span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{'תשואה ('+(PERIODS.find(p=>p.range===period)?.label||period)+'):'}</span><span style={{fontSize:'1rem',fontWeight:800,fontFamily:'monospace',color:rangeReturn>=0?'#2dd87a':'#e05252',background:rangeReturn>=0?'rgba(45,216,122,.12)':'rgba(224,82,82,.12)',border:'1px solid '+(rangeReturn>=0?'rgba(45,216,122,.3)':'rgba(224,82,82,.3)'),padding:'3px 14px',borderRadius:20}}>{(rangeReturn>=0?'+':'')+(rangeReturn*100).toFixed(2)+'%'}</span></div>)}
+            {displayReturn!==null&&(<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'.5rem'}}><span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{'תשואה ('+displayLabel+'):'}</span><span style={{fontSize:'1rem',fontWeight:800,fontFamily:'monospace',color:displayReturn>=0?'#2dd87a':'#e05252',background:displayReturn>=0?'rgba(45,216,122,.12)':'rgba(224,82,82,.12)',border:'1px solid '+(displayReturn>=0?'rgba(45,216,122,.3)':'rgba(224,82,82,.3)'),padding:'3px 14px',borderRadius:20}}>{(rangeReturn>=0?'+':'')+(rangeReturn*100).toFixed(2)+'%'}</span></div>)}
             {/* Chart */}
             <div style={{height:230,position:'relative',borderRadius:12,overflow:'hidden'}}>
               {chartLoad && (
