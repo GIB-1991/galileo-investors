@@ -268,25 +268,29 @@ export default function Screener() {
                 </div>
                 <p style={{margin:0,fontSize:'1.05rem',color:'var(--color-text-secondary)',fontWeight:500}}>{stock.longName||stock.shortName||''}</p>
                 {(()=>{
-                  const mc = stock.marketCap
-                  const qt = stock.quoteType
-                  if (!mc && qt !== 'ETF') return null
-                  let label, color, bg, border, maxPct
-                  if (qt==='ETF'||qt==='MUTUALFUND') {
-                    label='קרן סל ETF'; color='#60a5fa'; bg='rgba(96,165,250,.12)'; border='rgba(96,165,250,.3)'; maxPct='ללא הגבלה (עד 100%)'
+                  const mc  = stock.marketCap
+                  const qt  = stock.quoteType
+                  const sym = stock.symbol || ''
+                  // Detect ETF by quoteType or known ETF tickers
+                  const ETF_LIST = ['SPY','QQQ','IVV','VTI','VOO','DIA','GLD','SLV','TLT','IEF','LQD','EEM','VEA','IEFA','IWM','MDY','IJH','IJR','ARKK','ARKG','ARKW','ARKF','ARKQ','SOXX','SMH','XLK','XLF','XLE','XLV','XLP','XLU','XLI','XLB','XLY','XLRE','VNQ','REIT','BND','AGG','HYG','VCIT','BSV']
+                  const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.includes(sym)
+                  if (!mc && !isETF) return null
+                  let label, color, bg, border, maxPct, icon
+                  if (isETF) {
+                    label='קרן סל / ETF'; color='#60a5fa'; bg='rgba(96,165,250,.12)'; border='rgba(96,165,250,.3)'; maxPct='ניתן להחזיק עד 100% מהתיק'; icon='📊'
                   } else if (mc >= 1e12) {
-                    label='מגה קאפ'; color='#2dd87a'; bg='rgba(45,216,122,.12)'; border='rgba(45,216,122,.3)'; maxPct='חשיפה מקסימלית: 20% מהתיק'
+                    label='מגה קאפ'; color='#2dd87a'; bg='rgba(45,216,122,.12)'; border='rgba(45,216,122,.3)'; maxPct='חשיפה מקסימלית: 20% מהתיק'; icon='🟢'
                   } else if (mc >= 5e10) {
-                    label='לארג׳ קאפ'; color='#f5a623'; bg='rgba(245,166,35,.12)'; border='rgba(245,166,35,.3)'; maxPct='חשיפה מקסימלית: 10% מהתיק'
+                    label='לארג׳ קאפ'; color='#f5a623'; bg='rgba(245,166,35,.12)'; border='rgba(245,166,35,.3)'; maxPct='חשיפה מקסימלית: 10% מהתיק'; icon='🟡'
                   } else if (mc >= 1e10) {
-                    label='סמול קאפ'; color='#fb923c'; bg='rgba(251,146,60,.12)'; border='rgba(251,146,60,.3)'; maxPct='חשיפה מקסימלית: 5% מהתיק'
+                    label='סמול קאפ'; color='#fb923c'; bg='rgba(251,146,60,.12)'; border='rgba(251,146,60,.3)'; maxPct='חשיפה מקסימלית: 5% מהתיק'; icon='🟠'
                   } else {
-                    label='מיקרו קאפ'; color='#e05252'; bg='rgba(224,82,82,.12)'; border='rgba(224,82,82,.3)'; maxPct='חשיפה מקסימלית: 3-4% מהתיק'
+                    label='מיקרו קאפ'; color='#e05252'; bg='rgba(224,82,82,.12)'; border='rgba(224,82,82,.3)'; maxPct='חשיפה מקסימלית: 3–4% מהתיק'; icon='🔴'
                   }
                   return (
-                    <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6,flexWrap:'wrap'}}>
-                      <span style={{fontSize:'.75rem',fontWeight:700,color,background:bg,border:'1px solid '+border,padding:'2px 10px',borderRadius:20}}>
-                        {label}
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginTop:7,flexWrap:'wrap'}}>
+                      <span style={{fontSize:'.78rem',fontWeight:700,color,background:bg,border:'1px solid '+border,padding:'3px 12px',borderRadius:20,display:'flex',alignItems:'center',gap:4}}>
+                        {icon} {label}
                       </span>
                       <span style={{fontSize:'.73rem',color:'var(--color-text-muted)'}}>⚠️ {maxPct}</span>
                     </div>
