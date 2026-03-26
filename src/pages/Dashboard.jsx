@@ -52,7 +52,7 @@ export default function Dashboard({ user }) {
         const meta = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta
         if (!meta) return { ...m, price: 0, pct: 0, up: true }
         const price = meta.regularMarketPrice
-        const pct = meta.regularMarketChangePercent ?? (()=>{ const prev = meta.chartPreviousClose || meta.previousClose || price; return prev ? ((price-prev)/prev)*100 : 0 })()
+        const _cp = meta.regularMarketChangePercent; const pct = (_cp !== undefined && _cp !== null && Math.abs(_cp) > 0.0001) ? (Math.abs(_cp) < 1 ? _cp * 100 : _cp) : (()=>{ const prev = meta.chartPreviousClose || meta.previousClose; return prev && prev !== price ? ((price-prev)/prev)*100 : 0 })()
         return { ...m, price, pct, up: pct >= 0 }
       } catch(e) { return { ...m, price: 0, pct: 0, up: true } }
     }))
