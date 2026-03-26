@@ -52,7 +52,7 @@ export default function Dashboard({ user }) {
         const meta = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta
         if (!meta) return { ...m, price: 0, pct: 0, up: true }
         const price = meta.regularMarketPrice
-        const _cp = meta.regularMarketChangePercent; const pct = (_cp !== undefined && _cp !== null && Math.abs(_cp) > 0.0001) ? (Math.abs(_cp) < 1 ? _cp * 100 : _cp) : (()=>{ const prev = meta.chartPreviousClose || meta.previousClose; return prev && prev !== price ? ((price-prev)/prev)*100 : 0 })()
+        const _chg = meta.regularMarketChange || 0; const _prev = meta.chartPreviousClose || meta.previousClose || (price - _chg); const pct = _prev && _prev !== price ? ((_chg / _prev) * 100) : 0
         return { ...m, price, pct, up: pct >= 0 }
       } catch(e) { return { ...m, price: 0, pct: 0, up: true } }
     }))
@@ -143,7 +143,7 @@ export default function Dashboard({ user }) {
             <div style={{display:'flex',alignItems:'center',gap:4,justifyContent:'flex-end'}}>
               {m.up ? <TrendingUp size={13} style={{color:'var(--color-success)'}}/> : <TrendingDown size={13} style={{color:'var(--color-danger)'}}/>}
               <span style={{fontSize:'.8rem',fontWeight:700,color:m.up?'var(--color-success)':'var(--color-danger)',direction:'ltr',fontFamily:"'IBM Plex Mono',monospace"}}>
-                {m.pct >= 0 ? '+' : ''}{Number(m.pct).toFixed(2)}%
+                {m.pct >= 0 ? '+' : ''}{Math.abs(m.pct)<0.1 ? Number(m.pct).toFixed(3) : Number(m.pct).toFixed(2)}%
               </span>
             </div>
           </div>
