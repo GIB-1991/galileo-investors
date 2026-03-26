@@ -297,7 +297,7 @@ export default function Screener() {
                     <span
                         title={capInfo.tooltip||''}
                         style={{fontSize:'.78rem',fontWeight:700,color:capInfo.color,background:capInfo.bg,border:'1px solid '+capInfo.border,padding:'3px 12px',borderRadius:20,cursor:capInfo.tooltip?'help':'default'}}>
-                        {capInfo.label}{capInfo.tooltip?' ℹ️':''}
+                        {capInfo.label}{capInfo.tooltip&&<span style={{fontSize:'.7rem',opacity:.7,marginLeft:2}}>(i)</span>}
                       </span>
                     <span style={{fontSize:'.73rem',color:'var(--color-text-muted)',lineHeight:1.4}}>⚠️ {capInfo.pct}</span>
                   </div>
