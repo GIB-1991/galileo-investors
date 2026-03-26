@@ -23,12 +23,12 @@ const ETF_LIST = ['SPY','QQQ','IVV','VTI','VOO','DIA','GLD','SLV','TLT','IEF','L
 function getCapInfo(mc, qt, sym) {
   // safe ETF check
                   const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.indexOf(String(sym||""))>=0
-  if (isETF) return { label:'קרן סל / ETF', pct:'ללא הגבלה — עד 100% מהתיק', color:'#60a5fa', bg:'rgba(96,165,250,.15)', border:'rgba(96,165,250,.35)' }
+  if (isETF) return { label:'קרן סל / ETF', tooltip:'קרנות סל גדולות המורכבות ממניות רבות (S&P 500, נאסדק ועוד) — ניתן להחזיק ללא הגבלת חשיפה', pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): עד 100% — עד 100% מהתיק', color:'#60a5fa', bg:'rgba(96,165,250,.15)', border:'rgba(96,165,250,.35)' }
   if (!mc) return null
-  if (mc >= 1e12) return { label:'מגה קאפ', pct:'חשיפה מקס׳: 20% מהתיק', color:'#2dd87a', bg:'rgba(45,216,122,.13)', border:'rgba(45,216,122,.35)' }
-  if (mc >= 5e10) return { label:'לארג׳ קאפ', pct:'חשיפה מקס׳: 10% מהתיק', color:'#f5a623', bg:'rgba(245,166,35,.13)', border:'rgba(245,166,35,.35)' }
-  if (mc >= 1e10) return { label:'סמול קאפ', pct:'חשיפה מקס׳: 5% מהתיק', color:'#fb923c', bg:'rgba(251,146,60,.13)', border:'rgba(251,146,60,.35)' }
-  return { label:'מיקרו קאפ', pct:'חשיפה מקס׳: 3–4% מהתיק', color:'#e05252', bg:'rgba(224,82,82,.13)', border:'rgba(224,82,82,.35)' }
+  if (mc >= 1e12) return { label:'מגה קאפ', tooltip:'מגה קאפ: שווי שוק מעל טריליון דולר ($1T+). לדוגמה: Apple, Microsoft, Nvidia, Alphabet', pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 20%׳: 20% מהתיק', color:'#2dd87a', bg:'rgba(45,216,122,.13)', border:'rgba(45,216,122,.35)' }
+  if (mc >= 5e10) return { label:'לארג׳ קאפ', tooltip:"לארג' קאפ: שווי שוק עד 500 מיליארד דולר. חברות גדולות ויציבות כגון JPMorgan, Visa, Mastercard", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 10%", color:'#f5a623', bg:'rgba(245,166,35,.13)', border:'rgba(245,166,35,.35)' }
+  if (mc >= 1e10) return { label:'סמול קאפ', tooltip:'סמול קאפ: שווי שוק עד 100 מיליארד דולר. מניות צמיחה עם פוטנציאל גבוה וסיכון מוגבר', pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 5%׳: 5% מהתיק', color:'#fb923c', bg:'rgba(251,146,60,.13)', border:'rgba(251,146,60,.35)' }
+  return { label:'מיקרו קאפ', tooltip:'מיקרו קאפ: שווי שוק של עשרות מיליארדי דולר ומטה. מניות ספקולטיביות עם סיכון גבוה — נדרשת זהירות מיוחדת', pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 3-4%׳: 3–4% מהתיק', color:'#e05252', bg:'rgba(224,82,82,.13)', border:'rgba(224,82,82,.35)' }
 }
 
 function fmtN(n, pre='$') {
@@ -294,8 +294,12 @@ export default function Screener() {
                 {/* ── 4. Cap warning ── */}
                 {capInfo&&(
                   <div style={{display:'flex',alignItems:'center',gap:8,marginTop:7,justifyContent:'flex-end',flexWrap:'wrap'}}>
-                    <span style={{fontSize:'.78rem',fontWeight:700,color:capInfo.color,background:capInfo.bg,border:'1px solid '+capInfo.border,padding:'3px 12px',borderRadius:20}}>{capInfo.label}</span>
-                    <span style={{fontSize:'.73rem',color:'var(--color-text-muted)'}}>⚠️ {capInfo.pct}</span>
+                    <span
+                        title={capInfo.tooltip||''}
+                        style={{fontSize:'.78rem',fontWeight:700,color:capInfo.color,background:capInfo.bg,border:'1px solid '+capInfo.border,padding:'3px 12px',borderRadius:20,cursor:capInfo.tooltip?'help':'default'}}>
+                        {capInfo.label}{capInfo.tooltip?' ℹ️':''}
+                      </span>
+                    <span style={{fontSize:'.73rem',color:'var(--color-text-muted)',lineHeight:1.4}}>⚠️ {capInfo.pct}</span>
                   </div>
                 )}
               </div>
