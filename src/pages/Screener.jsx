@@ -145,12 +145,13 @@ export default function Screener() {
   const prev     = parseFloat(stock?.chartPreviousClose || price)
   const dayChange= stock?.regularMarketChange ?? (price - prev)
   const dayPct   = stock?.regularMarketChangePercent ?? (prev ? (price-prev)/prev : 0)
+  const dayChangePct = stock?.regularMarketChangePercent ?? (stock?.regularMarketPrice && dayChange ? (dayChange/(stock.regularMarketPrice-dayChange))*100 : 0)
   const isUp     = dayChange >= 0
   const rngUp    = (rangeReturn ?? 0) >= 0
   const chartColor = rngUp ? '#2dd87a' : '#e05252'
   const nowUTC=new Date(),dayUTC=nowUTC.getUTCDay(),hUTC=nowUTC.getUTCHours()*60+nowUTC.getUTCMinutes()
   const marketOpen=dayUTC>=1&&dayUTC<=5&&hUTC>=810&&hUTC<1200
-  const displayReturn=marketOpen?changePct:rangeReturn
+  const displayReturn=marketOpen?dayChangePct:rangeReturn
   const displayLabel=marketOpen?'יומי':(PERIODS.find(p=>p.range===period)?.label||period)
   const mc=stock?.marketCap,qt=stock?.quoteType,sym=stock?.symbol||''
   const isETF=qt==='ETF'||qt==='MUTUALFUND'||(sym && ETF_LIST.indexOf(String(sym||""))>=0)
