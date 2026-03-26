@@ -52,8 +52,7 @@ export default function Dashboard({ user }) {
         const meta = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta
         if (!meta) return { ...m, price: 0, pct: 0, up: true }
         const price = meta.regularMarketPrice
-        const prev = meta.previousClose || meta.chartPreviousClose || price
-        const pct = prev ? ((price - prev) / prev) * 100 : 0
+        const pct = meta.regularMarketChangePercent ?? (()=>{ const prev = meta.chartPreviousClose || meta.previousClose || price; return prev ? ((price-prev)/prev)*100 : 0 })()
         return { ...m, price, pct, up: pct >= 0 }
       } catch(e) { return { ...m, price: 0, pct: 0, up: true } }
     }))
