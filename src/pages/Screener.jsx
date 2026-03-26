@@ -155,7 +155,7 @@ export default function Screener() {
   const mc=stock?.marketCap,qt=stock?.quoteType,sym=stock?.symbol||''
   const isETF=qt==='ETF'||qt==='MUTUALFUND'||(sym && ETF_LIST.indexOf(String(sym||""))>=0)
   let capLabel=null,capColor='#f5a623',capBg='rgba(245,166,35,.12)',capBorder='rgba(245,166,35,.3)',capIcon='',capMax=null
-  if(isETF){capLabel='קרן סל / ETF';capColor='#60a5fa';capBg='rgba(96,165,250,.12)';capBorder='rgba(96,165,250,.3)';capIcon='📊';capMax='ניתן להחזיק עד 100%'}
+  if(isETF){capLabel='קרן סל / ETF';capColor='#60a5fa';capBg='rgba(96,165,250,.12)';capBorder='rgba(96,165,250,.3)';capIcon='📊';capMax="ניתן להחזיק עד 100%"}
   else if(mc>=1e12){capLabel='מגה קאפ';capColor='#2dd87a';capBg='rgba(45,216,122,.12)';capBorder='rgba(45,216,122,.3)';capIcon='🟢';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 20%"}
   else if(mc>=5e10){capLabel='לארג׳ קאפ';capColor='#f5a623';capBg='rgba(245,166,35,.12)';capBorder='rgba(245,166,35,.3)';capIcon='🟡';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 10%"}
   else if(mc>=1e10){capLabel='סמול קאפ';capColor='#fb923c';capBg='rgba(251,146,60,.12)';capBorder='rgba(251,146,60,.3)';capIcon='🟠';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 5%"}
