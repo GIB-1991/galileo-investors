@@ -141,9 +141,11 @@ export default async function handler(req, res) {
       priceToBook:                p(ov.PriceToBookRatio),
       priceToSales:               p(ov.PriceToSalesRatioTTM),
       sharesOutstanding:          p(ov.SharesOutstanding),
-      shortPercentFloat:      p(ov.ShortPercentOutstandingShares) ?? p(ov.ShortPercentFloat) ?? null,
-      shortRatio:             p(ov.ShortRatio) ?? null,
-      avgVolume30d:           p(ov.AverageDailyVolume30Day) ?? null,
+      shortPercentFloat:      null, // not in AV free tier
+      shortRatio:             null, // not in AV free tier  
+      avgVolume30d:           avData && avData.volumes && avData.volumes.length > 0
+                                ? Math.round(avData.volumes.slice(-30).filter(v=>v>0).reduce((a,b)=>a+b,0) / Math.max(1, avData.volumes.slice(-30).filter(v=>v>0).length))
+                                : null,
       quoteType:                  ov.AssetType==='ETF'?'ETF':ov.AssetType==='MUTUAL FUND'?'MUTUALFUND':'EQUITY',
       revenue:                    p(ov.RevenueTTM),
       grossProfit:                p(ov.GrossProfitTTM),
