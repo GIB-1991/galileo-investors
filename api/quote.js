@@ -141,9 +141,7 @@ export default async function handler(req, res) {
       priceToBook:                p(ov.PriceToBookRatio),
       priceToSales:               p(ov.PriceToSalesRatioTTM),
       sharesOutstanding:          p(ov.SharesOutstanding),
-      shortPercentFloat:      (yahooMeta.sharesShort && yahooMeta.floatShares && yahooMeta.floatShares > 0)
-                                ? parseFloat((yahooMeta.sharesShort / yahooMeta.floatShares * 100).toFixed(2))
-                                : null,
+      shortPercentFloat:      null, // set post-meta from Yahoo
       shortRatio:             null, // not in AV free tier  
       avgVolume30d:           null, // computed post-fetch from chart volumes
       quoteType:                  ov.AssetType==='ETF'?'ETF':ov.AssetType==='MUTUAL FUND'?'MUTUALFUND':'EQUITY',
@@ -155,7 +153,7 @@ export default async function handler(req, res) {
       revenueGrowth:              p(ov.QuarterlyRevenueGrowthYOY),
       profitMargin:               p(ov.ProfitMargin),
       operatingMargin:            p(ov.OperatingMarginTTM),
-      dividendYield:              yahooMeta.dividendYield ?? p(ov.DividendYield) ?? null,
+      dividendYield:              p(ov.DividendYield) ?? null, // will be overridden post-meta
       dividendRate:               p(ov.DividendPerShare) ?? meta.dividendRate ?? null,
       exDividendDate:             ov.ExDividendDate,
       payoutRatio:                p(ov.PayoutRatio),
@@ -169,6 +167,12 @@ export default async function handler(req, res) {
                                    ov.AnalystRatingSell,ov.AnalystRatingStrongSell].reduce((s,v)=>s+parseInt(v||0),0)||undefined,
     };
 
+    // Fix dividendYield: use Yahoo's value (more accurate, annualized decimal)
+    if (yahooMeta.dividendYield != null) meta.dividendYield = yahooMeta.dividendYield;
+    // Fix shortPercentFloat: compute from Yahoo sharesShort/floatShares
+    if (yahooMeta.sharesShort > 0 && yahooMeta.floatShares > 0) {
+      meta.shortPercentFloat = parseFloat((yahooMeta.sharesShort / yahooMeta.floatShares * 100).toFixed(2));
+    }
     // yahooResult already fetched via Promise.all above
     if (!yahooResult) { res.status(500).json({ error: 'No chart data available' }); return; }
     // Compute avgVolume30d from Yahoo volumes
