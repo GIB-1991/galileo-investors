@@ -141,7 +141,9 @@ export default async function handler(req, res) {
       priceToBook:                p(ov.PriceToBookRatio),
       priceToSales:               p(ov.PriceToSalesRatioTTM),
       sharesOutstanding:          p(ov.SharesOutstanding),
-      shortPercentFloat:      null, // not in AV free tier
+      shortPercentFloat:      (yahooMeta.sharesShort && yahooMeta.floatShares && yahooMeta.floatShares > 0)
+                                ? parseFloat((yahooMeta.sharesShort / yahooMeta.floatShares * 100).toFixed(2))
+                                : null,
       shortRatio:             null, // not in AV free tier  
       avgVolume30d:           null, // computed post-fetch from chart volumes
       quoteType:                  ov.AssetType==='ETF'?'ETF':ov.AssetType==='MUTUAL FUND'?'MUTUALFUND':'EQUITY',
@@ -153,7 +155,7 @@ export default async function handler(req, res) {
       revenueGrowth:              p(ov.QuarterlyRevenueGrowthYOY),
       profitMargin:               p(ov.ProfitMargin),
       operatingMargin:            p(ov.OperatingMarginTTM),
-      dividendYield:              p(ov.DividendYield) ?? meta.dividendYield ?? null,
+      dividendYield:              yahooMeta.dividendYield ?? p(ov.DividendYield) ?? null,
       dividendRate:               p(ov.DividendPerShare) ?? meta.dividendRate ?? null,
       exDividendDate:             ov.ExDividendDate,
       payoutRatio:                p(ov.PayoutRatio),
