@@ -12,6 +12,7 @@ const PERIODS = [
   {label:'5 שנים', range:'5y',  interval:'1mo'},
   {label:'שנה',    range:'1y',  interval:'1wk'},
   {label:'6 חודשים',range:'6mo',interval:'1d'},
+  {label:'YTD',       range:'ytd', interval:'1d'},
   {label:'3 חודשים',range:'3mo',interval:'1d'},
   {label:'חודש',   range:'1mo', interval:'1d'},
   {label:'שבוע',   range:'5d',  interval:'1h'},
@@ -117,8 +118,14 @@ export default function Screener() {
   async function loadChart(ticker, p) {
     setChartLoad(true)
     const per = PERIODS.find(x=>x.range===p) || PERIODS[3]
+    const isYTD = p === 'ytd'
+    const ytdStart = Math.floor(new Date(new Date().getFullYear(), 0, 1) / 1000)
+    const ytdEnd   = Math.floor(Date.now() / 1000)
+    const effRange    = isYTD ? '1y'  : per.range
+    const effInterval = isYTD ? '1d'  : per.interval
+    const ytdSuffix   = isYTD ? '&period1=' + ytdStart + '&period2=' + ytdEnd : ''
     try {
-      const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range='+per.range+'&interval='+per.interval)
+      const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range='+effRange+'&interval='+effInterval+ytdSuffix)
       const d = await r.json()
       const result = d.chart?.result?.[0]
       if (!result) { setChartLoad(false); return }
