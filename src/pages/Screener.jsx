@@ -358,7 +358,13 @@ export default function Screener() {
               ):(
                 <div style={{height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--color-text-muted)',fontSize:'.85rem',border:'1px dashed var(--color-border)',borderRadius:12}}>
                   אין נתוני גרף
-                </div>
+                
+            {/* Live Volume */}
+            {stock?.regularMarketVolume && (
+              <div style={{textAlign:'right',fontSize:'.72rem',color:'rgba(245,166,35,.7)',marginTop:4,paddingRight:8}}>
+                ווליום יומי: <span style={{color:'rgba(245,166,35,1)',fontWeight:600}}>{fmtN(stock.regularMarketVolume)}</span>
+              </div>
+            )}</div>
               )}
             </div>
           </div>
@@ -410,7 +416,9 @@ export default function Screener() {
                 return (!v||!a) ? 'var(--color-text-primary)' : v > a*1.5 ? '#2dd87a' : v < a*0.5 ? '#e05252' : 'var(--color-text-primary)'
               })()}/>
               <Row label="דיבידנד"          val={stock.dividendYield && parseFloat(stock.dividendYield) > 0 ? (parseFloat(stock.dividendYield) < 1 ? (parseFloat(stock.dividendYield)*100).toFixed(2) : parseFloat(stock.dividendYield).toFixed(2))+'%' : 'לא'}/>
-              {stock.dividendRate&&parseFloat(stock.dividendRate)>0&&<Row label="דיבידנד לשנה"   val={fmtN(stock.dividendRate)}/>}
+              {stock.shortPercentFloat!=null&&<Row label="שורט %" val={(parseFloat(stock.shortPercentFloat)<1?(parseFloat(stock.shortPercentFloat)*100).toFixed(1):parseFloat(stock.shortPercentFloat).toFixed(1))+'%'}/>}
+              {stock.avgVolume30d&&<Row label="ווליום ממוצע 30י׳" val={fmtN(stock.avgVolume30d)}/>}
+              
               <Row label="יעד אנליסטים"    val={fmtN(stock.targetMeanPrice)} color="#f5a623"/>
             </div>
 
