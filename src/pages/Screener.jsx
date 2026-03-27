@@ -119,11 +119,9 @@ export default function Screener() {
     setChartLoad(true)
     const per = PERIODS.find(x=>x.range===p) || PERIODS[3]
     const isYTD = p === 'ytd'
-    const ytdStart = Math.floor(new Date(new Date().getFullYear(), 0, 1) / 1000)
-    const ytdEnd   = Math.floor(Date.now() / 1000)
-    const effRange    = isYTD ? '1y'  : per.range
+    const effRange    = isYTD ? 'ytd' : per.range
     const effInterval = isYTD ? '1d'  : per.interval
-    const ytdSuffix   = isYTD ? '&period1=' + ytdStart + '&period2=' + ytdEnd : ''
+    const ytdSuffix   = ''
     try {
       const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range='+effRange+'&interval='+effInterval+ytdSuffix)
       const d = await r.json()
@@ -411,7 +409,7 @@ export default function Screener() {
                 const v = parseFloat(stock.regularMarketVolume), a = parseFloat(stock.averageVolume)
                 return (!v||!a) ? 'var(--color-text-primary)' : v > a*1.5 ? '#2dd87a' : v < a*0.5 ? '#e05252' : 'var(--color-text-primary)'
               })()}/>
-              <Row label="דיבידנד"          val={stock.dividendYield && parseFloat(stock.dividendYield) > 0 ? (parseFloat(stock.dividendYield)*100).toFixed(2)+'%' : 'לא'}/>
+              <Row label="דיבידנד"          val={stock.dividendYield && parseFloat(stock.dividendYield) > 0 ? (parseFloat(stock.dividendYield) < 1 ? (parseFloat(stock.dividendYield)*100).toFixed(2) : parseFloat(stock.dividendYield).toFixed(2))+'%' : 'לא'}/>
               {stock.dividendRate&&parseFloat(stock.dividendRate)>0&&<Row label="דיבידנד לשנה"   val={fmtN(stock.dividendRate)}/>}
               <Row label="יעד אנליסטים"    val={fmtN(stock.targetMeanPrice)} color="#f5a623"/>
             </div>
