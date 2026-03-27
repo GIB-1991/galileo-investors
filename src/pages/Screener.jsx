@@ -333,7 +333,11 @@ export default function Screener() {
             </div>
 
             {/* ── 6. Chart ── */}
-            <div style={{height:230,position:'relative',borderRadius:12,overflow:'hidden'}}>
+            
+              {stock?.regularMarketVolume&&<div style={{textAlign:'left',fontSize:'.72rem',color:'rgba(245,166,35,.75)',margin:'4px 0 0 8px'}}>
+                {'ווליום יומי: '}<span style={{color:'rgba(245,166,35,1)',fontWeight:700}}>{fmtN(stock.regularMarketVolume)}</span>
+              </div>}
+              <div style={{height:230,position:'relative',borderRadius:12,overflow:'hidden'}}>
               {chartLoad&&(
                 <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.12)',zIndex:2}}>
                   <div style={{width:26,height:26,border:'2px solid rgba(245,166,35,.25)',borderTop:'2px solid #f5a623',borderRadius:'50%',animation:'spin .7s linear infinite'}}/>
@@ -358,13 +362,7 @@ export default function Screener() {
               ):(
                 <div style={{height:'100%',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--color-text-muted)',fontSize:'.85rem',border:'1px dashed var(--color-border)',borderRadius:12}}>
                   אין נתוני גרף
-                
-            {/* Live Volume */}
-            {stock?.regularMarketVolume && (
-              <div style={{textAlign:'right',fontSize:'.72rem',color:'rgba(245,166,35,.7)',marginTop:4,paddingRight:8}}>
-                ווליום יומי: <span style={{color:'rgba(245,166,35,1)',fontWeight:600}}>{fmtN(stock.regularMarketVolume)}</span>
-              </div>
-            )}</div>
+                </div>
               )}
             </div>
           </div>
