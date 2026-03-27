@@ -143,9 +143,7 @@ export default async function handler(req, res) {
       sharesOutstanding:          p(ov.SharesOutstanding),
       shortPercentFloat:      null, // not in AV free tier
       shortRatio:             null, // not in AV free tier  
-      avgVolume30d:           avData && avData.volumes && avData.volumes.length > 0
-                                ? Math.round(avData.volumes.slice(-30).filter(v=>v>0).reduce((a,b)=>a+b,0) / Math.max(1, avData.volumes.slice(-30).filter(v=>v>0).length))
-                                : null,
+      avgVolume30d:           null, // computed post-fetch from chart volumes
       quoteType:                  ov.AssetType==='ETF'?'ETF':ov.AssetType==='MUTUAL FUND'?'MUTUALFUND':'EQUITY',
       revenue:                    p(ov.RevenueTTM),
       grossProfit:                p(ov.GrossProfitTTM),
