@@ -95,7 +95,7 @@ export default function Screener() {
   async function loadStock(ticker) {
     setLoading(true); setErr(null); setShowSugg(false); setSugg([])
     try {
-      const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range=3mo&interval=1d&_t='+Math.floor(Date.now()/60000))
+      const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range=3mo&interval=1d')
       const d = await r.json()
       const result = d.chart?.result?.[0]
       if (!result) { setErr('לא נמצאו נתונים עבור '+ticker); setLoading(false); return }
