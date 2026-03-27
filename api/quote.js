@@ -167,15 +167,16 @@ export default async function handler(req, res) {
                                    ov.AnalystRatingSell,ov.AnalystRatingStrongSell].reduce((s,v)=>s+parseInt(v||0),0)||undefined,
     };
 
+    // Use Yahoo data as primary (always available), with AV meta enrichment
+    const yahooResult = yahooData?.chart?.result?.[0];
+    if (!yahooResult) { res.status(500).json({ error: 'No chart data' }); return; }
+    // Compute avgVolume30d from Yahoo volumes
+    const yVols = yahooResult.indicators?.quote?.[0]?.volume || [];
+    const last30vols = yVols.filter(v=>v!=null&&v>0).slice(-30);
+    if(last30vols.length>0) meta.avgVolume30d = Math.round(last30vols.reduce((a,b)=>a+b,0)/last30vols.length);
+    // Merge yahoo result with enriched meta
     res.status(200).json({
-      chart: { result: [{
-        meta,
-        timestamp: avData.timestamp,
-        indicators: {
-          quote: [{ open:avData.opens, high:avData.highs, low:avData.lows, close:avData.closes, volume:avData.volumes }],
-          adjclose: [{ adjclose: avData.closes }]
-        }
-      }]}
+      chart: { result: [{ ...yahooResult, meta }] }
     });
   } catch(e) {
     res.status(500).json({ error: e.message });
