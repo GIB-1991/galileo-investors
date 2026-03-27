@@ -167,8 +167,7 @@ export default async function handler(req, res) {
                                    ov.AnalystRatingSell,ov.AnalystRatingStrongSell].reduce((s,v)=>s+parseInt(v||0),0)||undefined,
     };
 
-    // Use Yahoo data as primary source — fetch fresh result
-    const yahooResult = await getYahooChart();
+    // yahooResult already fetched via Promise.all above
     if (!yahooResult) { res.status(500).json({ error: 'No chart data available' }); return; }
     // Compute avgVolume30d from Yahoo volumes
     const yVols = yahooResult.indicators?.quote?.[0]?.volume || [];
