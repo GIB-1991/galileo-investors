@@ -1,3 +1,16 @@
+// Fetch short interest from Yahoo Finance quoteSummary
+async function getYahooShort(symbol, ua) {
+  try {
+    const url = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/'+symbol+'?modules=defaultKeyStatistics';
+    const r = await fetch(url, { headers: { 'User-Agent': ua, 'Accept': 'application/json', 'Accept-Language': 'en-US,en;q=0.9' } });
+    if (!r.ok) return null;
+    const d = await r.json();
+    const ks = d?.quoteSummary?.result?.[0]?.defaultKeyStatistics || {};
+    const shortPct = ks.shortPercentOfFloat?.raw ?? ks.shortPercentOutstandingShares?.raw ?? null;
+    return shortPct != null ? parseFloat((shortPct * 100).toFixed(2)) : null;
+  } catch { return null; }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
@@ -87,17 +100,16 @@ export default async function handler(req, res) {
 
   try {
     // Run chart + fundamentals in parallel
-    const [yahooResult, { ov, gq }, avChart] = await Promise.all([
+    const [yahooResult, { ov, gq }, avChart, ymShortPct] = await Promise.all([
       getYahooChart(),
       getAVFundamentals(),
       getAVChart(),
+      getYahooShort(sym, UA),
     ]);
 
     const yahooMeta = yahooResult?.meta || {};
     const ymDivYield    = yahooMeta.dividendYield ?? null;
-    const ymShortFloat  = (yahooMeta.sharesShort > 0 && yahooMeta.floatShares > 0)
-                            ? parseFloat((yahooMeta.sharesShort / yahooMeta.floatShares * 100).toFixed(2))
-                            : null;
+    const ymShortFloat  = ymShortPct ?? null;
     const avData    = avChart || (yahooResult ? {
       timestamp: yahooResult.timestamp,
       closes:  yahooResult.indicators?.quote?.[0]?.close  || [],
