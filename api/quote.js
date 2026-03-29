@@ -106,18 +106,21 @@ export default async function handler(req, res) {
       getAVFundamentals().catch(()=>({ov:{},gq:{}})),
       getAVChart().catch(()=>null),
     ]);
+    // early exit if no data at all
+    if (!yahooResult && !avChart) return res.status(500).json({ error: 'No data available for '+sym });
+
     const { ov={}, gq={} } = _avFund || {};
 
     const yahooMeta = yahooResult?.meta || {};
     const ymDivYield    = yahooMeta.dividendYield ?? null;
     const ymShortFloat  = null; // getYahooShort called separately below
     const avData    = avChart || (yahooResult ? {
-      timestamp: yahooResult.timestamp,
-      closes:  yahooResult.indicators?.quote?.[0]?.close  || [],
-      highs:   yahooResult.indicators?.quote?.[0]?.high   || [],
-      lows:    yahooResult.indicators?.quote?.[0]?.low    || [],
-      opens:   yahooResult.indicators?.quote?.[0]?.open   || [],
-      volumes: yahooResult.indicators?.quote?.[0]?.volume || [],
+      timestamp: yahooResult?.timestamp || [],
+      closes:  yahooResult?.indicators?.quote?.[0]?.close  || [],
+      highs:   yahooResult?.indicators?.quote?.[0]?.high   || [],
+      lows:    yahooResult?.indicators?.quote?.[0]?.low    || [],
+      opens:   yahooResult?.indicators?.quote?.[0]?.open   || [],
+      volumes: yahooResult?.indicators?.quote?.[0]?.volume || [],
     } : null) || { timestamp:[], closes:[], highs:[], lows:[], opens:[], volumes:[] };
 
     const p   = n => { const v=parseFloat(n); return isNaN(v)?undefined:v; };
