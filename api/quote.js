@@ -100,12 +100,13 @@ export default async function handler(req, res) {
 
   try {
     // Run chart + fundamentals in parallel
-    const [yahooResult, { ov, gq }, avChart, ymShortPct] = await Promise.all([
+    const [yahooResult, _avFund, avChart, ymShortPct] = await Promise.all([
       getYahooChart().catch(()=>null),
       getAVFundamentals().catch(()=>({ov:{},gq:{}})),
       getAVChart().catch(()=>null),
       getYahooShort(sym, UA).catch(()=>null),
     ]);
+    const { ov={}, gq={} } = _avFund || {};
 
     const yahooMeta = yahooResult?.meta || {};
     const ymDivYield    = yahooMeta.dividendYield ?? null;
