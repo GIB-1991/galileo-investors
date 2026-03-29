@@ -101,17 +101,16 @@ export default async function handler(req, res) {
 
   try {
     // Run chart + fundamentals in parallel
-    const [yahooResult, _avFund, avChart, ymShortPct] = await Promise.all([
+    const [yahooResult, _avFund, avChart] = await Promise.all([
       getYahooChart().catch(()=>null),
       getAVFundamentals().catch(()=>({ov:{},gq:{}})),
       getAVChart().catch(()=>null),
-      getYahooShort(sym, UA).catch(()=>null),
     ]);
     const { ov={}, gq={} } = _avFund || {};
 
     const yahooMeta = yahooResult?.meta || {};
     const ymDivYield    = yahooMeta.dividendYield ?? null;
-    const ymShortFloat  = ymShortPct ?? null;
+    const ymShortFloat  = null; // getYahooShort called separately below
     const avData    = avChart || (yahooResult ? {
       timestamp: yahooResult.timestamp,
       closes:  yahooResult.indicators?.quote?.[0]?.close  || [],
@@ -185,7 +184,10 @@ export default async function handler(req, res) {
                                    ov.AnalystRatingSell,ov.AnalystRatingStrongSell].reduce((s,v)=>s+parseInt(v||0),0)||undefined,
     };
 
-    // yahooResult already fetched via Promise.all above
+    // Fetch short% separately (non-blocking — doesn't affect main data)
+    const ymShortPct2 = await getYahooShort(sym, UA).catch(()=>null);
+    if (ymShortPct2 != null) meta.shortPercentFloat = ymShortPct2;
+        // yahooResult already fetched via Promise.all above
     if (!yahooResult) { res.status(500).json({ error: 'No chart data available' }); return; }
     // Compute avgVolume30d from Yahoo volumes
     const yVols = yahooResult.indicators?.quote?.[0]?.volume || [];
