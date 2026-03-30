@@ -122,8 +122,8 @@ export default async function handler(req, res) {
     const p   = n => { const v=parseFloat(n); return isNaN(v)?undefined:v; };
     const lp  = gq['05. price'] ? p(gq['05. price']) : (avData.closes.slice(-1)[0] || yahooMeta.regularMarketPrice || 0);
     const lpc = gq['08. previous close'] ? p(gq['08. previous close']) : (avData.closes.slice(-2)[0] || lp);
-    const lch = gq['09. change'] ? p(gq['09. change']) : +(lp-lpc).toFixed(4);
-    const lpt = gq['10. change percent'] ? p(gq['10. change percent'].replace('%',''))/100 : (lpc?(lp-lpc)/lpc:0);
+    const lch = gq['09. change'] ? (p(gq['09. change'])||0) : (isFinite(lp-lpc) ? +(lp-lpc).toFixed(4) : 0);
+    const lpt = gq['10. change percent'] ? (p(gq['10. change percent'].replace('%',''))||0)/100 : (lpc&&isFinite(lp/lpc)?(lp-lpc)/lpc:0);
 
     const meta = {
       symbol:                     sym,
@@ -138,8 +138,8 @@ export default async function handler(req, res) {
       website:                    ov.OfficialSite,
       description:                ov.Description,
       regularMarketPrice:         lp,
-      regularMarketChange:        +lch.toFixed(4),
-      regularMarketChangePercent: +lpt.toFixed(6),
+      regularMarketChange:        +(lch||0).toFixed(4),
+      regularMarketChangePercent: +(lpt||0).toFixed(6),
       regularMarketOpen:          gq['02. open'] ? p(gq['02. open']) : (avData.opens.slice(-1)[0] || yahooMeta.regularMarketOpen),
       regularMarketDayHigh:       gq['03. high'] ? p(gq['03. high']) : (avData.highs.slice(-1)[0] || yahooMeta.regularMarketDayHigh),
       regularMarketDayLow:        gq['04. low']  ? p(gq['04. low'])  : (avData.lows.slice(-1)[0]  || yahooMeta.regularMarketDayLow),
