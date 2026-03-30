@@ -1,5 +1,22 @@
-// api/quote.js — Yahoo Finance (chart + financialData)
+// api/quote.js — Yahoo chart + AV OVERVIEW (1 AV call only)
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15';
+const AV_KEYS = ['T8VBPQ82S0O7VFSQ', 'RIBVCZG0TI9S4YM1'];
+
+async function getAVOverview(sym) {
+  for (const key of AV_KEYS) {
+    try {
+      const resp = await fetch(
+        'https://www.alphavantage.co/query?function=OVERVIEW&symbol=' + sym + '&apikey=' + key,
+        { headers: { 'User-Agent': 'galileo' } }
+      );
+      if (!resp.ok) continue;
+      const ov = await resp.json();
+      if (ov.Note || ov.Information || !ov.Symbol) continue;
+      return ov;
+    } catch { continue; }
+  }
+  return null;
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,41 +31,24 @@ export default async function handler(req, res) {
   const yhInterval  = intervalMap[r] || '1d';
 
   try {
-    // Fetch chart + quote summary in parallel
-    const [chartResp, summaryResp] = await Promise.all([
+    // Fetch Yahoo chart + AV OVERVIEW in parallel
+    const [chartResp, ov] = await Promise.all([
       fetch(
         'https://query1.finance.yahoo.com/v8/finance/chart/' + sym +
         '?interval=' + yhInterval + '&range=' + r,
-        { headers: { 'User-Agent': UA, 'Accept': '*/*' } }
+        { headers: { 'User-Agent': UA } }
       ),
-      fetch(
-        'https://query1.finance.yahoo.com/v11/finance/quoteSummary/' + sym +
-        '?modules=summaryDetail,defaultKeyStatistics,financialData,assetProfile,recommendationTrend',
-        { headers: { 'User-Agent': UA, 'Accept': 'application/json' } }
-      ).catch(() => null)
+      getAVOverview(sym).catch(() => null)
     ]);
 
-    if (!chartResp.ok) return res.status(502).json({ error: 'Yahoo chart failed: ' + chartResp.status });
-
+    if (!chartResp.ok) return res.status(502).json({ error: 'Yahoo fetch failed: ' + chartResp.status });
     const chartData = await chartResp.json();
     const result = chartData?.chart?.result?.[0];
     if (!result || !result.timestamp?.length) {
       return res.status(500).json({ error: 'No chart data for ' + sym });
     }
 
-    // Parse quote summary
-    let sd = {}, ks = {}, fd = {}, ap = {}, rt = {};
-    if (summaryResp?.ok) {
-      const summaryData = await summaryResp.json().catch(() => ({}));
-      const qr = summaryData?.quoteSummary?.result?.[0] || {};
-      sd = qr.summaryDetail || {};
-      ks = qr.defaultKeyStatistics || {};
-      fd = qr.financialData || {};
-      ap = qr.assetProfile || {};
-      rt = qr.recommendationTrend?.trend?.[0] || {};
-    }
-
-    const ym = result.meta || {};
+    const ym     = result.meta || {};
     const quotes = result.indicators?.quote?.[0] || {};
     const closes  = quotes.close  || [];
     const highs   = quotes.high   || [];
@@ -58,28 +58,28 @@ export default async function handler(req, res) {
 
     const lp  = ym.regularMarketPrice || closes.slice(-1)[0] || 0;
     const lpc = ym.chartPreviousClose || closes.slice(-2)[0] || lp;
-    const lch = lp && lpc && isFinite(lp - lpc) ? +(lp - lpc).toFixed(4) : 0;
+    const lch = isFinite(lp - lpc) ? +(lp - lpc).toFixed(4) : 0;
     const lpt = lp && lpc && isFinite(lp / lpc) ? +((lp - lpc) / lpc).toFixed(6) : 0;
 
-    const recentVols = volumes.filter(v => v != null && v > 0).slice(-30);
+    const recentVols = volumes.filter(v => v > 0).slice(-30);
     const avgVol30d  = recentVols.length
       ? Math.round(recentVols.reduce((a, b) => a + b, 0) / recentVols.length)
       : (ym.regularMarketVolume || 0);
 
-    const n = v => (v?.raw ?? v ?? null);
+    const p = n => { const v = parseFloat(n); return isNaN(v) ? undefined : v; };
 
     const meta = {
       symbol:                     sym,
       currency:                   ym.currency || 'USD',
-      exchangeName:               ym.exchangeName || '',
-      fullExchangeName:           ym.fullExchangeName || '',
-      longName:                   ap.longName || ym.longName || ym.shortName || sym,
-      shortName:                  ym.shortName || sym,
-      sector:                     ap.sector || undefined,
-      industry:                   ap.industry || undefined,
-      country:                    ap.country || undefined,
-      website:                    ap.website || undefined,
-      description:                ap.longBusinessSummary || undefined,
+      exchangeName:               (ov?.Exchange)   || ym.exchangeName || '',
+      fullExchangeName:           (ov?.Exchange)   || ym.fullExchangeName || '',
+      longName:                   (ov?.Name)       || ym.longName || ym.shortName || sym,
+      shortName:                  ym.shortName     || ov?.Name || sym,
+      sector:                     ov?.Sector,
+      industry:                   ov?.Industry,
+      country:                    ov?.Country,
+      website:                    ov?.OfficialSite,
+      description:                ov?.Description,
       regularMarketPrice:         lp,
       regularMarketChange:        lch,
       regularMarketChangePercent: lpt,
@@ -88,40 +88,42 @@ export default async function handler(req, res) {
       regularMarketDayLow:        ym.regularMarketDayLow  || lows.slice(-1)[0],
       regularMarketVolume:        ym.regularMarketVolume  || volumes.slice(-1)[0],
       chartPreviousClose:         lpc,
-      fiftyTwoWeekHigh:           n(sd.fiftyTwoWeekHigh) || ym.fiftyTwoWeekHigh,
-      fiftyTwoWeekLow:            n(sd.fiftyTwoWeekLow)  || ym.fiftyTwoWeekLow,
-      fiftyDayAverage:            n(ks.fiftyDayAverage)  || ym.fiftyDayAverage,
-      twoHundredDayAverage:       n(ks.twoHundredDayAverage) || ym.twoHundredDayAverage,
-      marketCap:                  n(sd.marketCap),
-      trailingPE:                 n(sd.trailingPE),
-      forwardPE:                  n(sd.forwardPE),
-      trailingEps:                n(ks.trailingEps),
-      beta:                       n(sd.beta),
-      priceToBook:                n(ks.priceToBook),
-      priceToSales:               n(ks.priceToSalesTrailing12Months),
-      sharesOutstanding:          n(ks.sharesOutstanding),
-      shortPercentFloat:          n(ks.shortPercentOfFloat) != null
-                                    ? parseFloat((n(ks.shortPercentOfFloat) * 100).toFixed(2))
-                                    : null,
-      shortRatio:                 n(ks.shortRatio),
+      fiftyTwoWeekHigh:           p(ov?.['52WeekHigh'])        || ym.fiftyTwoWeekHigh,
+      fiftyTwoWeekLow:            p(ov?.['52WeekLow'])         || ym.fiftyTwoWeekLow,
+      fiftyDayAverage:            p(ov?.['50DayMovingAverage'])|| ym.fiftyDayAverage,
+      twoHundredDayAverage:       p(ov?.['200DayMovingAverage'])||ym.twoHundredDayAverage,
+      marketCap:                  p(ov?.MarketCapitalization),
+      trailingPE:                 p(ov?.TrailingPE),
+      forwardPE:                  p(ov?.ForwardPE),
+      trailingEps:                p(ov?.EPS),
+      beta:                       p(ov?.Beta),
+      priceToBook:                p(ov?.PriceToBookRatio),
+      priceToSales:               p(ov?.PriceToSalesRatioTTM),
+      sharesOutstanding:          p(ov?.SharesOutstanding),
+      shortPercentFloat:          null,
+      shortRatio:                 null,
       avgVolume30d:               avgVol30d,
       quoteType:                  ym.quoteType || 'EQUITY',
-      revenue:                    n(fd.totalRevenue),
-      grossProfit:                n(fd.grossProfits),
-      ebitda:                     n(fd.ebitda),
-      returnOnEquity:             n(fd.returnOnEquity),
-      returnOnAssets:             n(fd.returnOnAssets),
-      revenueGrowth:              n(fd.revenueGrowth),
-      profitMargin:               n(fd.profitMargins),
-      operatingMargin:            n(fd.operatingMargins),
-      dividendYield:              n(sd.dividendYield) ?? n(sd.trailingAnnualDividendYield) ?? null,
-      dividendRate:               n(sd.dividendRate)  ?? n(sd.trailingAnnualDividendRate) ?? null,
-      exDividendDate:             sd.exDividendDate?.fmt || undefined,
-      enterpriseToRevenue:        n(ks.enterpriseToRevenue),
-      enterpriseToEbitda:         n(ks.enterpriseToEbitda),
-      targetMeanPrice:            n(fd.targetMeanPrice),
-      recommendationKey:          fd.recommendationKey || undefined,
-      numberOfAnalystOpinions:    n(fd.numberOfAnalystOpinions),
+      revenue:                    p(ov?.RevenueTTM),
+      grossProfit:                p(ov?.GrossProfitTTM),
+      ebitda:                     p(ov?.EBITDA),
+      returnOnEquity:             p(ov?.ReturnOnEquityTTM),
+      returnOnAssets:             p(ov?.ReturnOnAssetsTTM),
+      revenueGrowth:              p(ov?.RevenueGrowthYOY),
+      profitMargin:               p(ov?.ProfitMargin),
+      operatingMargin:            p(ov?.OperatingMarginTTM),
+      dividendYield:              p(ov?.DividendYield),
+      dividendRate:               p(ov?.DividendPerShare),
+      exDividendDate:             ov?.ExDividendDate || undefined,
+      enterpriseToRevenue:        p(ov?.EVToRevenue),
+      enterpriseToEbitda:         p(ov?.EVToEBITDA),
+      targetMeanPrice:            p(ov?.AnalystTargetPrice),
+      recommendationKey:          undefined,
+      numberOfAnalystOpinions:    p(ov?.AnalystRatingStrongBuy) != null
+        ? [ov.AnalystRatingStrongBuy,ov.AnalystRatingBuy,ov.AnalystRatingHold,
+           ov.AnalystRatingSell,ov.AnalystRatingStrongSell]
+            .reduce((s,v)=>s+parseInt(v||0),0) || undefined
+        : undefined,
     };
 
     return res.status(200).json({
