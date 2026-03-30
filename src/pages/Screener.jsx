@@ -180,9 +180,9 @@ export default function Screener() {
   }
 
   const Row = ({label,val,color:c})=> val&&val!=='N/A' ? (
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,.04)'}}>
-      <span style={{fontSize:'.8rem',color:'var(--color-text-muted)'}}>{label}</span>
-      <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:'monospace',color:c||'var(--color-text-primary)'}}>{val}</span>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid rgba(0,0,0,.08)'}}>
+      <span style={{fontSize:'.8rem',color:'#555'}}>{label}</span>
+      <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:'monospace',color:c||'#1a1a1a'}}>{val}</span>
     </div>
   ) : null
 
