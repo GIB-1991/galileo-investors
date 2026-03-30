@@ -18,6 +18,21 @@ async function getAVOverview(sym) {
   return null;
 }
 
+// Fetch short float from Finviz
+async function getFinvizShort(sym) {
+  try {
+    const resp = await fetch(
+      'https://finviz.com/quote.ashx?t=' + sym,
+      { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' } }
+    );
+    if (!resp.ok) return null;
+    const html = await resp.text();
+    const m = html.match(/Short Float<\/a><\/td><td[^>]*><a[^>]*><b>([\d.]+%)<\/b>/);
+    if (!m) return null;
+    return parseFloat(m[1]);
+  } catch { return null; }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
@@ -32,13 +47,14 @@ export default async function handler(req, res) {
 
   try {
     // Fetch Yahoo chart + AV OVERVIEW in parallel
-    const [chartResp, ov] = await Promise.all([
+    const [chartResp, ov, finvizShort] = await Promise.all([
       fetch(
         'https://query1.finance.yahoo.com/v8/finance/chart/' + sym +
         '?interval=' + yhInterval + '&range=' + r,
         { headers: { 'User-Agent': UA } }
       ),
-      getAVOverview(sym).catch(() => null)
+      getAVOverview(sym).catch(() => null),
+      getFinvizShort(sym).catch(() => null)
     ]);
 
     if (!chartResp.ok) return res.status(502).json({ error: 'Yahoo fetch failed: ' + chartResp.status });
@@ -100,7 +116,7 @@ export default async function handler(req, res) {
       priceToBook:                p(ov?.PriceToBookRatio),
       priceToSales:               p(ov?.PriceToSalesRatioTTM),
       sharesOutstanding:          p(ov?.SharesOutstanding),
-      shortPercentFloat:          null,
+      shortPercentFloat:          finvizShort ?? null,
       shortRatio:                 null,
       avgVolume30d:               avgVol30d,
       quoteType:                  ym.quoteType || 'EQUITY',
