@@ -185,10 +185,7 @@ export default async function handler(req, res) {
                                    ov.AnalystRatingSell,ov.AnalystRatingStrongSell].reduce((s,v)=>s+parseInt(v||0),0)||undefined,
     };
 
-    // Fetch short% separately (non-blocking — doesn't affect main data)
-    const ymShortPct2 = await getYahooShort(sym, UA).catch(()=>null);
-    if (ymShortPct2 != null) meta.shortPercentFloat = ymShortPct2;
-        // yahooResult already fetched via Promise.all above
+    // yahooResult already fetched via Promise.all above
     if (!yahooResult) { res.status(500).json({ error: 'No chart data available' }); return; }
     // Compute avgVolume30d from Yahoo volumes
     const yVols = yahooResult.indicators?.quote?.[0]?.volume || [];
