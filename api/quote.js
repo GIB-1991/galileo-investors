@@ -99,11 +99,9 @@ export default async function handler(req, res) {
 
   try {
     // Run chart + fundamentals in parallel
-    const [yahooResult, _avFund] = await Promise.all([
-      getYahooChart().catch(()=>null),
-      getAVFundamentals().catch(()=>({ov:{},gq:{}})),
-    ]);
-    const avChart = null; // removed — Yahoo chart used directly
+    const yahooResult = await getYahooChart().catch(()=>null);
+    const _avFund = null; // AV removed — Yahoo provides all needed data
+    const avChart = null;
     // early exit if no data at all
     if (!yahooResult && !avChart) return res.status(500).json({ error: 'No data available for '+sym });
 
