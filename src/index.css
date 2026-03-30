@@ -94,7 +94,7 @@ body::after {
   --color-border2: rgba(245,166,35,0.22);
   --color-text-primary: #e8e8f0;
   --color-text-secondary: #9898b8;
-  --color-text-muted: #5858788;
+  --color-text-muted: #444455;
   --color-accent: #f5a623;
   --color-success: #2dd87a;
   --color-danger: #e05252;
