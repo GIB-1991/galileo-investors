@@ -172,33 +172,27 @@ export default function Portfolio() {
         </div>
       </div>      {tab==='portfolio' && (<div>
         {enriched.length>0&&(<div style={{marginBottom:'1.5rem'}}>
-          }
           <div className="card" style={{padding:'1.25rem 1.5rem',background:totalPnLPct>=0?'rgba(22,163,74,0.06)':'rgba(220,38,38,0.06)',border:totalPnLPct>=0?'1.5px solid rgba(22,163,74,0.25)':'1.5px solid rgba(220,38,38,0.25)'}}>
-            }
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem'}}>
               <div>
                 <div style={{fontSize:'.75rem',color:'#888',marginBottom:4,fontWeight:500}}>תשואה כוללת (מתאריך קנייה)</div>
                 <div style={{display:'flex',alignItems:'baseline',gap:'0.75rem'}}>
-                  <span style={{fontSize:'2.2rem',fontWeight:900,fontFamily:"'IBM Plex Mono',monospace",color:totalPnLPct>=0?'#16a34a':'#dc2626',lineHeight:1}}>
-                    {totalPnLPct>=0?'+':''}{totalPnLPct.toFixed(2)}%
-                  </span>
-                  <span style={{fontSize:'1.1rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:totalPnLPct>=0?'#16a34a':'#dc2626'}}>
-                    {fm(totalPnL)}
-                  </span>
+                  <span style={{fontSize:'2.2rem',fontWeight:900,fontFamily:"'IBM Plex Mono',monospace",color:totalPnLPct>=0?'#16a34a':'#dc2626',lineHeight:1}}>{totalPnLPct>=0?'+':''}{totalPnLPct.toFixed(2)}%</span>
+                  <span style={{fontSize:'1.1rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:totalPnLPct>=0?'#16a34a':'#dc2626'}}>{fm(totalPnL)}</span>
                 </div>
               </div>
               <div style={{display:'flex',gap:'2rem',flexWrap:'wrap'}}>
                 <div style={{textAlign:'right'}}>
                   <div style={{fontSize:'.72rem',color:'#888',marginBottom:2}}>עלות השקעה</div>
-                  <div style={{fontSize:'1.1rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#444'}}>{'$'+totalCost.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+                  <div style={{fontSize:'1.05rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#444'}}>{'$'+totalCost.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
                 </div>
                 <div style={{textAlign:'right'}}>
                   <div style={{fontSize:'.72rem',color:'#888',marginBottom:2}}>שווי נוכחי</div>
-                  <div style={{fontSize:'1.1rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#1a1a1a'}}>{'$'+totalVal.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
+                  <div style={{fontSize:'1.05rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#1a1a1a'}}>{'$'+totalVal.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
                 </div>
                 <div style={{textAlign:'right'}}>
                   <div style={{fontSize:'.72rem',color:'#888',marginBottom:2}}>פוזיציות</div>
-                  <div style={{fontSize:'1.1rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#1a1a1a'}}>{holdings.length}</div>
+                  <div style={{fontSize:'1.05rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#1a1a1a'}}>{holdings.length}</div>
                 </div>
               </div>
             </div>
