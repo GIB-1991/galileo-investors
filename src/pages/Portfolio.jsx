@@ -172,9 +172,9 @@ export default function Portfolio() {
         </div>
       </div>      {tab==='portfolio' && (<div>
         {enriched.length>0&&(<div style={{marginBottom:'1.5rem'}}>
-          {/* Portfolio performance banner — like IB/eToro */}
+          }
           <div className="card" style={{padding:'1.25rem 1.5rem',background:totalPnLPct>=0?'rgba(22,163,74,0.06)':'rgba(220,38,38,0.06)',border:totalPnLPct>=0?'1.5px solid rgba(22,163,74,0.25)':'1.5px solid rgba(220,38,38,0.25)'}}>
-            {/* Top row: main return number */}
+            }
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem'}}>
               <div>
                 <div style={{fontSize:'.75rem',color:'#888',marginBottom:4,fontWeight:500}}>תשואה כוללת (מתאריך קנייה)</div>
