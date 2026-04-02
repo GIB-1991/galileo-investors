@@ -70,7 +70,7 @@ export default function Calculator() {
 
   const inp = (label, value, setter, min, max, step, suffix, hint) => (
     <div style={{marginBottom:'1.25rem'}}>
-      <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-primary)',marginBottom:6,fontSize:'.88rem'}}>{label}</label>
+      <label style={{display:'block',fontSize:'.88rem',fontWeight:600,color:'var(--color-text-primary)',marginBottom:6}}>{label}</label>
       <div style={{position:'relative',display:'flex',alignItems:'center'}}>
         {suffix === 'ils' && <span style={{position:'absolute',right:10,color:'var(--color-text-muted)',fontSize:'.85rem',fontWeight:600}}>₪</span>}
         <input
