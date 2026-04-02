@@ -287,7 +287,7 @@ function SellPnL({ sp, bp, ss }) {
         ) : (
           <div style={{textAlign:'center',padding:'4rem',color:'var(--color-text-muted)'}}><div style={{fontSize:'3rem',marginBottom:'1rem'}}>📊</div><p style={{margin:'0 0 1rem'}}>התיק ריק. הוסף מניה ראשונה!</p><button className="btn-primary" onClick={()=>setShowAdd(true)} style={{display:'inline-flex',alignItems:'center',gap:6}}><Plus size={14}/> הוסף מניה</button></div>
         )}
-      </div>)}
+      </div>)
         {tab==='history' && (history.length===0 ? (
         <div style={{textAlign:'center',padding:'4rem',color:'var(--color-text-muted)'}}><History size={40} style={{marginBottom:'1rem',opacity:.3}}/><p style={{margin:0}}>עדיין אין פעולות</p></div>
       ) : (
