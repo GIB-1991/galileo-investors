@@ -8,11 +8,6 @@ import { loadHoldingsFromDB, saveHoldingToDB, updateHoldingInDB, deleteHoldingFr
 
 const COLORS = ['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#06b6d4','#fbbf24','#34d399','#818cf8','#fb7185']
 
-function SellPnL({ sp, bp, ss }) {
-  const p = (sp - bp) * ss
-  return (<div style={{background:p>=0?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.1)',borderRadius:9,padding:'.75rem',textAlign:'center',border:'1px solid',borderColor:p>=0?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.25)',fontSize:'.85rem'}}>רווח/הפסד: <strong style={{color:p>=0?'var(--color-success)':'var(--color-danger)',direction:'ltr',display:'inline-block'}}>{p>=0?'+':'-'}{'$'+Math.abs(p).toFixed(2)}</strong></div>)
-}
-
 export default function Portfolio() {
   const [holdings, setHoldings] = useState([])
   const [history, setHistory] = useState([])
