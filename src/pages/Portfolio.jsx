@@ -8,6 +8,11 @@ import { loadHoldingsFromDB, saveHoldingToDB, updateHoldingInDB, deleteHoldingFr
 
 const COLORS = ['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#06b6d4','#fbbf24','#34d399','#818cf8','#fb7185']
 
+function SellPnL({ sp, bp, ss }) {
+  const p = (sp - bp) * ss
+  return (<div style={{background:p>=0?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.1)',borderRadius:9,padding:'.75rem',textAlign:'center',border:'1px solid',borderColor:p>=0?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.25)',fontSize:'.85rem'}}>רווח/הפסד: <strong style={{color:p>=0?'var(--color-success)':'var(--color-danger)',direction:'ltr',display:'inline-block'}}>{p>=0?'+':'-'}{'$'+Math.abs(p).toFixed(2)}</strong></div>)
+}
+
 export default function Portfolio() {
   const [holdings, setHoldings] = useState([])
   const [history, setHistory] = useState([])
@@ -254,9 +259,4 @@ export default function Portfolio() {
       {showSell&&(<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'1rem'}} onClick={e=>{if(e.target===e.currentTarget)setShowSell(null)}}><div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'2rem',width:'100%',maxWidth:380,boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.25rem'}}><h3 style={{margin:0,fontWeight:700}}>מכור <span className="ticker-badge">{showSell.ticker}</span></h3><button onClick={()=>setShowSell(null)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)'}}><X size={17}/></button></div><div style={{background:'var(--color-bg2)',borderRadius:9,padding:'.75rem',marginBottom:'1rem',fontSize:'.82rem',color:'var(--color-text-muted)'}}>בתיק: <strong style={{color:'var(--color-text-primary)'}}>{showSell.shares} מניות</strong> ב-<strong style={{color:'var(--color-text-primary)',direction:'ltr',display:'inline-block'}}>{'$'+showSell.buyPrice.toFixed(2)}</strong></div><div style={{display:'flex',flexDirection:'column',gap:'1rem'}}><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>מניות למכירה</label><input className="input" type="number" max={showSell.shares} value={sellShares} onChange={e=>setSellShares(e.target.value)} style={{direction:'ltr'}}/></div><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>מחיר מכירה ($) {sellPriceLoading&&<span style={{color:'var(--color-accent)',fontSize:'.72rem'}}>טוען...</span>}</label><input className="input" type="number" value={sellPrice} onChange={e=>setSellPrice(e.target.value)} style={{direction:'ltr'}}/></div>{sellShares&&sellPrice&&<SellPnL sp={parseFloat(sellPrice)} bp={showSell.buyPrice} ss={parseFloat(sellShares)}/>}<button style={{background:'var(--color-danger)',color:'white',fontFamily:'Heebo,sans-serif',fontWeight:700,padding:'.8rem',fontSize:'.9rem',borderRadius:10,border:'none',cursor:'pointer',opacity:(!sellShares||!sellPrice)?0.5:1}} disabled={!sellShares||!sellPrice} onClick={confirmSell}>אשר מכירה</button></div></div></div>)}
     </div>
   )
-}
-
-function SellPnL({ sp, bp, ss }) {
-  const p = (sp - bp) * ss
-  return (<div style={{background:p>=0?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.1)',borderRadius:9,padding:'.75rem',textAlign:'center',border:'1px solid',borderColor:p>=0?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.25)',fontSize:'.85rem'}}>רווח/הפסד: <strong style={{color:p>=0?'var(--color-success)':'var(--color-danger)',direction:'ltr',display:'inline-block'}}>{p>=0?'+':'-'}{'$'+Math.abs(p).toFixed(2)}</strong></div>)
 }
