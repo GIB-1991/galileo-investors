@@ -95,14 +95,14 @@ export default function Calculator() {
 
         {/* Left: inputs */}
         <div className="card" style={{padding:'1.5rem'}}>
-          <h3 style={{margin:'0 0 1.25rem',fontSize:'.95rem',fontWeight:700,color:'var(--color-text-primary)',fontSize:'1rem',letterSpacing:'.01em'}}>פרטי ההשקעה</h3>
+          <h3 style={{margin:'0 0 1.25rem',fontWeight:700,color:'var(--color-text-primary)',fontSize:'1rem',letterSpacing:'.01em'}}>פרטי ההשקעה</h3>
           {inp('השקעה ראשונית', initial, setInitial, 0, 10000000, 1000, 'ils', 'הסכום שאיתו אתה מתחיל היום')}
           {inp('הפקדה חודשית', monthly, setMonthly, 0, 100000, 100, 'ils', 'כמה אתה מתכנן להפקיד כל חודש')}
           {inp('ריבית שנתית', rate, setRate, 0, 50, 0.5, '%', 'תשואה שנתית צפויה על ההשקעה')}
           {inp('תקופת השקעה (שנים)', years, setYears, 1, 50, 1, 'years', 'כמה שנים אתה מתכנן להשקיע')}
 
           <div style={{borderTop:'1px solid var(--color-border)',paddingTop:'1.25rem',marginTop:'.25rem'}}>
-            <h3 style={{margin:'0 0 1rem',fontSize:'.85rem',fontWeight:700,color:'var(--color-text-secondary)',fontSize:'.88rem'}}>דמי ניהול (אופציונלי)</h3>
+            <h3 style={{margin:'0 0 1rem',fontWeight:700,color:'var(--color-text-secondary)',fontSize:'.88rem'}}>דמי ניהול (אופציונלי)</h3>
             {inp('דמי ניהול שנתיים', mgmtFee, setMgmtFee, 0, 5, 0.1, '%', 'אחוז הנגבה שנתית מהיתרה')}
             {inp('עמלת הפקדה', depositFee, setDepositFee, 0, 5, 0.1, '%', 'אחוז המנוכה מכל הפקדה')}
           </div>
