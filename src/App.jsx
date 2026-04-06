@@ -10,6 +10,7 @@ import Screener from './pages/Screener.jsx'
 import Portfolio from './pages/Portfolio.jsx'
 import Articles from './pages/Articles.jsx'
 import Calculator from './pages/Calculator.jsx'
+import Superinvestors from './pages/Superinvestors.jsx'
 import Admin from './pages/Admin.jsx'
 
 const ADMIN_EMAIL = 'gilbitan2000@gmail.com'
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/screener" element={<AppShell user={user}><Screener/></AppShell>}/>
           <Route path="/portfolio" element={<AppShell user={user}><Portfolio/></AppShell>}/>
           <Route path="/calculator" element={<AppShell user={user}><Calculator/></AppShell>}/>
+<Route path="/superinvestors" element={<AppShell user={user}><Superinvestors/></AppShell>}/>
           <Route path="/academy" element={<AppShell user={user}><Academy/></AppShell>}/>
           <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
           {user.email === ADMIN_EMAIL && (
