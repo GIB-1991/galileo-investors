@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon, Shield } from 'lucide-react'
+import {Star,  LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon, Shield } from 'lucide-react'
 import { signOut } from '../../services/supabase.js'
 import { useTrialTimer } from '../../hooks/useAuth.js'
 import GalileoLogo from '../GalileoLogo.jsx'
@@ -12,6 +12,7 @@ const NAV = [
   {path:'/calculator', label:'מחשבון', icon:Calculator},
   {path:'/academy', label:'אקדמיה', icon:BookOpen},
   {path:'/articles', label:'מאמרים', icon:FileText},
+  {path:'/superinvestors', label:'המשקיעים הגדולים', icon:Star},
 ]
 
 const SOCIAL = [
