@@ -171,32 +171,8 @@ export default function Portfolio() {
           <button onClick={()=>refreshPrices()} title="רענן מחירים" style={{background:'none',border:'1px solid var(--color-border)',borderRadius:9,cursor:'pointer',color:'var(--color-text-muted)',padding:'7px 10px',display:'flex',alignItems:'center'}}><RefreshCw size={14}/></button>
         </div>
       </div>      {tab==='portfolio' && (<div>
-        {enriched.length>0&&(<div style={{marginBottom:'1.5rem'}}>
-          <div className="card" style={{padding:'1.25rem 1.5rem',background:totalPnLPct>=0?'rgba(22,163,74,0.06)':'rgba(220,38,38,0.06)',border:totalPnLPct>=0?'1.5px solid rgba(22,163,74,0.25)':'1.5px solid rgba(220,38,38,0.25)'}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem'}}>
-              <div>
-                <div style={{fontSize:'.75rem',color:'#888',marginBottom:4,fontWeight:500}}>תשואה כוללת (מתאריך קנייה)</div>
-                <div style={{display:'flex',alignItems:'baseline',gap:'0.75rem'}}>
-                  <span style={{fontSize:'2.2rem',fontWeight:900,fontFamily:"'IBM Plex Mono',monospace",color:totalPnLPct>=0?'#16a34a':'#dc2626',lineHeight:1}}>{totalPnLPct>=0?'+':''}{totalPnLPct.toFixed(2)}%</span>
-                  <span style={{fontSize:'1.1rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:totalPnLPct>=0?'#16a34a':'#dc2626'}}>{fm(totalPnL)}</span>
-                </div>
-              </div>
-              <div style={{display:'flex',gap:'2rem',flexWrap:'wrap'}}>
-                <div style={{textAlign:'right'}}>
-                  <div style={{fontSize:'.72rem',color:'#888',marginBottom:2}}>עלות השקעה</div>
-                  <div style={{fontSize:'1.05rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#444'}}>{'$'+totalCost.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
-                </div>
-                <div style={{textAlign:'right'}}>
-                  <div style={{fontSize:'.72rem',color:'#888',marginBottom:2}}>שווי נוכחי</div>
-                  <div style={{fontSize:'1.05rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#1a1a1a'}}>{'$'+totalVal.toLocaleString('en-US',{maximumFractionDigits:0})}</div>
-                </div>
-                <div style={{textAlign:'right'}}>
-                  <div style={{fontSize:'.72rem',color:'#888',marginBottom:2}}>פוזיציות</div>
-                  <div style={{fontSize:'1.05rem',fontWeight:700,fontFamily:"'IBM Plex Mono',monospace",color:'#1a1a1a'}}>{holdings.length}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+        {enriched.length>0&&(<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'1.5rem'}}>
+          {[['שווי תיק','$'+totalVal.toLocaleString('en-US',{maximumFractionDigits:0}),null],['רווח/הפסד',fm(totalPnL),totalPnL],['תשואה',(totalPnLPct>=0?'+':'')+totalPnLPct.toFixed(1)+'%',totalPnLPct],['פוזיציות',''+holdings.length,null]].map(([l,v,n])=>(<div key={l} className="card" style={{padding:'1rem'}}><div style={{fontSize:'.72rem',color:'var(--color-text-muted)',marginBottom:4}}>{l}</div><div style={{fontWeight:800,fontSize:'1.05rem',direction:'ltr',textAlign:'right',fontFamily:"'IBM Plex Mono',monospace",color:n==null?'var(--color-text-primary)':n>=0?'var(--color-success)':'var(--color-danger)'}}>{v}</div></div>))}
         </div>)}
         {pieData.length>0&&(<div className="card" style={{marginBottom:'1.5rem',padding:'1.25rem'}}><h3 style={{margin:'0 0 1rem',fontSize:'.9rem',fontWeight:700}}>חלוקת תיק</h3><div style={{display:'flex',gap:'1.5rem',alignItems:'center',flexWrap:'wrap'}}><ResponsiveContainer width={200} height={200}><PieChart><Pie data={pieData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value">{pieData.map((d,i)=><Cell key={i} fill={d.color}/>)}</Pie><Tooltip content={<CT/>}/></PieChart></ResponsiveContainer><div style={{flex:1,minWidth:160}}>{pieData.map(d=>(<div key={d.name} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}><div style={{width:10,height:10,borderRadius:2,background:d.color,flexShrink:0}}/><span style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:700,fontSize:'.8rem',color:'var(--color-accent)',minWidth:48}}>{d.name}</span><span style={{fontSize:'.78rem',color:'var(--color-text-secondary)',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.fullName}</span><span style={{fontWeight:700,fontSize:'.8rem',direction:'ltr'}}>{d.value}%</span></div>))}</div></div></div>)}
         {tips.length>0&&(<div style={{marginBottom:'1.5rem',display:'flex',flexDirection:'column',gap:'.5rem'}}>{tips.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'.875rem 1rem',borderRadius:10,border:'1px solid',background:a.type==='danger'?'rgba(240,82,82,0.08)':a.type==='warning'?'rgba(245,166,35,0.08)':'rgba(45,216,122,0.08)',borderColor:a.type==='danger'?'rgba(240,82,82,0.25)':a.type==='warning'?'rgba(245,166,35,0.25)':'rgba(45,216,122,0.25)'}}><AlertTriangle size={14} style={{color:a.type==='danger'?'var(--color-danger)':a.type==='warning'?'var(--color-warning)':'var(--color-success)',flexShrink:0,marginTop:2}}/><span style={{fontSize:'.85rem',color:'var(--color-text-secondary)',lineHeight:1.5}}>{a.message}</span></div>))}</div>)}
@@ -214,7 +190,6 @@ export default function Portfolio() {
                   <td style={{padding:'.8rem .875rem',direction:'ltr',fontFamily:"'IBM Plex Mono',monospace",fontWeight:600}}>${row.val.toLocaleString('en-US',{maximumFractionDigits:0})}</td>
                   <td style={{padding:'.8rem .875rem',direction:'ltr',fontFamily:"'IBM Plex Mono',monospace",color:row.pnl>=0?'var(--color-success)':'var(--color-danger)',fontWeight:600}}>{fm(row.pnl)}</td>
                   <td style={{padding:'.8rem .875rem'}}><span style={{color:row.pnlPct>=0?'var(--color-success)':'var(--color-danger)',fontWeight:600,direction:'ltr',display:'flex',alignItems:'center',gap:3}}>{row.pnlPct>=0?<TrendingUp size={11}/>:<TrendingDown size={11}/>}{Math.abs(row.pnlPct).toFixed(1)}%</span></td>
-                  <td style={{padding:'.8rem .875rem',fontSize:'.78rem',color:'#666',whiteSpace:'nowrap',direction:'rtl'}}>{row.createdAt?(<div><div style={{fontWeight:500,color:'#444'}}>{new Date(row.createdAt).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit'})}</div><div style={{fontSize:'.7rem',color:'#888'}}>{Math.floor((Date.now()-new Date(row.createdAt))/864e5)}י׳</div></div>):'—'}</td>
                   <td style={{padding:'.8rem .875rem'}}><div style={{display:'flex',gap:5}}>
                     <button onClick={()=>openSell(row)} style={{padding:'3px 10px',borderRadius:6,background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.3)',cursor:'pointer',color:'var(--color-accent)',fontSize:'.75rem',fontWeight:700,fontFamily:'Heebo,sans-serif'}}>מכור</button>
                     <button onClick={()=>removeHolding(row.id)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:3}} onMouseEnter={e=>e.currentTarget.style.color='var(--color-danger)'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><Trash2 size={13}/></button>
@@ -226,7 +201,7 @@ export default function Portfolio() {
         ) : (
           <div style={{textAlign:'center',padding:'4rem',color:'var(--color-text-muted)'}}><div style={{fontSize:'3rem',marginBottom:'1rem'}}>📊</div><p style={{margin:'0 0 1rem'}}>התיק ריק. הוסף מניה ראשונה!</p><button className="btn-primary" onClick={()=>setShowAdd(true)} style={{display:'inline-flex',alignItems:'center',gap:6}}><Plus size={14}/> הוסף מניה</button></div>
         )}
-        {tab==='history' && (history.length===0 ? (
+      </div>)}      {tab==='history' && (history.length===0 ? (
         <div style={{textAlign:'center',padding:'4rem',color:'var(--color-text-muted)'}}><History size={40} style={{marginBottom:'1rem',opacity:.3}}/><p style={{margin:0}}>עדיין אין פעולות</p></div>
       ) : (
         <div className="card" style={{padding:0,overflowX:'auto'}}>
@@ -255,7 +230,7 @@ export default function Portfolio() {
     </div>
   )
 }
-}
+
 function SellPnL({ sp, bp, ss }) {
   const p = (sp - bp) * ss
   return (<div style={{background:p>=0?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.1)',borderRadius:9,padding:'.75rem',textAlign:'center',border:'1px solid',borderColor:p>=0?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.25)',fontSize:'.85rem'}}>רווח/הפסד: <strong style={{color:p>=0?'var(--color-success)':'var(--color-danger)',direction:'ltr',display:'inline-block'}}>{p>=0?'+':'-'}{'$'+Math.abs(p).toFixed(2)}</strong></div>)
