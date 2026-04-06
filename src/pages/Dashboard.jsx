@@ -29,6 +29,15 @@ function getMarketStatus() {
   return { open: false, label: 'שוק סגור', sub: 'מחוץ לשעות מסחר', color: '#f05252' }
 }
 
+
+function extractTickers(title) {
+  const dollar = [...title.matchAll(/\$([A-Z]{1,5})\b/g)].map(m => m[1]);
+  const map = {Apple:'AAPL',Microsoft:'MSFT',Google:'GOOGL',Alphabet:'GOOGL',Amazon:'AMZN',Meta:'META',Tesla:'TSLA',Nvidia:'NVDA',Netflix:'NFLX',Goldman:'GS',JPMorgan:'JPM'};
+  const named = [];
+  for (const [n,t] of Object.entries(map)) if (title.includes(n) && !dollar.includes(t)) named.push(t);
+  return [...new Set([...dollar,...named])].slice(0,5);
+}
+
 export default function Dashboard({ user }) {
   const [market, setMarket] = useState([])
   const [news, setNews] = useState([])
@@ -65,7 +74,7 @@ export default function Dashboard({ user }) {
     try {
       const r = await fetch('/api/news')
       const d = await r.json()
-      const items = (d && d.news) ? d.news : []
+      const items = (d && d.news) ? d.news.map(it=>({...it,tickers:it.tickers&&it.tickers.length?it.tickers:extractTickers(it.titleEn||it.title)})) : []
       setNews(items)
       setNewsLoading(false)
       if (items.length > 0 && !items[0].translated) {
