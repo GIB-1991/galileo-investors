@@ -77,31 +77,6 @@ export default function Dashboard({ user }) {
       const items = (d && d.news) ? d.news.map(it=>({...it,tickers:it.tickers&&it.tickers.length?it.tickers:extractTickers(it.titleEn||it.title)})) : []
       setNews(items)
       setNewsLoading(false)
-      if (items.length > 0 && !items[0].translated) {
-        setTranslating(true)
-        try {
-          const tr = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items: items.map(n => n.titleHe) })
-          })
-          if (tr.ok) {
-            const td = await tr.json()
-            if (td.translated && td.translated.length > 0) {
-              setNews(items.map(function(n, i) {
-                const t = td.translated[i]
-                return {
-                  ...n,
-                  titleHe: (t && t.t) ? t.t : n.titleHe,
-                  summary: (t && t.s) ? t.s : n.summary,
-                  translated: !!(t && t.t)
-                }
-              }))
-            }
-          }
-        } catch(e) {}
-        setTranslating(false)
-      }
     } catch(e) { setNewsLoading(false) }
   }, [])
 
@@ -189,7 +164,7 @@ export default function Dashboard({ user }) {
                   <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-muted)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
                   {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-muted)'}}>{item.time||timeAgo(item.pubDate)}</span>}
                 </div>
-                <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.titleHe}</p>
+                <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
                 {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-muted)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
               </div>
             </a>
