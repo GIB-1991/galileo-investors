@@ -187,7 +187,7 @@ export default function Dashboard({ user }) {
               <div style={{flex:1}}>
                 <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,justifyContent:'flex-start',flexWrap:'wrap'}}>
                   <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-muted)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
-                  {item.pubDate && <span style={{fontSize:'.7rem',color:'var(--color-text-muted)'}}>{timeAgo(item.pubDate)}</span>}
+                  {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-muted)'}}>{item.time||timeAgo(item.pubDate)}</span>}
                 </div>
                 <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.titleHe}</p>
                 {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-muted)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
