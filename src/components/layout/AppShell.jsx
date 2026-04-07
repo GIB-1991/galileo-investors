@@ -200,40 +200,90 @@ function PlanetsLayer({ darkMode }) {
           </radialGradient>
         </defs>
 
-        
-import { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import {Star,  LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon, Shield } from 'lucide-react'
-import { signOut } from '../../services/supabase.js'
-import { useTrialTimer } from '../../hooks/useAuth.js'
-import GalileoLogo from '../GalileoLogo.jsx'
+        {/* ===== SATURN — top left ===== */}
+        <g display="none" transform="translate(-30,200)">
+          <circle cx="0" cy="0" r="55" fill="url(#sat_glow)"/>
+          {/* Ring back half */}
+          <ellipse cx="0" cy="5" rx="68" ry="17" fill="url(#sat_ring_b)" opacity="0.6"/>
+          <ellipse cx="0" cy="5" rx="52" ry="12" fill="url(#sat_ring_a)" opacity="0.7"/>
+          {/* Planet */}
+          <circle cx="0" cy="0" r="28" fill="url(#sat_body)"/>
+          {/* Bands */}
+          <path d="M-28,6 Q0,4 28,6" stroke="#a07828" strokeWidth="4" fill="none" opacity="0.5"/>
+          <path d="M-27,-6 Q0,-7 27,-6" stroke="#b08838" strokeWidth="2.5" fill="none" opacity="0.4"/>
+          <path d="M-24,12 Q0,11 24,12" stroke="#906020" strokeWidth="2" fill="none" opacity="0.35"/>
+          <path d="M-22,-13 Q0,-14 22,-13" stroke="#c09848" strokeWidth="1.8" fill="none" opacity="0.32"/>
+          {/* Highlight */}
+          <ellipse cx="-7" cy="-9" rx="10" ry="6" fill="#fff8e0" opacity="0.18"/>
+          {/* Ring front half */}
+          <path d="M-68,5 Q0,22 68,5" fill="none" stroke="url(#sat_ring_a)" strokeWidth="10" opacity="0.7"/>
+          <path d="M-52,5 Q0,16 52,5" fill="none" stroke="url(#sat_ring_b)" strokeWidth="5" opacity="0.55"/>
+          {/* Moon Titan */}
+          <circle cx="80" cy="-22" r="6" fill="#d4c080" opacity="0.7"/>
+          <circle cx="80" cy="-22" r="6" fill="none" stroke="#e8d090" strokeWidth="0.8" opacity="0.4"/>
+          {/* Moon Enceladus */}
+          <circle cx="-75" cy="15" r="4" fill="#e8e8e8" opacity="0.55"/>
+        </g>
 
-const NAV = [
-  {path:'/dashboard', label:'לוח בקרה', icon:LayoutDashboard},
-  {path:'/screener', label:'סקרינר', icon:Search},
-  {path:'/portfolio', label:'תיק השקעות', icon:PieChart},
-  {path:'/calculator', label:'מחשבון', icon:Calculator},
-  {path:'/academy', label:'אקדמיה', icon:BookOpen},
-  {path:'/articles', label:'מאמרים', icon:FileText},
-  {path:'/superinvestors', label:'המשקיעים הגדולים', icon:Star},
-]
+        {/* ===== JUPITER — bottom right ===== */}
+        <g transform="translate(1480,560)">
+          <circle cx="0" cy="0" r="65" fill="url(#jup_glow)"/>
+          <circle cx="0" cy="0" r="34" fill="url(#jup_body)"/>
+          <circle cx="0" cy="0" r="34" fill="none" stroke="#d4aa58" strokeWidth="0.8" opacity="0.3"/>
+          {/* Bands */}
+          <path d="M-34,-10 Q0,-8 34,-10" stroke="#a07830" strokeWidth="5" fill="none" opacity="0.55"/>
+          <path d="M-34,0 Q0,2 34,0" stroke="#8a6020" strokeWidth="3" fill="none" opacity="0.5"/>
+          <path d="M-34,10 Q0,8 34,10" stroke="#b08838" strokeWidth="4" fill="none" opacity="0.52"/>
+          <path d="M-32,-18 Q0,-17 32,-18" stroke="#c0a048" strokeWidth="2.5" fill="none" opacity="0.38"/>
+          <path d="M-30,18 Q0,17 30,18" stroke="#906028" strokeWidth="2.5" fill="none" opacity="0.35"/>
+          {/* Great Red Spot */}
+          <ellipse cx="11" cy="6" rx="9" ry="5" fill="#c04020" opacity="0.6"/>
+          <ellipse cx="11" cy="6" rx="6" ry="3" fill="#d05030" opacity="0.45"/>
+          {/* Highlight */}
+          <ellipse cx="-9" cy="-10" rx="11" ry="7" fill="#f8e898" opacity="0.14"/>
+          {/* Galilean moons */}
+          <circle cx="-50" cy="-10" r="5" fill="#d8c888" opacity="0.6"/>
+          <circle cx="-65" cy="6" r="3.5" fill="#c8b870" opacity="0.52"/>
+          <circle cx="52" cy="-6" r="4" fill="#d4c890" opacity="0.58"/>
+          <circle cx="60" cy="18" r="3" fill="#e0d090" opacity="0.45"/>
+        </g>
 
-const SOCIAL = [
-  { href:'https://t.me/GalileoMarket', label:'Telegram', icon:(
-    <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#229ED9"/>
-    <path d="M5.5 11.8L19 6.5L15.5 18L11.5 14L9 16.5V13L16 7.5" stroke="#fff" strokeWidth="1.4" fill="none" strokeLinejoin="round" strokeLinecap="round"/></svg>
-  )},
-  { href:'https://whatsapp.com/channel/0029VbCIpwPICVfgVBnTvD1R', label:'WhatsApp', icon:(
-    <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#25D366"/>
-    <path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-3.4-1.3L6 17.5l1.3-2.5A5 5 0 0 1 7 12a5 5 0 0 1 5-5z" stroke="#fff" strokeWidth="1.3" fill="none"/>
-    <path d="M9.5 10.5q.5-.5 1 0l.7 1.3q.2.4-.2.8l-.2.2q.7 1.2 2 1.4l.2-.2q.4-.4.8-.2l1.2.7q.5.5 0 1Q13.5 17 10.5 14 9 12 9.5 10.5z" fill="#fff"/></svg>
-  )},
-  { href:'https://www.facebook.com/profile.php?id=61582895521906', label:'Facebook', icon:(
-    <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877F2"/>
-    <path d="M13.5 7H12Q10 7 10 9v1.5H8.5v2H10V18h2.5v-5.5H14l.5-2h-2V9.5q0-.5 1-.5z" fill="#fff"/></svg>
-  )},
-  { href:'https://x.com/gilileoB', label:'X', icon:(
-    <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#111"/>
-    <path d="M7 7h3l2.5 3.5L15 7h2l-3.5 5L18 17h-3l-2.5-3.8L9.5 17H7.5l3.7-5.2z" fill="#fff"/></svg>
-  )},
-]
+        {/* ===== MARS — right side ===== */}
+        <g transform="translate(1540,360)">
+          <circle cx="0" cy="0" r="30" fill="url(#jup_glow)" opacity="0.5"/>
+          <circle cx="0" cy="0" r="14" fill="url(#mars_body)"/>
+          <circle cx="0" cy="0" r="14" fill="none" stroke="#d06040" strokeWidth="0.6" opacity="0.3"/>
+          <path d="M-14,4 Q0,3 14,4" stroke="#a03820" strokeWidth="2" fill="none" opacity="0.4"/>
+          <path d="M-12,-4 Q0,-5 12,-4" stroke="#b84830" strokeWidth="1.5" fill="none" opacity="0.35"/>
+          <ellipse cx="-4" cy="-4" rx="5" ry="3" fill="#fff0e8" opacity="0.18"/>
+        </g>
+
+        {/* ===== Constellation — top right ===== */}
+        <g opacity="0.5">
+          <circle cx="88%" cy="8%" r="2.5" fill="#c8d8ff"/>
+          <circle cx="91%" cy="12%" r="2" fill="#c8d8ff"/>
+          <circle cx="87%" cy="16%" r="2.5" fill="#c8d8ff"/>
+          <circle cx="93%" cy="15%" r="1.6" fill="#c8d8ff"/>
+          <circle cx="85%" cy="20%" r="2" fill="#c8d8ff"/>
+          <circle cx="90%" cy="21%" r="1.4" fill="#c8d8ff"/>
+          <line x1="88%" y1="8%" x2="91%" y2="12%" stroke="#c8d8ff" strokeWidth="0.6" opacity="0.4"/>
+          <line x1="91%" y1="12%" x2="87%" y2="16%" stroke="#c8d8ff" strokeWidth="0.6" opacity="0.4"/>
+          <line x1="87%" y1="16%" x2="93%" y2="15%" stroke="#c8d8ff" strokeWidth="0.6" opacity="0.35"/>
+          <line x1="87%" y1="16%" x2="85%" y2="20%" stroke="#c8d8ff" strokeWidth="0.6" opacity="0.35"/>
+          <line x1="85%" y1="20%" x2="90%" y2="21%" stroke="#c8d8ff" strokeWidth="0.6" opacity="0.3"/>
+        </g>
+
+        {/* ===== Shooting stars ===== */}
+        <line x1="72%" y1="6%" x2="80%" y2="12%" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round">
+          <animate attributeName="opacity" values="0;0;0.8;0.4;0" dur="5s" begin="2s" repeatCount="indefinite"/>
+        </line>
+        <line x1="28%" y1="4%" x2="37%" y2="10%" stroke="#f5a623" strokeWidth="1.4" strokeLinecap="round">
+          <animate attributeName="opacity" values="0;0;0.65;0.3;0" dur="7s" begin="5.5s" repeatCount="indefinite"/>
+        </line>
+        <line x1="55%" y1="90%" x2="63%" y2="95%" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round">
+          <animate attributeName="opacity" values="0;0;0.55;0.2;0" dur="6s" begin="10s" repeatCount="indefinite"/>
+        </line>
+      </svg>
+    </div>
+  )
+}
