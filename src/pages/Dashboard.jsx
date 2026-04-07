@@ -77,6 +77,23 @@ export default function Dashboard({ user }) {
       const items = (d && d.news) ? d.news.map(it=>({...it,tickers:it.tickers&&it.tickers.length?it.tickers:extractTickers(it.titleEn||it.title)})) : []
       setNews(items)
       setNewsLoading(false)
+      // Translate titles to Hebrew in background
+      try {
+        const tr = await fetch('/api/translate', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ titles: items.map(it=>it.titleEn||it.title) })
+        })
+        if (tr.ok) {
+          const td = await tr.json()
+          if (td.translated && td.translated.length > 0) {
+            setNews(items.map((it,i) => ({
+              ...it,
+              title: (td.translated[i] && td.translated[i].t) ? td.translated[i].t : it.title
+            })))
+          }
+        }
+      } catch(e) {}
     } catch(e) { setNewsLoading(false) }
   }, [])
 
