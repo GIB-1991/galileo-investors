@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
+  res.setHeader('Cache-Control', 'no-store');
 
   // Multiple RSS sources — try each until one works
   const FEEDS = [
@@ -78,10 +78,10 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
             body: JSON.stringify({
-              model: 'claude-haiku-4-5-20251001', max_tokens: 1000,
-              messages: [{ role: 'user', content: 'תרגם לעברית. JSON בלבד ללא markdown: [{"t":"כותרת"}]\n\n' + prompt }]
+              model: 'claude-haiku-4-5-20251001', max_tokens: 1200,
+              messages: [{ role: 'user', content: 'תרגם כל כותרת לעברית. החזר JSON בלבד, ללא markdown, ללא הסברים: [{"t":"כותרת בעברית"}]\n\n' + prompt }]
             }),
-            signal: AbortSignal.timeout(9000)
+            signal: AbortSignal.timeout(12000)
           });
           if (cr.ok) {
             const cd = await cr.json();
