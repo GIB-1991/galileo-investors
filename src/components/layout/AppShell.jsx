@@ -201,7 +201,7 @@ function PlanetsLayer({ darkMode }) {
         </defs>
 
         {/* ===== SATURN — top left ===== */}
-        <g transform="translate(90,140)">
+        <g transform="translate(-30,200)">
           <circle cx="0" cy="0" r="55" fill="url(#sat_glow)"/>
           {/* Ring back half */}
           <ellipse cx="0" cy="5" rx="68" ry="17" fill="url(#sat_ring_b)" opacity="0.6"/>
@@ -226,7 +226,7 @@ function PlanetsLayer({ darkMode }) {
         </g>
 
         {/* ===== JUPITER — bottom right ===== */}
-        <g transform="translate(1430,540)">
+        <g transform="translate(1480,560)">
           <circle cx="0" cy="0" r="65" fill="url(#jup_glow)"/>
           <circle cx="0" cy="0" r="34" fill="url(#jup_body)"/>
           <circle cx="0" cy="0" r="34" fill="none" stroke="#d4aa58" strokeWidth="0.8" opacity="0.3"/>
@@ -249,7 +249,7 @@ function PlanetsLayer({ darkMode }) {
         </g>
 
         {/* ===== MARS — right side ===== */}
-        <g transform="translate(1490,340)">
+        <g transform="translate(1540,360)">
           <circle cx="0" cy="0" r="30" fill="url(#jup_glow)" opacity="0.5"/>
           <circle cx="0" cy="0" r="14" fill="url(#mars_body)"/>
           <circle cx="0" cy="0" r="14" fill="none" stroke="#d06040" strokeWidth="0.6" opacity="0.3"/>
