@@ -201,7 +201,7 @@ function PlanetsLayer({ darkMode }) {
         </defs>
 
         {/* ===== SATURN — top left ===== */}
-        <g transform="translate(-30,200)">
+        <g transform="translate(-140,320)">
           <circle cx="0" cy="0" r="55" fill="url(#sat_glow)"/>
           {/* Ring back half */}
           <ellipse cx="0" cy="5" rx="68" ry="17" fill="url(#sat_ring_b)" opacity="0.6"/>
