@@ -103,8 +103,9 @@ export default function Dashboard({ user }) {
     if (!p) return 'N/A'
     const num = Number(p).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     if (ticker === 'ILS=X') return '₪' + num
-    if (ticker === 'GC=F') return '
-
+    if (ticker === 'GC=F') return String.fromCharCode(36) + num
+    return num
+  }
   function timeAgo(pubDate) {
     if (!pubDate) return ''
     const diff = Date.now() - new Date(pubDate).getTime()
@@ -199,15 +200,7 @@ export default function Dashboard({ user }) {
     return num
   }
 
-  function timeAgo(pubDate) {
-    if (!pubDate) return ''
-    const diff = Date.now() - new Date(pubDate).getTime()
-    const mins = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    if (mins < 60) return 'לפני ' + mins + ' דקות'
-    if (hours < 24) return 'לפני ' + hours + ' שעות'
-    return 'לפני ' + Math.floor(hours / 24) + ' ימים'
-  }
+  
 
   const today = new Date().toLocaleDateString('he-IL', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
