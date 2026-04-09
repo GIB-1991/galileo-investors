@@ -21,7 +21,7 @@ function getMarketStatus() {
   if (weekday === 'Sat' || weekday === 'Sun')
     return { open: false, label: 'שוק סגור', sub: 'סוף שבוע', color: '#f05252' }
   if (total >= 240 && total < 570)
-    return { open: true, label: 'פרה-מרקט', sub: '04:00-09:30 ET', color: '#92400e', bg: '#fef3c7' }
+    return { open: true, label: 'פרה-מרקט', sub: '04:00-09:30 ET', color: '#92400e', badgeBg: '#fef3c7' }
   if (total >= 570 && total < 960)
     return { open: true, label: 'שוק פתוח', sub: '09:30-16:00 ET', color: '#2dd87a' }
   if (total >= 960 && total < 1200)
@@ -184,7 +184,7 @@ export default function Dashboard({ user }) {
                 </div>
                 <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
                 {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-muted)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
-                {item.tickers&&item.tickers.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginTop:6,justifyContent:'flex-end',direction:'ltr'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace",direction:'ltr',display:'inline-block'}}>{')}</div>}
+                {item.tickers&&item.tickers.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginTop:5,direction:'rtl',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace",direction:'ltr',display:'inline-block'}}>{')}</div>}
               </div>
             </a>
           ))}</div>
@@ -196,7 +196,7 @@ export default function Dashboard({ user }) {
     </div>
   )
 } + num
-    return num  // SPY, QQQ — נקודות, ללא סימן
+    return num
   }
 
   function timeAgo(pubDate) {
@@ -301,7 +301,7 @@ export default function Dashboard({ user }) {
     </div>
   )
 } + num
-    return num  // SPY, QQQ — נקודות, ללא סימן
+    return num
   }
 
   function timeAgo(pubDate) {
