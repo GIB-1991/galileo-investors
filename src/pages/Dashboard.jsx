@@ -103,8 +103,9 @@ export default function Dashboard({ user }) {
     if (!p) return 'N/A'
     const num = Number(p).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     if (ticker === 'ILS=X') return '₪' + num
-    if (ticker === 'GC=F') return '
-
+    if (ticker === 'GC=F') return '$' + num
+    return num
+  }
   function timeAgo(pubDate) {
     if (!pubDate) return ''
     const diff = Date.now() - new Date(pubDate).getTime()
