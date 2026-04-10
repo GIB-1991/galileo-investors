@@ -196,9 +196,6 @@ export default function Dashboard({ user }) {
       </p>
     </div>
   )
-} + num
-    return num
-  }
 
   
 
