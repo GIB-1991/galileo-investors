@@ -11,7 +11,7 @@ const TICKERS = [
 function getMarketStatus() {
   const now = new Date()
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
+    timeZone: 'Asia/Jerusalem',
     hour: 'numeric', minute: 'numeric', weekday: 'short', hour12: false
   }).formatToParts(now)
   const weekday = parts.find(p => p.type === 'weekday').value
@@ -20,12 +20,12 @@ function getMarketStatus() {
   const total = hour * 60 + minute
   if (weekday === 'Sat' || weekday === 'Sun')
     return { open: false, label: 'שוק סגור', sub: 'סוף שבוע', color: '#f05252' }
-  if (total >= 240 && total < 570)
-    return { open: true, label: 'פרה-מרקט', sub: '04:00-09:30 ET', color: '#92400e', badgeBg: '#fef3c7' }
-  if (total >= 570 && total < 960)
-    return { open: true, label: 'שוק פתוח', sub: '09:30-16:00 ET', color: '#2dd87a' }
-  if (total >= 960 && total < 1200)
-    return { open: true, label: 'אפטר-מרקט', sub: '16:00-20:00 ET', color: '#4f8ef7' }
+  if (total >= 660 && total < 990)
+    return { open: true, label: 'פרה-מרקט', sub: '11:00-16:30', color: '#92400e', badgeBg: '#fef3c7' }
+  if (total >= 990 && total < 1380)
+    return { open: true, label: 'שוק פתוח', sub: '16:30-23:00', color: '#2dd87a' }
+  if (total >= 1380 || total < 180)
+    return { open: true, label: 'אפטר-מרקט', sub: '23:00-03:00', color: '#4f8ef7' }
   return { open: false, label: 'שוק סגור', sub: 'מחוץ לשעות מסחר', color: '#f05252' }
 }
 
