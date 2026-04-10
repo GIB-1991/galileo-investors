@@ -156,7 +156,7 @@ export default function AppShell({user, children}) {
 }
 
 function PlanetsLayer({ darkMode }) {
-  const opacity = darkMode ? 1 : 0.4
+  const opacity = darkMode ? 1 : 0.9
   return (
     <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0,overflow:'hidden',opacity}}>
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -226,7 +226,7 @@ function PlanetsLayer({ darkMode }) {
         </g>
 
         {/* ===== JUPITER — bottom right ===== */}
-        <g transform="translate(1430,540)">
+        <g transform="translate(1430,540) scale(1.5)">
           <circle cx="0" cy="0" r="65" fill="url(#jup_glow)"/>
           <circle cx="0" cy="0" r="34" fill="url(#jup_body)"/>
           <circle cx="0" cy="0" r="34" fill="none" stroke="#d4aa58" strokeWidth="0.8" opacity="0.3"/>
@@ -249,7 +249,7 @@ function PlanetsLayer({ darkMode }) {
         </g>
 
         {/* ===== MARS — right side ===== */}
-        <g transform="translate(1490,340)">
+        <g transform="translate(1490,340) scale(1.4)">
           <circle cx="0" cy="0" r="30" fill="url(#jup_glow)" opacity="0.5"/>
           <circle cx="0" cy="0" r="14" fill="url(#mars_body)"/>
           <circle cx="0" cy="0" r="14" fill="none" stroke="#d06040" strokeWidth="0.6" opacity="0.3"/>
