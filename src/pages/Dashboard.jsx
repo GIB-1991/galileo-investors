@@ -199,9 +199,6 @@ export default function Dashboard({ user }) {
 
   
 
-  const today = new Date().toLocaleDateString('he-IL', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  })
 
   return (
     <div dir='rtl'>
