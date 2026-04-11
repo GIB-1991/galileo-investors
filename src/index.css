@@ -5,6 +5,7 @@
 
 /* === COSMIC SPACE BACKGROUND === */
 html, body {
+  color: var(--color-text-primary);
   min-height: 100%;
   background-color: #080c14;
   background-image:
