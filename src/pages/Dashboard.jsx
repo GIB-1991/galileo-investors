@@ -125,12 +125,12 @@ export default function Dashboard({ user }) {
       <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
           <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
-          <p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
+          <p style={{color:'var(--color-text-secondary)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.08)',border:'1px solid '+(status.open?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.2)'),borderRadius:20,padding:'6px 16px'}}>
           {status.open ? <Activity size={12} style={{color:status.color}}/> : <Moon size={12} style={{color:status.color}}/>}
           <span style={{fontSize:'.82rem',fontWeight:700,color:status.color}}>{status.label}</span>
-          <span style={{fontSize:'.72rem',color:'var(--color-text-muted)',marginRight:4}}>{status.sub}</span>
+          <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ export default function Dashboard({ user }) {
           <div key={m.ticker} style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,padding:'1.1rem 1.25rem'}}
             onMouseEnter={e=>e.currentTarget.style.borderColor='var(--color-border2)'}
             onMouseLeave={e=>e.currentTarget.style.borderColor='var(--color-border)'}>
-            <div style={{fontSize:'.75rem',color:'var(--color-text-muted)',marginBottom:6,fontWeight:600,textAlign:'right'}}>{m.name}</div>
+            <div style={{fontSize:'.75rem',color:'var(--color-text-secondary)',marginBottom:6,fontWeight:600,textAlign:'right'}}>{m.name}</div>
             <div style={{fontSize:'1.15rem',fontWeight:800,direction:'ltr',textAlign:'right',fontFamily:"'IBM Plex Mono',monospace",marginBottom:4}}>{fmtPrice(m.price, m.ticker)}</div>
             <div style={{display:'flex',alignItems:'center',gap:4,justifyContent:'flex-end'}}>
               {m.up ? <TrendingUp size={13} style={{color:'var(--color-success)'}}/> : <TrendingDown size={13} style={{color:'var(--color-danger)'}}/>}
@@ -160,14 +160,14 @@ export default function Dashboard({ user }) {
             {translating && <span style={{fontSize:'.72rem',color:'var(--color-accent)',display:'flex',alignItems:'center',gap:4}}><RefreshCw size={10} style={{animation:'spin 1s linear infinite'}}/>מתרגם...</span>}
           </div>
           <button onClick={loadNews} disabled={newsLoading}
-            style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',display:'flex',alignItems:'center',gap:4,fontSize:'.75rem',padding:'4px 8px',borderRadius:6,opacity:newsLoading?0.5:1}}
+            style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-secondary)',display:'flex',alignItems:'center',gap:4,fontSize:'.75rem',padding:'4px 8px',borderRadius:6,opacity:newsLoading?0.5:1}}
             onMouseEnter={e=>e.currentTarget.style.color='var(--color-text-primary)'}
-            onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}>
+            onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
             <RefreshCw size={12} style={{animation:newsLoading?'spin 1s linear infinite':'none'}}/>{newsLoading ? 'טוען...' : 'עדכן'}
           </button>
         </div>
         {newsLoading ? (
-          <div style={{padding:'3rem',textAlign:'center',color:'var(--color-text-muted)'}}>
+          <div style={{padding:'3rem',textAlign:'center',color:'var(--color-text-secondary)'}}>
             <RefreshCw size={20} style={{marginBottom:'.75rem',opacity:.5,animation:'spin 1s linear infinite'}}/>
             <p style={{margin:0}}>טוען חדשות...</p>
           </div>
@@ -180,18 +180,18 @@ export default function Dashboard({ user }) {
               <ExternalLink size={13} style={{color:'var(--color-accent)',flexShrink:0,marginTop:6}}/>
               <div style={{flex:1}}>
                 <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,justifyContent:'flex-start',flexWrap:'wrap'}}>
-                  <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-muted)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
-                  {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-muted)'}}>{item.time||timeAgo(item.pubDate)}</span>}
+                  <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-secondary)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
+                  {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-secondary)'}}>{item.time||timeAgo(item.pubDate)}</span>}
                 </div>
                 <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
-                {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-muted)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
+                {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-secondary)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
                 {item.tickers&&item.tickers.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginTop:5,direction:'rtl',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace"}}>{'$'+t}</span>)}</div>}
               </div>
             </a>
           ))}</div>
         )}
       </div>
-      <p style={{fontSize:'.72rem',color:'var(--color-text-muted)',textAlign:'center',marginTop:'1.5rem'}}>
+      <p style={{fontSize:'.72rem',color:'var(--color-text-secondary)',textAlign:'center',marginTop:'1.5rem'}}>
         הנתונים מוצגים לצורך מידע בלבד
       </p>
     </div>
@@ -205,12 +205,12 @@ export default function Dashboard({ user }) {
       <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
           <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
-          <p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
+          <p style={{color:'var(--color-text-secondary)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.08)',border:'1px solid '+(status.open?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.2)'),borderRadius:20,padding:'6px 16px'}}>
           {status.open ? <Activity size={12} style={{color:status.color}}/> : <Moon size={12} style={{color:status.color}}/>}
           <span style={{fontSize:'.82rem',fontWeight:700,color:status.color}}>{status.label}</span>
-          <span style={{fontSize:'.72rem',color:'var(--color-text-muted)',marginRight:4}}>{status.sub}</span>
+          <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
         </div>
       </div>
 
@@ -221,7 +221,7 @@ export default function Dashboard({ user }) {
           <div key={m.ticker} style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,padding:'1.1rem 1.25rem'}}
             onMouseEnter={e=>e.currentTarget.style.borderColor='var(--color-border2)'}
             onMouseLeave={e=>e.currentTarget.style.borderColor='var(--color-border)'}>
-            <div style={{fontSize:'.75rem',color:'var(--color-text-muted)',marginBottom:6,fontWeight:600,textAlign:'right'}}>{m.name}</div>
+            <div style={{fontSize:'.75rem',color:'var(--color-text-secondary)',marginBottom:6,fontWeight:600,textAlign:'right'}}>{m.name}</div>
             <div style={{fontSize:'1.15rem',fontWeight:800,direction:'ltr',textAlign:'right',fontFamily:"'IBM Plex Mono',monospace",marginBottom:4}}>{fmtPrice(m.price, m.ticker)}</div>
             <div style={{display:'flex',alignItems:'center',gap:4,justifyContent:'flex-end'}}>
               {m.up ? <TrendingUp size={13} style={{color:'var(--color-success)'}}/> : <TrendingDown size={13} style={{color:'var(--color-danger)'}}/>}
@@ -240,14 +240,14 @@ export default function Dashboard({ user }) {
             {translating && <span style={{fontSize:'.72rem',color:'var(--color-accent)',display:'flex',alignItems:'center',gap:4}}><RefreshCw size={10} style={{animation:'spin 1s linear infinite'}}/>מתרגם...</span>}
           </div>
           <button onClick={loadNews} disabled={newsLoading}
-            style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',display:'flex',alignItems:'center',gap:4,fontSize:'.75rem',padding:'4px 8px',borderRadius:6,opacity:newsLoading?0.5:1}}
+            style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-secondary)',display:'flex',alignItems:'center',gap:4,fontSize:'.75rem',padding:'4px 8px',borderRadius:6,opacity:newsLoading?0.5:1}}
             onMouseEnter={e=>e.currentTarget.style.color='var(--color-text-primary)'}
-            onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}>
+            onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
             <RefreshCw size={12} style={{animation:newsLoading?'spin 1s linear infinite':'none'}}/>{newsLoading ? 'טוען...' : 'עדכן'}
           </button>
         </div>
         {newsLoading ? (
-          <div style={{padding:'3rem',textAlign:'center',color:'var(--color-text-muted)'}}>
+          <div style={{padding:'3rem',textAlign:'center',color:'var(--color-text-secondary)'}}>
             <RefreshCw size={20} style={{marginBottom:'.75rem',opacity:.5,animation:'spin 1s linear infinite'}}/>
             <p style={{margin:0}}>טוען חדשות...</p>
           </div>
@@ -260,18 +260,18 @@ export default function Dashboard({ user }) {
               <ExternalLink size={13} style={{color:'var(--color-accent)',flexShrink:0,marginTop:6}}/>
               <div style={{flex:1}}>
                 <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,justifyContent:'flex-start',flexWrap:'wrap'}}>
-                  <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-muted)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
-                  {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-muted)'}}>{item.time||timeAgo(item.pubDate)}</span>}
+                  <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-secondary)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
+                  {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-secondary)'}}>{item.time||timeAgo(item.pubDate)}</span>}
                 </div>
                 <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
-                {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-muted)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
+                {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-secondary)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
                 {item.tickers&&item.tickers.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginTop:5,direction:'rtl',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace"}}>{'$'+t}</span>)}</div>}
               </div>
             </a>
           ))}</div>
         )}
       </div>
-      <p style={{fontSize:'.72rem',color:'var(--color-text-muted)',textAlign:'center',marginTop:'1.5rem'}}>
+      <p style={{fontSize:'.72rem',color:'var(--color-text-secondary)',textAlign:'center',marginTop:'1.5rem'}}>
         הנתונים מוצגים לצורך מידע בלבד
       </p>
     </div>
