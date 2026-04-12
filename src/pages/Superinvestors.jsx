@@ -7,17 +7,17 @@ const REPORT_DATE='31 Dec 2025'
 const FILING_DATE='Feb 2026'
 
 const INV=[
-  {id:'BRK',name:'Warren Buffett',fund:'Berkshire Hathaway',img:'https://ui-avatars.com/api/?name=Warren+Buffett&size=120&background=f5a623&color=fff&bold=true&font-size=0.4',aum:298000,style:'Value',n:44,color:'#f5a623',
+  {id:'BRK',name:'Warren Buffett',fund:'Berkshire Hathaway',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F51%2FWarren_Buffett_KU_Visit.jpg%2F200px-Warren_Buffett_KU_Visit.jpg',aum:298000,style:'Value',n:44,color:'#f5a623',
     top5:[{t:'AAPL',n:'Apple',p:26.8,c:-1.3},{t:'BAC',n:'Bank of America',p:12.1,c:+1.4},{t:'AXP',n:'Amer. Express',p:10.8,c:+2.1},{t:'KO',n:'Coca-Cola',p:9.3,c:+0.4},{t:'CVX',n:'Chevron',p:6.1,c:-0.9}]},
-  {id:'PS',name:'Bill Ackman',fund:'Pershing Square',img:'https://ui-avatars.com/api/?name=Bill+Ackman&size=120&background=e05252&color=fff&bold=true&font-size=0.4',aum:11400,style:'Activist',n:11,color:'#4f8ef7',
+  {id:'PS',name:'Bill Ackman',fund:'Pershing Square',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F1%2F13%2FBill_Ackman.jpg%2F200px-Bill_Ackman.jpg',aum:11400,style:'Activist',n:11,color:'#4f8ef7',
     top5:[{t:'HLT',n:'Hilton',p:17.1,c:+2.8},{t:'CMG',n:'Chipotle',p:14.9,c:-0.7},{t:'GOOGL',n:'Alphabet',p:15.2,c:+3.4},{t:'BN',n:'Brookfield',p:13.8,c:+1.1},{t:'CP',n:'Canadian Pacific',p:11.9,c:+0.5}]},
-  {id:'DQ',name:'Stanley Druckenmiller',fund:'Duquesne Family Office',img:'https://ui-avatars.com/api/?name=Stanley+Druckenmiller&size=120&background=4f8ef7&color=fff&bold=true&font-size=0.4',aum:3600,style:'Macro',n:68,color:'#2dd87a',
+  {id:'DQ',name:'Stanley Druckenmiller',fund:'Duquesne Family Office',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fb%2Fb5%2FStanley_Druckenmiller_2000.jpg%2F200px-Stanley_Druckenmiller_2000.jpg',aum:3600,style:'Macro',n:68,color:'#2dd87a',
     top5:[{t:'NVDA',n:'Nvidia',p:14.2,c:+6.8},{t:'MSFT',n:'Microsoft',p:10.1,c:+1.2},{t:'META',n:'Meta',p:9.3,c:+4.7},{t:'AMZN',n:'Amazon',p:8.4,c:+2.3},{t:'ORCL',n:'Oracle',p:5.9,c:+8.1}]},
-  {id:'AM',name:'David Tepper',fund:'Appaloosa Management',img:'https://ui-avatars.com/api/?name=David+Tepper&size=120&background=2dd87a&color=fff&bold=true&font-size=0.4',aum:7890,style:'Value',n:47,color:'#a855f7',
+  {id:'AM',name:'David Tepper',fund:'Appaloosa Management',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fd%2Fd6%2FDavid_Tepper_2011.jpg%2F200px-David_Tepper_2011.jpg',aum:7890,style:'Value',n:47,color:'#a855f7',
     top5:[{t:'META',n:'Meta',p:19.7,c:+4.8},{t:'AMZN',n:'Amazon',p:16.2,c:+3.1},{t:'NVDA',n:'Nvidia',p:15.8,c:+7.2},{t:'GOOGL',n:'Alphabet',p:10.1,c:+2.9},{t:'BABA',n:'Alibaba',p:9.3,c:-1.7}]},
-  {id:'SC',name:'Michael Burry',fund:'Scion Asset Management',img:'https://ui-avatars.com/api/?name=Michael+Burry&size=120&background=9b59b6&color=fff&bold=true&font-size=0.4',aum:114,style:'Contrarian',n:9,color:'#f05252',
+  {id:'SC',name:'Michael Burry',fund:'Scion Asset Management',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fa%2Fab%2FMichael_Burry_2010.jpg%2F200px-Michael_Burry_2010.jpg',aum:114,style:'Contrarian',n:9,color:'#f05252',
     top5:[{t:'BABA',n:'Alibaba',p:23.1,c:-2.4},{t:'JD',n:'JD.com',p:17.4,c:-1.3},{t:'HCA',n:'HCA Healthcare',p:14.8,c:+1.9},{t:'BIDU',n:'Baidu',p:11.2,c:-3.7},{t:'CPRI',n:'Capri',p:8.6,c:-0.9}]},
-  {id:'BG',name:'Seth Klarman',fund:'Baupost Group',img:'https://ui-avatars.com/api/?name=Seth+Klarman&size=120&background=e67e22&color=fff&bold=true&font-size=0.4',aum:27500,style:'Deep Value',n:36,color:'#06b6d4',
+  {id:'BG',name:'Seth Klarman',fund:'Baupost Group',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F2%2F2e%2FSeth_Klarman_%2528cropped%2529.jpg%2F200px-Seth_Klarman_%2528cropped%2529.jpg',aum:27500,style:'Deep Value',n:36,color:'#06b6d4',
     top5:[{t:'EXPE',n:'Expedia',p:20.1,c:+2.3},{t:'BEKE',n:'KE Holdings',p:13.9,c:+1.1},{t:'VSAT',n:'Viasat',p:10.4,c:-2.1},{t:'VNT',n:'Vontier',p:8.7,c:+0.9},{t:'ATEX',n:'Anterix',p:6.8,c:+1.4}]},
 ]
 
