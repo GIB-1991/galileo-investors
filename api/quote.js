@@ -49,7 +49,7 @@ export default async function handler(req, res) {
     // Fetch Yahoo chart + AV OVERVIEW in parallel
     const [chartResp, ov, finvizShort] = await Promise.all([
       fetch(
-        'https://query1.finance.yahoo.com/v8/finance/chart/' + sym +
+        'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
         '?interval=' + yhInterval + '&range=' + r,
         { headers: { 'User-Agent': UA } }
       ),
