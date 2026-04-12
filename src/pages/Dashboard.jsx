@@ -185,7 +185,7 @@ export default function Dashboard({ user }) {
                 </div>
                 <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
                 {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-secondary)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
-                {item.tickers&&item.tickers.length>0&&<div style={{marginTop:8,textAlign:'right'}}><div style={{fontSize:'.65rem',color:'var(--color-text-secondary)',marginBottom:3,fontWeight:600}}>מניות רלוונטיות</div><div style={{display:'flex',gap:4,flexWrap:'wrap',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace"}}>{'$'+t}</span>)}</div>}
+                {item.tickers&&item.tickers.length>0&&<div style={{marginTop:8,textAlign:'right'}}><div style={{fontSize:'.65rem',color:'var(--color-text-secondary)',marginBottom:3,fontWeight:600}}>מניות רלוונטיות</div><div style={{display:'flex',gap:4,flexWrap:'wrap',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace",direction:'ltr',display:'inline-block'}}>{'$'+t}</span>)}</div></div>}
               </div>
             </a>
           ))}</div>
