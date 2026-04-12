@@ -40,7 +40,11 @@ export default async function handler(req, res) {
   const { ticker, range } = req.query;
   if (!ticker) return res.status(400).json({ error: 'ticker required' });
 
-  const sym = ticker.toUpperCase();
+  // Re-parse ticker from raw URL to handle encoded = signs (e.g. GC%3DF)
+  const rawUrl = req.url || '';
+  const rawMatch = rawUrl.match(/[?&]ticker=([^&]+)/);
+  const rawTicker = rawMatch ? decodeURIComponent(rawMatch[1]) : ticker;
+  const sym = (rawTicker || ticker).toUpperCase();
   const r   = range || '3mo';
   const intervalMap = { '1d':'5m', '5d':'1h', '1y':'1wk', '5y':'1mo' };
   const yhInterval  = intervalMap[r] || '1d';
