@@ -103,7 +103,7 @@ export default function Dashboard({ user }) {
     if (!p) return 'N/A'
     const num = Number(p).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     if (ticker === 'ILS=X') return '₪' + num
-    if (ticker === 'GC=F') { const gldNum = Number(p*7.41).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); return String.fromCharCode(36)+gldNum }
+    if (ticker === 'GC=F') { const gldNum = Number(p*10.87).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); return String.fromCharCode(36)+gldNum }
     return num
   }
   function timeAgo(pubDate) {
