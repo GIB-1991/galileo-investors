@@ -101,7 +101,7 @@ export default function Superinvestors(){
               style={{border:'2px solid '+(sel?.id===inv.id?inv.color:'var(--color-border)'),borderRadius:14,padding:'1rem',cursor:'pointer',background:sel?.id===inv.id?inv.color+'08':'var(--color-bg2)',transition:'all .2s'}}>
               <div style={{display:'flex',gap:10,alignItems:'center'}}>
                 <img src={inv.img} alt={inv.name} onError={e=>e.target.style.display='none'}
-                  style={{width:48,height:48,borderRadius:'50%',objectFit:'cover',border:'2px solid '+inv.color,flexShrink:0}}/>
+                  style={{width:60,height:60,borderRadius:12,objectFit:'cover',objectPosition:'center top',border:'3px solid '+inv.color,flexShrink:0,boxShadow:'0 4px 12px '+inv.color+'40',background:inv.color+'20'}}/>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontWeight:700,fontSize:'.88rem',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{inv.name}</div>
                   <div style={{fontSize:'.72rem',color:'var(--color-text-muted)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{inv.fund}</div>
