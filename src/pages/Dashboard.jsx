@@ -127,7 +127,7 @@ export default function Dashboard({ user }) {
           <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
           <p style={{color:'var(--color-text-secondary)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.08)',border:'1px solid '+(status.open?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.2)'),borderRadius:20,padding:'6px 16px'}}>
+        <div title={'פרה-מרקט: 11:00-16:30 | שוק פתוח: 16:30-23:00 | אפטר-מרקט: 23:00-03:00'} style={{cursor:'help',display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.08)',border:'1px solid '+(status.open?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.2)'),borderRadius:20,padding:'6px 16px'}}>
           {status.open ? <Activity size={12} style={{color:status.color}}/> : <Moon size={12} style={{color:status.color}}/>}
           <span style={{fontSize:'.82rem',fontWeight:700,color:status.color}}>{status.label}</span>
           <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
@@ -185,7 +185,7 @@ export default function Dashboard({ user }) {
                 </div>
                 <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
                 {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-secondary)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
-                {item.tickers&&item.tickers.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginTop:5,direction:'rtl',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace"}}>{'$'+t}</span>)}</div>}
+                {item.tickers&&item.tickers.length>0&&<div style={{marginTop:8,textAlign:'right'}}><div style={{fontSize:'.65rem',color:'var(--color-text-secondary)',marginBottom:3,fontWeight:600}}>מניות רלוונטיות</div><div style={{display:'flex',gap:4,flexWrap:'wrap',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace"}}>{'$'+t}</span>)}</div>}
               </div>
             </a>
           ))}</div>
