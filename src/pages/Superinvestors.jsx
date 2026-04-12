@@ -17,7 +17,7 @@ const INV=[
     top5:[{t:'META',n:'Meta',p:19.7,c:+4.8},{t:'AMZN',n:'Amazon',p:16.2,c:+3.1},{t:'NVDA',n:'Nvidia',p:15.8,c:+7.2},{t:'GOOGL',n:'Alphabet',p:10.1,c:+2.9},{t:'BABA',n:'Alibaba',p:9.3,c:-1.7}]},
   {id:'SC',name:'Michael Burry',fund:'Scion Asset Management',img:'https://ui-avatars.com/api/?name=Michael+Burry&size=120&background=9b59b6&color=fff&bold=true&font-size=0.35',aum:114,style:'Contrarian',n:9,color:'#f05252',
     top5:[{t:'BABA',n:'Alibaba',p:23.1,c:-2.4},{t:'JD',n:'JD.com',p:17.4,c:-1.3},{t:'HCA',n:'HCA Healthcare',p:14.8,c:+1.9},{t:'BIDU',n:'Baidu',p:11.2,c:-3.7},{t:'CPRI',n:'Capri',p:8.6,c:-0.9}]},
-  {id:'BG',name:'Seth Klarman',fund:'Baupost Group',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fb%2Fb8%2FSeth_Klarman_at_147th_Preakness_Stakes.jpg%2F200px-Seth_Klarman_at_147th_Preakness_Stakes.jpg',aum:27500,style:'Deep Value',n:36,color:'#06b6d4',
+  {id:'BG',name:'Seth Klarman',fund:'Baupost Group',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fb%2Fb8%2FSeth_Klarman_at_147th_Preakness_Stakes.jpg%2F250px-Seth_Klarman_at_147th_Preakness_Stakes.jpg',aum:27500,style:'Deep Value',n:36,color:'#06b6d4',
     top5:[{t:'EXPE',n:'Expedia',p:20.1,c:+2.3},{t:'BEKE',n:'KE Holdings',p:13.9,c:+1.1},{t:'VSAT',n:'Viasat',p:10.4,c:-2.1},{t:'VNT',n:'Vontier',p:8.7,c:+0.9},{t:'ATEX',n:'Anterix',p:6.8,c:+1.4}]},
 ]
 
