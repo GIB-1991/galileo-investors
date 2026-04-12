@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown, ExternalLink, RefreshCw, Activity, Moon } fro
 const TICKERS = [
   { ticker: 'SPY', name: 'S&P 500' },
   { ticker: 'QQQ', name: 'Nasdaq 100' },
-  { ticker: 'GC=F', name: 'Gold' },
+  { ticker: 'GC=F', apiTicker: 'GLD', name: 'Gold' },
   { ticker: 'ILS=X', name: 'USD/ILS' },
 ]
 
@@ -56,7 +56,7 @@ export default function Dashboard({ user }) {
     setMktLoading(true)
     const res = await Promise.all(TICKERS.map(async m => {
       try {
-        const r = await fetch('/api/quote?ticker=' + encodeURIComponent(m.ticker) + '&range=1d&_t=' + Math.floor(Date.now()/60000))
+        const r = await fetch('/api/quote?ticker=' + (m.apiTicker||m.ticker) + '&range=1d&_t=' + Math.floor(Date.now()/60000))
         const d = await r.json()
         const meta = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta
         if (!meta) return { ...m, price: 0, pct: 0, up: true }
@@ -103,7 +103,7 @@ export default function Dashboard({ user }) {
     if (!p) return 'N/A'
     const num = Number(p).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     if (ticker === 'ILS=X') return '₪' + num
-    if (ticker === 'GC=F') return String.fromCharCode(36) + num
+    if (ticker === 'GC=F') { const gldNum = Number(p*10).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); return String.fromCharCode(36)+gldNum }
     return num
   }
   function timeAgo(pubDate) {
