@@ -9,7 +9,7 @@ const FILING_DATE='Feb 2026'
 const INV=[
   {id:'BRK',name:'Warren Buffett',fund:'Berkshire Hathaway',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F51%2FWarren_Buffett_KU_Visit.jpg%2F200px-Warren_Buffett_KU_Visit.jpg',aum:298000,style:'Value',n:44,color:'#f5a623',
     top5:[{t:'AAPL',n:'Apple',p:26.8,c:-1.3},{t:'BAC',n:'Bank of America',p:12.1,c:+1.4},{t:'AXP',n:'Amer. Express',p:10.8,c:+2.1},{t:'KO',n:'Coca-Cola',p:9.3,c:+0.4},{t:'CVX',n:'Chevron',p:6.1,c:-0.9}]},
-  {id:'PS',name:'Bill Ackman',fund:'Pershing Square',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F1%2F13%2FBill_Ackman.jpg%2F200px-Bill_Ackman.jpg'_Business_Model_(headshot).jpg%2F200px-Valeant_Pharmaceuticals'_Business_Model_(headshot).jpg',aum:11400,style:'Activist',n:11,color:'#4f8ef7',
+  {id:'PS',name:'Bill Ackman',fund:'Pershing Square',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F1%2F13%2FBill_Ackman.jpg%2F200px-Bill_Ackman.jpg',aum:11400,style:'Activist',n:11,color:'#4f8ef7',
     top5:[{t:'HLT',n:'Hilton',p:17.1,c:+2.8},{t:'CMG',n:'Chipotle',p:14.9,c:-0.7},{t:'GOOGL',n:'Alphabet',p:15.2,c:+3.4},{t:'BN',n:'Brookfield',p:13.8,c:+1.1},{t:'CP',n:'Canadian Pacific',p:11.9,c:+0.5}]},
   {id:'DQ',name:'Stanley Druckenmiller',fund:'Duquesne Family Office',img:'https://ui-avatars.com/api/?name=Stanley+Druckenmiller&size=200&background=1a3a5c&color=f5a623&bold=true&font-size=0.35',aum:3600,style:'Macro',n:68,color:'#2dd87a',
     top5:[{t:'NVDA',n:'Nvidia',p:14.2,c:+6.8},{t:'MSFT',n:'Microsoft',p:10.1,c:+1.2},{t:'META',n:'Meta',p:9.3,c:+4.7},{t:'AMZN',n:'Amazon',p:8.4,c:+2.3},{t:'ORCL',n:'Oracle',p:5.9,c:+8.1}]},
