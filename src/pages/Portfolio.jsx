@@ -26,6 +26,8 @@ export default function Portfolio() {
   const [addAlerts, setAddAlerts] = useState([])
   const [finvizData, setFinvizData] = useState(null)
   const [sellShares, setSellShares] = useState('')
+  const [addAlerts, setAddAlerts] = useState([])
+  const [finvizData, setFinvizData] = useState(null)
   const [sellPrice, setSellPrice] = useState('')
   const [sellPriceLoading, setSellPriceLoading] = useState(false)
   const [userId, setUserId] = useState(null)
@@ -83,6 +85,12 @@ export default function Portfolio() {
       if (p) setBuyPrice(p.toFixed(2))
     } catch(e) {}
     setPriceLoading(false)
+    // Fetch Finviz data for risk alerts
+    fetch('/api/finviz?ticker='+ticker).then(r=>r.json()).then(fv=>{
+      setFinvizData(fv)
+      const enriched={ticker,name,price:parseFloat(buyPrice)||0,beta:fv.beta,shortFloat:fv.shortFloat,avgVolume:fv.avgVolume,marketCap:fv.marketCap||0}
+      setAddAlerts(checkStockAlerts(enriched,holdings,0,0))
+    }).catch(()=>{})
   }
 
   // Re-run alerts when shares or price changes
@@ -105,7 +113,7 @@ export default function Portfolio() {
     await saveTradeHistoryToDB(userId, entry)
     const newHist = await loadHistoryFromDB(userId)
     setHistory(newHist)
-    setQuery(''); setSel(null); setShares(''); setBuyPrice(''); setShowAdd(false)
+    setQuery(''); setSel(null); setShares(''); setBuyPrice(''); setShowAdd(false); setAddAlerts([]); setFinvizData(null)
     refreshPrices(upd)
   }
 
@@ -233,6 +241,12 @@ export default function Portfolio() {
         </div>
       ))}
 
+              {addAlerts.length>0&&(<div style={{marginBottom:'1rem',display:'flex',flexDirection:'column',gap:'.4rem'}}>
+                {addAlerts.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'center',gap:'.5rem',padding:'.45rem .7rem',borderRadius:'.375rem',background:a.type==='danger'?'rgba(239,68,68,0.15)':'rgba(245,158,11,0.15)',border:'1px solid '+(a.type==='danger'?'rgba(239,68,68,0.4)':'rgba(245,158,11,0.4)')}}>
+                  <AlertTriangle size={13} color={a.type==='danger'?'#ef4444':'#f59e0b'}/>
+                  <span style={{fontSize:'.78rem',color:a.type==='danger'?'#fca5a5':'#fcd34d'}}>{a.message}</span>
+                </div>))}
+              </div>)}
       {showAdd&&(<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'1rem'}} onClick={()=>setShowAdd(false)}><div onClick={e=>e.stopPropagation()} style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'2rem',width:'100%',maxWidth:420,boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}><h3 style={{margin:0,fontWeight:700}}>הוסף מניה</h3><button onClick={()=>setShowAdd(false)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)'}}><X size={17}/></button></div><div style={{display:'flex',flexDirection:'column',gap:'1rem'}}><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>חיפוש מניה</label><div style={{position:'relative'}}><Search size={13} style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',color:'var(--color-text-muted)'}}/><input className="input input-ticker" value={query} onChange={e=>{setQuery(e.target.value.toUpperCase());setSel(null)}} onFocus={()=>suggestions.length>0&&setShowSugg(true)} onBlur={()=>setTimeout(()=>setShowSugg(false),200)} placeholder="AAPL, Tesla..." style={{paddingRight:34}} autoComplete="off"/>{showSugg&&suggestions.length>0&&(<div style={{position:'absolute',top:'calc(100% + 4px)',right:0,left:0,background:'var(--color-surface)',border:'1px solid var(--color-border2)',borderRadius:10,zIndex:200,overflow:'hidden',boxShadow:'0 8px 32px rgba(0,0,0,0.4)'}}>{suggestions.map(s=>(<div key={s.ticker} onMouseDown={()=>pickTicker(s.ticker,s.name)} style={{padding:'.6rem 1rem',cursor:'pointer',display:'flex',alignItems:'center',gap:10}} onMouseEnter={e=>e.currentTarget.style.background='var(--color-bg2)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}><span style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:700,fontSize:'.8rem',color:'var(--color-accent)',minWidth:52}}>{s.ticker}</span><span style={{fontSize:'.8rem',color:'var(--color-text-secondary)'}}>{(s.name||'').substring(0,28)}</span></div>))}</div>)}</div>{sel&&<div style={{marginTop:4,fontSize:'.75rem',color:'var(--color-success)'}}>&#10003; {sel.name}</div>}</div><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>מניות</label><input className="input" type="number" value={shares} onChange={e=>{setShares(e.target.value);recomputeAlerts(e.target.value,buyPrice)}} onBlur={e=>recomputeAlerts(e.target.value,buyPrice)} placeholder="10" style={{direction:'ltr'}}/></div><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>מחיר קנייה ($) {priceLoading&&<span style={{color:'var(--color-accent)',fontSize:'.72rem'}}>טוען...</span>}</label><input className="input" type="number" value={buyPrice} onChange={e=>{setBuyPrice(e.target.value);recomputeAlerts(shares,e.target.value)}} onBlur={e=>recomputeAlerts(shares,e.target.value)} placeholder="מחיר שוק" style={{direction:'ltr'}}/></div><button className="btn-accent" onClick={addHolding} disabled={!sel||!shares||!buyPrice} style={{opacity:(!sel||!shares||!buyPrice)?0.5:1}}>הוסף לתיק</button></div></div></div>)}
 
       {showSell&&(<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'1rem'}} onClick={e=>{if(e.target===e.currentTarget)setShowSell(null)}}><div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'2rem',width:'100%',maxWidth:380,boxShadow:'0 20px 60px rgba(0,0,0,0.5)'}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.25rem'}}><h3 style={{margin:0,fontWeight:700}}>מכור <span className="ticker-badge">{showSell.ticker}</span></h3><button onClick={()=>setShowSell(null)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)'}}><X size={17}/></button></div><div style={{background:'var(--color-bg2)',borderRadius:9,padding:'.75rem',marginBottom:'1rem',fontSize:'.82rem',color:'var(--color-text-muted)'}}>בתיק: <strong style={{color:'var(--color-text-primary)'}}>{showSell.shares} מניות</strong> ב-<strong style={{color:'var(--color-text-primary)',direction:'ltr',display:'inline-block'}}>{'$'+showSell.buyPrice.toFixed(2)}</strong></div><div style={{display:'flex',flexDirection:'column',gap:'1rem'}}><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>מניות למכירה</label><input className="input" type="number" max={showSell.shares} value={sellShares} onChange={e=>setSellShares(e.target.value)} style={{direction:'ltr'}}/></div><div><label style={{fontSize:'.8rem',fontWeight:600,display:'block',marginBottom:6,color:'var(--color-text-secondary)'}}>מחיר מכירה ($) {sellPriceLoading&&<span style={{color:'var(--color-accent)',fontSize:'.72rem'}}>טוען...</span>}</label><input className="input" type="number" value={sellPrice} onChange={e=>setSellPrice(e.target.value)} style={{direction:'ltr'}}/></div>{sellShares&&sellPrice&&<SellPnL sp={parseFloat(sellPrice)} bp={showSell.buyPrice} ss={parseFloat(sellShares)}/>}<button style={{background:'var(--color-danger)',color:'white',fontFamily:'Heebo,sans-serif',fontWeight:700,padding:'.8rem',fontSize:'.9rem',borderRadius:10,border:'none',cursor:'pointer',opacity:(!sellShares||!sellPrice)?0.5:1}} disabled={!sellShares||!sellPrice} onClick={confirmSell}>אשר מכירה</button></div></div></div>)}
