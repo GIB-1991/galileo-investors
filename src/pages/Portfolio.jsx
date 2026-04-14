@@ -28,6 +28,8 @@ export default function Portfolio() {
   const [sellShares, setSellShares] = useState('')
   const [addAlerts, setAddAlerts] = useState([])
   const [finvizData, setFinvizData] = useState(null)
+  const [addAlerts, setAddAlerts] = useState([])
+  const [finvizData, setFinvizData] = useState(null)
   const [sellPrice, setSellPrice] = useState('')
   const [sellPriceLoading, setSellPriceLoading] = useState(false)
   const [userId, setUserId] = useState(null)
@@ -85,6 +87,11 @@ export default function Portfolio() {
       if (p) setBuyPrice(p.toFixed(2))
     } catch(e) {}
     setPriceLoading(false)
+    fetch('/api/finviz?ticker='+ticker).then(r=>r.json()).then(fv=>{
+      setFinvizData(fv)
+      const st={ticker,name,price:parseFloat(buyPrice)||0,beta:fv.beta,shortFloat:fv.shortFloat,avgVolume:fv.avgVolume,marketCap:fv.marketCap||0}
+      setAddAlerts(checkStockAlerts(st,holdings,0,0))
+    }).catch(()=>{})
     // Fetch Finviz data for risk alerts
     fetch('/api/finviz?ticker='+ticker).then(r=>r.json()).then(fv=>{
       setFinvizData(fv)
@@ -113,7 +120,7 @@ export default function Portfolio() {
     await saveTradeHistoryToDB(userId, entry)
     const newHist = await loadHistoryFromDB(userId)
     setHistory(newHist)
-    setQuery(''); setSel(null); setShares(''); setBuyPrice(''); setShowAdd(false); setAddAlerts([]); setFinvizData(null)
+    setQuery(''); setSel(null); setShares(''); setBuyPrice(''); setShowAdd(false); setAddAlerts([]); setFinvizData(null); setAddAlerts([]); setFinvizData(null)
     refreshPrices(upd)
   }
 
@@ -241,6 +248,12 @@ export default function Portfolio() {
         </div>
       ))}
 
+              {addAlerts.length>0&&(<div style={{marginBottom:'1rem',display:'flex',flexDirection:'column',gap:'.4rem'}}>
+                {addAlerts.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'center',gap:'.5rem',padding:'.45rem .7rem',borderRadius:'.375rem',background:a.type==='danger'?'rgba(239,68,68,0.15)':'rgba(245,158,11,0.15)',border:'1px solid '+(a.type==='danger'?'rgba(239,68,68,0.4)':'rgba(245,158,11,0.4)')}}>
+                  <AlertTriangle size={13} color={a.type==='danger'?'#ef4444':'#f59e0b'}/>
+                  <span style={{fontSize:'.78rem',color:a.type==='danger'?'#fca5a5':'#fcd34d'}}>{a.message}</span>
+                </div>))}
+              </div>)}
               {addAlerts.length>0&&(<div style={{marginBottom:'1rem',display:'flex',flexDirection:'column',gap:'.4rem'}}>
                 {addAlerts.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'center',gap:'.5rem',padding:'.45rem .7rem',borderRadius:'.375rem',background:a.type==='danger'?'rgba(239,68,68,0.15)':'rgba(245,158,11,0.15)',border:'1px solid '+(a.type==='danger'?'rgba(239,68,68,0.4)':'rgba(245,158,11,0.4)')}}>
                   <AlertTriangle size={13} color={a.type==='danger'?'#ef4444':'#f59e0b'}/>
