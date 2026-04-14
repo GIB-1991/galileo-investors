@@ -1,85 +1,120 @@
-import { getMarketCapCategory } from '../services/stockApi.js'
-
+// ETF major holdings for overlap detection
 const ETF_HOLDINGS = {
-  QQQ: ['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA','AVGO','COST','NFLX'],
-  SPY: ['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA','BRK','LLY','JPM'],
+  SPY: ['AAPL','MSFT','NVDA','AMZN','GOOGL','GOOG','META','TSLA','BRK.B','LLY','JPM','V','UNH','XOM','MA'],
+  QQQ: ['AAPL','MSFT','NVDA','AMZN','GOOGL','GOOG','META','TSLA','AVGO','COST','NFLX','ADBE','AMD','INTC','QCOM'],
+  VTI: ['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA','BRK.B','LLY','JPM'],
+  IWM: ['SMCI','CHWY','RIVN','LCID','GME','AMC'],
+  DIA: ['UNH','GS','HD','MSFT','CAT','SHW','MCD','V','AMGN','AXP'],
 }
 
-// Used by Portfolio - takes array of {ticker, shares, buyPrice, currentPrice, marketCap, beta, shortFloat, sharesFloat}
+const ETF_TICKERS = new Set(Object.keys(ETF_HOLDINGS))
+
+// מניות עם אחוז גדול ב-ETF ספציפי (>5%)
+const ETF_WEIGHTS = {
+  SPY: { AAPL:0.073, MSFT:0.065, NVDA:0.059, AMZN:0.039, GOOGL:0.034, META:0.028 },
+  QQQ: { AAPL:0.089, MSFT:0.079, NVDA:0.072, AMZN:0.051, GOOGL:0.050, META:0.040 },
+}
+
+// Returns market cap category based on live market cap (from Finviz/Yahoo)
+// Mega Cap: >1T | Large Cap: 200B-1T | Small Cap: <200B
+function getCategory(mc) {
+  if (!mc || mc === 0) return 'ETF'
+  if (mc >= 1e12) return 'mega'      // >$1T — max 20% portfolio
+  if (mc >= 200e9) return 'large'    // $200B-$1T — max 10%
+  return 'small'                     // <$200B — max 5%
+}
+
 export function analyzePortfolio(holdings) {
   const alerts = []
-  if (!holdings || !holdings.length) return alerts
+  if (!holdings?.length) return alerts
 
   const totalValue = holdings.reduce((s,h) => s + ((h.currentPrice||h.buyPrice||0) * (h.shares||0)), 0)
   if (!totalValue) return alerts
 
+  // Build effective exposures — including ETF overlaps
+  const effectiveExposure = {} // ticker -> total exposure fraction
+
   for (const h of holdings) {
     const val = (h.currentPrice||h.buyPrice||0) * (h.shares||0)
     const w = val / totalValue
-    const cat = getMarketCapCategory(h.marketCap||0)
+    const t = h.ticker.toUpperCase()
 
-    if (cat === 'Mega Cap' && w > 0.20)
-      alerts.push({ type: 'warning', message: h.ticker + ': משקל ' + (w*100).toFixed(1) + '% — Mega Cap חורג ממגבלת 20%' })
-    if (cat === 'Large Cap' && w > 0.10)
-      alerts.push({ type: 'warning', message: h.ticker + ': משקל ' + (w*100).toFixed(1) + '% — Large Cap חורג ממגבלת 10%' })
-    if (cat === 'Mid Cap' && w > 0.05)
-      alerts.push({ type: 'warning', message: h.ticker + ': משקל ' + (w*100).toFixed(1) + '% — Mid Cap חורג ממגבלת 5%' })
-    if (cat === 'Small Cap' && w > 0.04)
-      alerts.push({ type: 'warning', message: h.ticker + ': משקל ' + (w*100).toFixed(1) + '% — Small Cap חורג ממגבלת 4%' })
-    if ((h.shortFloat||0) > 10)
-      alerts.push({ type: 'danger', message: h.ticker + ': Short Float ' + h.shortFloat + '% — סיכון גבוה' })
-    if ((h.sharesFloat||0) > 0 && h.sharesFloat < 50e6)
-      alerts.push({ type: 'danger', message: h.ticker + ': Float נמוך מ-50M מניות — נזילות נמוכה' })
-    if ((h.currentPrice||h.buyPrice||0) < 10)
-      alerts.push({ type: 'warning', message: h.ticker + ': מחיר מתחת ל-$10 — מניית penny stock' })
-
-    // ETF overlap warning
-    const etfKeys = Object.keys(ETF_HOLDINGS)
-    for (const etf of etfKeys) {
-      const etfHolding = holdings.find(x => x.ticker === etf)
-      if (!etfHolding) continue
-      const etfW = ((etfHolding.currentPrice||etfHolding.buyPrice||0) * (etfHolding.shares||0)) / totalValue
-      if (ETF_HOLDINGS[etf].includes(h.ticker) && etfW + w > 0.20)
-        alerts.push({ type: 'warning', message: h.ticker + ' + ' + etf + ': כפילות חשיפה חורגת מ-20%' })
+    if (ETF_TICKERS.has(t)) {
+      // Add ETF weight to each underlying holding
+      const weights = ETF_WEIGHTS[t]
+      if (weights) {
+        for (const [underlying, etfW] of Object.entries(weights)) {
+          effectiveExposure[underlying] = (effectiveExposure[underlying]||0) + w * etfW
+        }
+      }
+      // ETFs can be 100% — no limit
+    } else {
+      effectiveExposure[t] = (effectiveExposure[t]||0) + w
     }
   }
 
-  if (alerts.length === 0)
-    alerts.push({ type: 'success', message: '✓ התיק עומד בכל כללי התזה של גלילאו — פיזור תקין' })
+  // Check each direct holding
+  for (const h of holdings) {
+    const t = h.ticker.toUpperCase()
+    if (ETF_TICKERS.has(t)) continue // ETFs have no cap limit
+
+    const val = (h.currentPrice||h.buyPrice||0) * (h.shares||0)
+    const directW = val / totalValue
+    const totalW = effectiveExposure[t] || directW
+    const cat = getCategory(h.marketCap||0)
+    const pct = (totalW*100).toFixed(1)
+
+    // Position size alerts
+    if (cat==='mega' && totalW > 0.20)
+      alerts.push({ type:'warning', ticker:t, message:t+': חשיפה '+pct+'% — Mega Cap חורג ממגבלת 20%' })
+    if (cat==='large' && totalW > 0.10)
+      alerts.push({ type:'warning', ticker:t, message:t+': חשיפה '+pct+'% — Large Cap חורג ממגבלת 10%' })
+    if (cat==='small' && totalW > 0.05)
+      alerts.push({ type:'warning', ticker:t, message:t+': חשיפה '+pct+'% — Small Cap חורג ממגבלת 5%' })
+
+    // ETF overlap alert
+    if (totalW > directW + 0.01) {
+      const overlapPct = ((totalW-directW)*100).toFixed(1)
+      alerts.push({ type:'info', ticker:t, message:t+': חשיפה כפולה +'+overlapPct+'% דרך ETF בתיק' })
+    }
+  }
 
   return alerts
 }
 
-// Used by Screener - analyze single stock against thesis rules (fix 3)
-export function analyzeStockForScreener(stock) {
-  const tips = []
-  const cat = getMarketCapCategory(stock.marketCap||0)
+// Called when user clicks "הוסף" — checks single stock before adding
+// Returns array of alerts for that stock + projected portfolio
+export function checkStockAlerts(stock, existingHoldings, newShares, newBuyPrice) {
+  const alerts = []
+  const t = (stock.ticker||'').toUpperCase()
 
-  // Size category
-  const catLabels = { 'Mega Cap': 'מניית ענק (Mega Cap)', 'Large Cap': 'מניה גדולה (Large Cap)', 'Mid Cap': 'מניה בינונית (Mid Cap)', 'Small Cap': 'מניה קטנה (Small Cap)', 'ETF': 'קרן סל (ETF)' }
-  const catLimits = { 'Mega Cap': '20%', 'Large Cap': '10%', 'Mid Cap': '5%', 'Small Cap': '4%', 'ETF': '100%' }
-  const catColors = { 'Mega Cap': '#2dd87a', 'Large Cap': '#4f8ef7', 'Mid Cap': '#fbbf24', 'Small Cap': '#f05252', 'ETF': '#a855f7' }
-
-  tips.push({
-    type: 'info',
-    color: catColors[cat] || '#9ca3af',
-    message: 'קטגוריה: ' + (catLabels[cat]||cat) + ' — מגבלת משקל מקסימלי בתיק: ' + (catLimits[cat]||'—')
-  })
-
-  if (stock.price < 10 && stock.price > 0)
-    tips.push({ type: 'warning', color: '#fbbf24', message: 'מחיר מתחת ל-$10 — penny stock, סיכון גבוה לפי תזת גלילאו' })
+  // 1. Short Float > 10%
   if ((stock.shortFloat||0) > 10)
-    tips.push({ type: 'danger', color: '#f05252', message: 'Short Float ' + stock.shortFloat + '% — מעל 10%, סיכון לסחיטת שורטיסטים' })
-  if ((stock.shortFloat||0) > 20)
-    tips.push({ type: 'danger', color: '#f05252', message: 'Short Float גבוה מאוד ' + stock.shortFloat + '% — אינטרס שורט משמעותי' })
-  if (stock.beta && stock.beta > 2)
-    tips.push({ type: 'warning', color: '#fbbf24', message: 'Beta ' + stock.beta.toFixed(1) + ' — תנודתיות גבוהה מאוד ביחס לשוק' })
-  if (stock.beta && stock.beta < 0.5 && stock.beta > 0)
-    tips.push({ type: 'info', color: '#4f8ef7', message: 'Beta ' + stock.beta.toFixed(1) + ' — מניה דפנסיבית, פחות תנודתיות מהשוק' })
+    alerts.push({ type:'danger', message:t+': שורט פלואט '+stock.shortFloat.toFixed(1)+'% — מעל 10%, סיכון גבוה' })
 
-  const etfMatch = Object.keys(ETF_HOLDINGS).filter(e => ETF_HOLDINGS[e].includes(stock.ticker))
-  if (etfMatch.length > 0)
-    tips.push({ type: 'warning', color: '#fbbf24', message: 'מניה זו נמצאת ב-' + etfMatch.join(', ') + ' — שים לב לכפילות חשיפה בתיק' })
+  // 2. Beta > 3
+  if ((stock.beta||0) > 3)
+    alerts.push({ type:'danger', message:t+': Beta '+stock.beta.toFixed(2)+' — תנודתיות גבוהה מאוד (מעל 3)' })
 
-  return tips
+  // 3. Average daily volume < 250K
+  if (stock.avgVolume > 0 && stock.avgVolume < 250000)
+    alerts.push({ type:'danger', message:t+': נפח מסחר יומי '+Math.round(stock.avgVolume/1000)+'K — נזילות נמוכה (מינימום 250K)' })
+
+  // 4. Project portfolio weight after addition
+  const newVal = newShares * (stock.price||newBuyPrice||0)
+  const existingTotal = existingHoldings.reduce((s,h)=>s+((h.currentPrice||h.buyPrice||0)*h.shares),0)
+  const projectedTotal = existingTotal + newVal
+  if (projectedTotal > 0) {
+    const w = newVal / projectedTotal
+    const cat = getCategory(stock.marketCap||0)
+    const pct = (w*100).toFixed(1)
+    if (cat==='mega' && w>0.20)
+      alerts.push({ type:'warning', message:t+': משקל צפוי '+pct+'% — Mega Cap יחרוג ממגבלת 20%' })
+    if (cat==='large' && w>0.10)
+      alerts.push({ type:'warning', message:t+': משקל צפוי '+pct+'% — Large Cap יחרוג ממגבלת 10%' })
+    if (cat==='small' && w>0.05)
+      alerts.push({ type:'warning', message:t+': משקל צפוי '+pct+'% — Small Cap יחרוג ממגבלת 5%' })
+  }
+
+  return alerts
 }
