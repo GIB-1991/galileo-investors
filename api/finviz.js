@@ -11,37 +11,42 @@ export default async function handler(req,res){
     });
     const html=await r.text();
 
-    // HTML pattern: data-boxover-html="LABEL">...<b>VALUE</b>
+    // Two patterns: data-boxover-html="LABEL" (Beta) or snapshot-td-label text (Short Float, Avg Volume, Market Cap)
     function cell(label){
-      const idx=html.indexOf('data-boxover-html="'+label+'"');
-      if(idx===-1)return null;
+      let idx=html.indexOf('data-boxover-html="'+label+'"');
+      if(idx===-1){
+        // fallback: find label in snapshot-td-label div
+        const labelTag='>'+label+'<';
+        idx=html.indexOf(labelTag);
+        if(idx===-1)return null;
+      }
+      // value is in next <b>...</b> within 600 chars
       const bStart=html.indexOf('<b>',idx);
-      if(bStart===-1||bStart-idx>500)return null;
+      if(bStart===-1||bStart-idx>600)return null;
       const bEnd=html.indexOf('</b>',bStart);
       if(bEnd===-1)return null;
-      // Strip any inner tags (e.g. <a href=...>VALUE</a>)
       return html.substring(bStart+3,bEnd).replace(/<[^>]+>/g,'').trim();
     }
 
     const betaRaw=cell('Beta');
-    const beta=betaRaw?parseFloat(betaRaw):null;
+    const beta=betaRaw&&betaRaw!=='-'?parseFloat(betaRaw):null;
 
     const sfRaw=cell('Short Float');
-    const shortFloat=sfRaw?parseFloat(sfRaw.replace('%','')):0;
+    const shortFloat=sfRaw&&sfRaw!=='-'?parseFloat(sfRaw.replace('%','')):0;
 
     const avRaw=cell('Avg Volume');
     let avgVolume=0;
-    if(avRaw){
+    if(avRaw&&avRaw!=='-'){
       const v=parseFloat(avRaw);
       if(avRaw.includes('B'))avgVolume=v*1e9;
       else if(avRaw.includes('M'))avgVolume=v*1e6;
       else if(avRaw.includes('K'))avgVolume=v*1e3;
-      else avgVolume=v;
+      else avgVolume=v||0;
     }
 
     const mcRaw=cell('Market Cap');
     let marketCap=0;
-    if(mcRaw){
+    if(mcRaw&&mcRaw!=='-'){
       const v=parseFloat(mcRaw);
       if(mcRaw.includes('T'))marketCap=v*1e12;
       else if(mcRaw.includes('B'))marketCap=v*1e9;
