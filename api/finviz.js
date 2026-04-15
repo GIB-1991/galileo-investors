@@ -11,16 +11,17 @@ export default async function handler(req,res){
     });
     const html=await r.text();
 
-    // Two patterns: data-boxover-html="LABEL" (Beta) or snapshot-td-label text (Short Float, Avg Volume, Market Cap)
+    // Find label (works for both data-boxover-html="X" and plain label text)
+    // Then get the next <b>value</b> within 600 chars
     function cell(label){
+      // Try data-boxover-html first (Beta)
       let idx=html.indexOf('data-boxover-html="'+label+'"');
       if(idx===-1){
-        // fallback: find label in snapshot-td-label div
-        const labelTag='>'+label+'<';
-        idx=html.indexOf(labelTag);
-        if(idx===-1)return null;
+        // Fallback: plain text label anywhere in HTML (Short Float, Avg Volume, Market Cap)
+        idx=html.indexOf(label+'<');
+        if(idx===-1) idx=html.indexOf(label+'</');
+        if(idx===-1) return null;
       }
-      // value is in next <b>...</b> within 600 chars
       const bStart=html.indexOf('<b>',idx);
       if(bStart===-1||bStart-idx>600)return null;
       const bEnd=html.indexOf('</b>',bStart);
