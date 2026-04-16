@@ -99,12 +99,23 @@ export default function Portfolio() {
 
     const addHolding = async () => {
     if (!sel||!shares||!buyPrice||!userId) return
-    const holding = { ticker:sel.ticker, name:sel.name, shares:parseFloat(shares), buyPrice:parseFloat(buyPrice) }
-    // Save to Supabase
-    const saved = await saveHoldingToDB(userId, holding)
-    if (!saved) return
-    const upd = [...holdings, saved]
-    setHoldings(upd)
+    const newShares = parseFloat(shares)
+    const newBuyPrice = parseFloat(buyPrice)
+    // Check if ticker already exists — merge instead of creating new row
+    const existing = holdings.find(h => h.ticker === sel.ticker)
+    let upd
+    if (existing) {
+      const mergedShares = existing.shares + newShares
+      await updateHoldingInDB(existing.id, mergedShares)
+      upd = holdings.map(h => h.id === existing.id ? {...h, shares: mergedShares} : h)
+      setHoldings(upd)
+    } else {
+      const holding = { ticker:sel.ticker, name:sel.name, shares:newShares, buyPrice:newBuyPrice }
+      const saved = await saveHoldingToDB(userId, holding)
+      if (!saved) return
+      upd = [...holdings, saved]
+      setHoldings(upd)
+    }
     // Save trade history
     const entry = { type:'buy', ticker:saved.ticker, name:saved.name, shares:saved.shares, price:saved.buyPrice, buyPrice:null, date:new Date().toLocaleDateString('he-IL') }
     await saveTradeHistoryToDB(userId, entry)
