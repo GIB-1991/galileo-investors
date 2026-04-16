@@ -104,20 +104,23 @@ export default function Portfolio() {
     // Check if ticker already exists — merge instead of creating new row
     const existing = holdings.find(h => h.ticker === sel.ticker)
     let upd
+    let saveTicker, saveName, saveShares, savePrice
     if (existing) {
       const mergedShares = existing.shares + newShares
       await updateHoldingInDB(existing.id, mergedShares)
       upd = holdings.map(h => h.id === existing.id ? {...h, shares: mergedShares} : h)
       setHoldings(upd)
+      saveTicker=existing.ticker; saveName=existing.name; saveShares=newShares; savePrice=newBuyPrice
     } else {
       const holding = { ticker:sel.ticker, name:sel.name, shares:newShares, buyPrice:newBuyPrice }
       const saved = await saveHoldingToDB(userId, holding)
       if (!saved) return
       upd = [...holdings, saved]
       setHoldings(upd)
+      saveTicker=saved.ticker; saveName=saved.name; saveShares=saved.shares; savePrice=saved.buyPrice
     }
     // Save trade history
-    const entry = { type:'buy', ticker:saved.ticker, name:saved.name, shares:saved.shares, price:saved.buyPrice, buyPrice:null, date:new Date().toLocaleDateString('he-IL') }
+    const entry = { type:'buy', ticker:saveTicker, name:saveName, shares:saveShares, price:savePrice, buyPrice:null, date:new Date().toLocaleDateString('he-IL') }
     await saveTradeHistoryToDB(userId, entry)
     const newHist = await loadHistoryFromDB(userId)
     setHistory(newHist)
