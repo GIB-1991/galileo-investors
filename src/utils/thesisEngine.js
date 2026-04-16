@@ -24,7 +24,15 @@ function getCategory(mc) {
   return 'small'                     // <$200B — max 5%
 }
 
-export function analyzePortfolio(holdings) {
+export function analyzePortfolio(holdingsInput) {
+  // Merge duplicate tickers before analysis
+  const merged={};
+  [...holdingsInput].forEach(h=>{
+    if(merged[h.ticker]) merged[h.ticker]={...merged[h.ticker],shares:merged[h.ticker].shares+h.shares};
+    else merged[h.ticker]={...h};
+  });
+  let holdings=Object.values(merged);
+
   const alerts = []
   if (!holdings?.length) return alerts
 
