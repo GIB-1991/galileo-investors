@@ -12,6 +12,7 @@ export default function Portfolio() {
   const [holdings, setHoldings] = useState([])
   const [history, setHistory] = useState([])
   const [prices, setPrices] = useState({})
+  const [sectorMap, setSectorMap] = useState({})
   const [dbLoading, setDbLoading] = useState(true)
   const [tab, setTab] = useState('portfolio')
   const [showAdd, setShowAdd] = useState(false)
@@ -172,6 +173,22 @@ export default function Portfolio() {
   })
   const tips = enriched.length>0 ? analyzePortfolio(enriched.map(h=>({ticker:h.ticker,shares:h.shares,buyPrice:h.buyPrice,currentPrice:h.cur,marketCap:0,beta:1,shortFloat:0,sharesFloat:1e9}))) : []
   const pieData = enriched.map((h,i)=>({name:h.ticker,fullName:(h.name||h.ticker).substring(0,18),value:parseFloat(h.pct.toFixed(1)),color:COLORS[i%COLORS.length]})).filter(d=>d.value>0)
+  // Sector pie data
+  const sectorPieData = (() => {
+    const map = {}
+    enriched.forEach(h=>{
+      const sec = sectorMap[h.ticker] || 'אחר'
+      const val = h.currentValue || 0
+      map[sec] = (map[sec]||0) + val
+    })
+    const SECTOR_COLORS=['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ec4899']
+    return Object.entries(map).map(([name,value],i)=>({
+      name, value:parseFloat(value.toFixed(2)),
+      pct:totalVal>0?((value/totalVal)*100).toFixed(1):'0',
+      color:SECTOR_COLORS[i%SECTOR_COLORS.length]
+    })).sort((a,b)=>b.value-a.value)
+  })()
+
   const totalPnL = enriched.reduce((s,h)=>s+h.pnl,0)
   const totalCost = enriched.reduce((s,h)=>s+h.cost,0)
   const totalPnLPct = totalCost?(totalPnL/totalCost)*100:0
