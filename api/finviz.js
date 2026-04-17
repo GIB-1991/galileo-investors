@@ -54,7 +54,21 @@ export default async function handler(req,res){
       else if(mcRaw.includes('M'))marketCap=v*1e6;
     }
 
+    // Extract sector
+    let sector=null;
+    const secMatch=html.match(/screener\.ashx\?v=111&f=sec_[^"]*">([^<]+)<\/a>/);
+    if(secMatch) sector=secMatch[1].trim();
+    // Also try industry table pattern
+    if(!sector){
+      const secIdx=html.indexOf('>Sector<');
+      if(secIdx>-1){
+        const secSlice=html.substring(secIdx,secIdx+300);
+        const sMatch=secSlice.match(/class="tab-link">([^<]+)<\/a>/);
+        if(sMatch) sector=sMatch[1].trim();
+      }
+    }
+
     res.setHeader('Cache-Control','public,max-age=3600');
-    res.json({beta,shortFloat,avgVolume,marketCap:marketCap||null});
+    res.json({beta,shortFloat,avgVolume,marketCap:marketCap||null,sector});
   }catch(e){res.status(500).json({error:e.message});}
 }
