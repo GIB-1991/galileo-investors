@@ -1,4 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
+  }, [holdings])
+
+  // Fetch sectors for all holdings
+  useEffect(()=>{
+    if(!holdings.length) return
+    holdings.forEach(h=>{
+      fetch('/api/finviz?ticker='+h.ticker)
+        .then(r=>r.json())
+        .then(fv=>{ if(fv.sector) setSectorMap(prev=>({...prev,[h.ticker]:fv.sector})) })
+        .catch(()=>{})
+    })
+  }, [holdings.map(h=>h.ticker).join(',')])te, useEffect, useRef } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { Plus, Trash2, TrendingUp, TrendingDown, AlertTriangle, Search, X, History, ArrowDownCircle, ArrowUpCircle, RefreshCw } from 'lucide-react'
 import { searchTicker } from '../services/stockApi.js'
@@ -12,6 +23,7 @@ export default function Portfolio() {
   const [holdings, setHoldings] = useState([])
   const [history, setHistory] = useState([])
   const [prices, setPrices] = useState({})
+  const [sectorMap, setSectorMap] = useState({})
   const [sectorMap, setSectorMap] = useState({})
   const [dbLoading, setDbLoading] = useState(true)
   const [tab, setTab] = useState('portfolio')
@@ -166,6 +178,21 @@ export default function Portfolio() {
     setShowSell(null); setSellShares(''); setSellPrice('')
   }
   const totalVal = holdings.reduce((s,h)=>s+(prices[h.ticker]||h.buyPrice)*h.shares,0)
+  const sectorColors=['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ec4899']
+  const sectorPieData=(()=>{
+    const map={}
+    enriched.forEach(h=>{
+      const sec=sectorMap[h.ticker]||'אחר'
+      const val=(h.currentPrice||h.buyPrice)*h.shares
+      map[sec]=(map[sec]||0)+val
+    })
+    return Object.entries(map).map(([name,value],i)=>({
+      name,value:parseFloat(value.toFixed(2)),
+      pct:totalVal>0?((value/totalVal)*100).toFixed(1):'0',
+      color:sectorColors[i%sectorColors.length]
+    })).sort((a,b)=>b.value-a.value)
+  })()
+
   const enriched = holdings.map(h=>{
     const cur=prices[h.ticker]||h.buyPrice, val=cur*h.shares, cost=h.buyPrice*h.shares
     const pnl=val-cost, pnlPct=cost?(pnl/cost)*100:0, pct=totalVal?(val/totalVal)*100:0
@@ -220,6 +247,29 @@ export default function Portfolio() {
           {[['שווי תיק','$'+totalVal.toLocaleString('en-US',{maximumFractionDigits:0}),null],['רווח/הפסד',fm(totalPnL),totalPnL],['תשואה',(totalPnLPct>=0?'+':'')+totalPnLPct.toFixed(1)+'%',totalPnLPct],['פוזיציות',''+holdings.length,null]].map(([l,v,n])=>(<div key={l} className="card" style={{padding:'1rem'}}><div style={{fontSize:'.72rem',color:'var(--color-text-muted)',marginBottom:4}}>{l}</div><div style={{fontWeight:800,fontSize:'1.05rem',direction:'ltr',textAlign:'right',fontFamily:"'IBM Plex Mono',monospace",color:n==null?'var(--color-text-primary)':n>=0?'var(--color-success)':'var(--color-danger)'}}>{v}</div></div>))}
         </div>)}
         {pieData.length>0&&(<div className="card" style={{marginBottom:'1.5rem',padding:'1.25rem'}}><h3 style={{margin:'0 0 1rem',fontSize:'.9rem',fontWeight:700}}>חלוקת תיק</h3><div style={{display:'flex',gap:'1.5rem',alignItems:'center',flexWrap:'wrap'}}><ResponsiveContainer width={200} height={200}><PieChart><Pie data={pieData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value">{pieData.map((d,i)=><Cell key={i} fill={d.color}/>)}</Pie><Tooltip content={<CT/>}/></PieChart></ResponsiveContainer><div style={{flex:1,minWidth:160}}>{pieData.map(d=>(<div key={d.name} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}><div style={{width:10,height:10,borderRadius:2,background:d.color,flexShrink:0}}/><span style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:700,fontSize:'.8rem',color:'var(--color-accent)',minWidth:48}}>{d.name}</span><span style={{fontSize:'.78rem',color:'var(--color-text-secondary)',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.fullName}</span><span style={{fontWeight:700,fontSize:'.8rem',direction:'ltr'}}>{d.value}%</span></div>))}</div></div></div>)}
+        {sectorPieData.length>0&&(<div style={{background:'var(--color-surface)',borderRadius:'1rem',padding:'1.25rem',marginBottom:'1.5rem'}}>
+          <h3 style={{margin:'0 0 1rem',fontSize:'.9rem',fontWeight:700,color:'var(--color-text)'}}>חלוקה לפי סקטורים</h3>
+          <div style={{display:'flex',gap:'1.5rem',alignItems:'center',flexWrap:'wrap'}}>
+            <ResponsiveContainer width={200} height={200}><PieChart>
+              <Pie data={sectorPieData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value">
+                {sectorPieData.map((d,i)=><Cell key={i} fill={d.color}/>)}
+              </Pie>
+              <Tooltip content={({active,payload})=>{
+                if(!active||!payload?.length) return null
+                const d=payload[0].payload
+                return(<div style={{background:'var(--color-surface-2)',border:'1px solid var(--color-border)',borderRadius:8,padding:'8px 12px',fontSize:'.82rem',direction:'rtl'}}>
+                  <div style={{fontWeight:700}}>{d.name}</div>
+                  <div style={{color:'var(--color-text-muted)'}}>{d.pct}%</div>
+                </div>)
+              }}/>
+            </PieChart></ResponsiveContainer>
+            <div style={{flex:1,minWidth:160}}>{sectorPieData.map(d=>(<div key={d.name} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+              <div style={{width:10,height:10,borderRadius:2,background:d.color,flexShrink:0}}/>
+              <span style={{fontSize:'.82rem',flex:1,color:'var(--color-text)'}}>{d.name}</span>
+              <span style={{fontSize:'.82rem',fontWeight:700,color:'var(--color-text-muted)'}}>{d.pct}%</span>
+            </div>))}</div>
+          </div>
+        </div>)}
         {tips.length>0&&(<div style={{marginBottom:'1.5rem',display:'flex',flexDirection:'column',gap:'.5rem'}}>{tips.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'.875rem 1rem',borderRadius:10,border:'1px solid',background:a.type==='danger'?'rgba(240,82,82,0.08)':a.type==='warning'?'rgba(245,166,35,0.08)':'rgba(45,216,122,0.08)',borderColor:a.type==='danger'?'rgba(240,82,82,0.25)':a.type==='warning'?'rgba(245,166,35,0.25)':'rgba(45,216,122,0.25)'}}><AlertTriangle size={14} style={{color:a.type==='danger'?'var(--color-danger)':a.type==='warning'?'var(--color-warning)':'var(--color-success)',flexShrink:0,marginTop:2}}/><span style={{fontSize:'.9rem',color:'#ffffff',fontWeight:'700',lineHeight:1.4}}>{a.message}</span></div>))}</div>)}
         {enriched.length>0 ? (
           <div className="card" style={{padding:0,overflowX:'auto'}}>
