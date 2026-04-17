@@ -23,9 +23,9 @@ function getCapLimit(cat) {
 }
 
 function getCapLabel(cat) {
-  if (cat==='mega') return 'Mega Cap (מעל 1T)'
-  if (cat==='large') return 'Large Cap (200B-1T)'
-  return 'Small Cap (מתחת 200B)'
+  if (cat==='mega') return 'מגה קאפ (מעל 1T דולר)'
+  if (cat==='large') return 'לארג קאפ (200B-1T דולר)'
+  return 'סמול קאפ (מתחת 200B דולר)'
 }
 
 // Check alerts when user picks a stock to add
