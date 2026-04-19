@@ -1,4 +1,4 @@
-import { useSta
+import { useState, useEffect, useRef } from 'react'
 
   // Fetch sectors for all holdings
   useEffect(()=>{
@@ -9,7 +9,7 @@ import { useSta
         .then(fv=>{ if(fv.sector) setSectorMap(prev=>({...prev,[h.ticker]:fv.sector})) })
         .catch(()=>{})
     })
-  }, [holdings.map(h=>h.ticker).join(',')])te, useEffect, useRef } from 'react'
+  }, [holdings.map(h=>h.ticker).join(',')])
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { Plus, Trash2, TrendingUp, TrendingDown, AlertTriangle, Search, X, History, ArrowDownCircle, ArrowUpCircle, RefreshCw } from 'lucide-react'
 import { searchTicker } from '../services/stockApi.js'
