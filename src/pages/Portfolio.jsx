@@ -166,6 +166,13 @@ export default function Portfolio() {
     setShowSell(null); setSellShares(''); setSellPrice('')
   }
   const totalVal = holdings.reduce((s,h)=>s+(prices[h.ticker]||h.buyPrice)*h.shares,0)
+
+  const enriched = holdings.map(h=>{
+    const cur=prices[h.ticker]||h.buyPrice, val=cur*h.shares, cost=h.buyPrice*h.shares
+    const pnl=val-cost, pnlPct=cost?(pnl/cost)*100:0, pct=totalVal?(val/totalVal)*100:0
+    return {...h,cur,val,cost,pnl,pnlPct,pct}
+  })
+
   const sectorColors=['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ec4899']
   const sectorPieData=(()=>{
     const map={}
@@ -180,12 +187,6 @@ export default function Portfolio() {
       color:sectorColors[i%sectorColors.length]
     })).sort((a,b)=>b.value-a.value)
   })()
-
-  const enriched = holdings.map(h=>{
-    const cur=prices[h.ticker]||h.buyPrice, val=cur*h.shares, cost=h.buyPrice*h.shares
-    const pnl=val-cost, pnlPct=cost?(pnl/cost)*100:0, pct=totalVal?(val/totalVal)*100:0
-    return {...h,cur,val,cost,pnl,pnlPct,pct}
-  })
   const tips = enriched.length>0 ? analyzePortfolio(enriched.map(h=>({ticker:h.ticker,shares:h.shares,buyPrice:h.buyPrice,currentPrice:h.cur,marketCap:0,beta:1,shortFloat:0,sharesFloat:1e9}))) : []
   const pieData = enriched.map((h,i)=>({name:h.ticker,fullName:(h.name||h.ticker).substring(0,18),value:parseFloat(h.pct.toFixed(1)),color:COLORS[i%COLORS.length]})).filter(d=>d.value>0)
   // Sector pie data
