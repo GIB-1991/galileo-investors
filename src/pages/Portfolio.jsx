@@ -24,7 +24,6 @@ export default function Portfolio() {
   const [history, setHistory] = useState([])
   const [prices, setPrices] = useState({})
   const [sectorMap, setSectorMap] = useState({})
-  const [sectorMap, setSectorMap] = useState({})
   const [dbLoading, setDbLoading] = useState(true)
   const [tab, setTab] = useState('portfolio')
   const [showAdd, setShowAdd] = useState(false)
