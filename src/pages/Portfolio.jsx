@@ -234,20 +234,22 @@ export default function Portfolio() {
         {sectorPieData&&sectorPieData.length>0&&(<div style={{background:'var(--color-surface)',borderRadius:'1rem',padding:'1.25rem',marginBottom:'1.5rem'}}>
           <h3 style={{margin:'0 0 1rem',fontSize:'.9rem',fontWeight:700,color:'var(--color-text)'}}>חלוקה לפי סקטורים</h3>
           <div style={{display:'flex',gap:'1.5rem',alignItems:'center',flexWrap:'wrap'}}>
-            <ResponsiveContainer width={200} height={200}><PieChart>
-              <Pie data={sectorPieData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value">
-                {sectorPieData.map((d,i)=><Cell key={i} fill={d.color}/>)}
-              </Pie>
-              <Tooltip content={({active,payload})=>{
-                if(!active||!payload?.length) return null
-                const d=payload[0].payload
-                return(<div style={{background:'var(--color-surface-2)',border:'1px solid var(--color-border)',borderRadius:8,padding:'8px 12px',fontSize:'.82rem',direction:'rtl'}}><div style={{fontWeight:700}}>{d.name}</div><div>{d.pct}%</div></div>)
-              }}/>
-            </PieChart></ResponsiveContainer>
-            <div style={{flex:1,minWidth:160}}>{sectorPieData.map(d=>(<div key={d.name} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+            <div style={{width:200,height:200,flexShrink:0}}>
+              <ResponsiveContainer width="100%" height="100%"><PieChart>
+                <Pie data={sectorPieData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value">
+                  {sectorPieData.map((d,i)=><Cell key={i} fill={d.color}/>)}
+                </Pie>
+                <Tooltip content={({active,payload})=>{
+                  if(!active||!payload?.length) return null
+                  const d=payload[0].payload
+                  return(<div style={{background:'var(--color-surface-2)',border:'1px solid var(--color-border)',borderRadius:8,padding:'8px 12px',fontSize:'.82rem',direction:'rtl'}}><div style={{fontWeight:700}}>{d.name}</div><div>{d.pct}%</div></div>)
+                }}/>
+              </PieChart></ResponsiveContainer>
+            </div>
+            <div style={{flex:1,minWidth:140}}>{sectorPieData.map(d=>(<div key={d.name} style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
               <div style={{width:10,height:10,borderRadius:2,background:d.color,flexShrink:0}}/>
-              <span style={{fontSize:'.82rem',flex:1}}>{d.name}</span>
-              <span style={{fontSize:'.82rem',fontWeight:700,color:'var(--color-text-muted)'}}>{d.pct}%</span>
+              <span style={{fontSize:'.82rem',flex:1,color:'var(--color-text)'}}>{d.name}</span>
+              <span style={{fontSize:'.82rem',fontWeight:700,color:'var(--color-text-muted)',minWidth:42,textAlign:'left'}}>{d.pct}%</span>
             </div>))}</div>
           </div>
         </div>)}
