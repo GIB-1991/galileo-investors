@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { Plus, Trash2, TrendingUp, TrendingDown, AlertTriangle, Search, X, History, ArrowDownCircle, ArrowUpCircle, RefreshCw } from 'lucide-react'
 import { searchTicker } from '../services/stockApi.js'
