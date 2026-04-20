@@ -73,6 +73,17 @@ export default function Portfolio() {
     }, 300)
   }, [query])
 
+  // Fetch sectors from Finviz for all holdings
+  useEffect(()=>{
+    if(!holdings.length) return
+    holdings.forEach(h=>{
+      fetch('/api/finviz?ticker='+h.ticker)
+        .then(r=>r.json())
+        .then(fv=>{ if(fv?.sector) setSectorMap(prev=>({...prev,[h.ticker]:fv.sector})) })
+        .catch(()=>{})
+    })
+  }, [holdings.map(h=>h.ticker).join(',')])
+
   const pickTicker = async (ticker, name) => {
     setSel({ ticker, name }); setQuery(ticker)
     setShowSugg(false); setSugg([])
