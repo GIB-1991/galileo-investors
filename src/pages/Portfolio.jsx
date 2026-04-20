@@ -185,20 +185,21 @@ export default function Portfolio() {
   const tips = enriched.length>0 ? analyzePortfolio(enriched.map(h=>({ticker:h.ticker,shares:h.shares,buyPrice:h.buyPrice,currentPrice:h.cur,marketCap:0,beta:1,shortFloat:0,sharesFloat:1e9}))) : []
   const pieData = enriched.map((h,i)=>({name:h.ticker,fullName:(h.name||h.ticker).substring(0,18),value:parseFloat(h.pct.toFixed(1)),color:COLORS[i%COLORS.length]})).filter(d=>d.value>0)
   // Sector pie data
-  const sectorPieData = useMemo(()=>{
-    const map = {}
-    enriched.forEach(h=>{
-      const sec = sectorMap[h.ticker] || 'אחר'
-      const val = h.currentValue || 0
-      map[sec] = (map[sec]||0) + val
-    })
-    const SECTOR_COLORS=['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ec4899']
-    return Object.entries(map).map(([name,value],i)=>({
-      name, value:parseFloat(value.toFixed(2)),
-      pct:totalVal>0?((value/totalVal)*100).toFixed(1):'0',
-      color:SECTOR_COLORS[i%SECTOR_COLORS.length]
-    })).sort((a,b)=>b.value-a.value)
-    },[holdings,prices,sectorMap])
+  const sectorColors=['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ec4899']
+  const sectorPieData=useMemo(()=>{
+      const totalV=holdings.reduce((s,h)=>s+(prices[h.ticker]||h.buyPrice||0)*h.shares,0)
+      if(!totalV) return []
+      const map={}
+      holdings.forEach(h=>{
+        const sec=sectorMap[h.ticker]; if(!sec) return
+        map[sec]=(map[sec]||0)+(prices[h.ticker]||h.buyPrice||0)*h.shares
+      })
+      return Object.entries(map).map(([name,value],i)=>({
+        name,value:parseFloat(value.toFixed(2)),
+        pct:((value/totalV)*100).toFixed(1),
+        color:sectorColors[i%sectorColors.length]
+      })).sort((a,b)=>b.value-a.value)
+  },[holdings,prices,sectorMap])
 
   const totalPnL = enriched.reduce((s,h)=>s+h.pnl,0)
   const totalCost = enriched.reduce((s,h)=>s+h.cost,0)
