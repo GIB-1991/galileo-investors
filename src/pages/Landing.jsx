@@ -1,5 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import { TrendingUp, Shield, BookOpen, BarChart2, ArrowLeft, Star } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { TrendingUp, Shield, BookOpen, BarChart2, ArrowLeft, Star, Users, Zap } from 'lucide-react'
+
+const ROW1 = ['SPY','QQQ','AAPL','MSFT','NVDA','GOOG','AMZN','META','TSLA','BRK-B','JPM','V','WMT','AVGO','LLY']
+const ROW2 = ['XOM','JNJ','PG','MA','HD','COST','MCD','CSCO','PEP','KO','UNH','CVX','TMO','ABT','CRM']
 
 const FEATURES=[
   {icon:BookOpen,title:'אקדמיה',desc:'מושגים פיננסיים בעברית עם דוגמאות חזותיות',color:'#f5a623'},
@@ -8,126 +12,178 @@ const FEATURES=[
   {icon:Shield,title:'מנוע התזה',desc:'ניתוח אוטומטי עם התראות על סיכונים',color:'#a855f7'},
 ]
 
-const TICKERS = [
-  {t:'AAPL',p:'$189.50',c:'+1.2%',up:true},
-  {t:'NVDA',p:'$875.40',c:'-1.4%',up:false},
-  {t:'MSFT',p:'$415.30',c:'+0.8%',up:true},
-  {t:'TSLA',p:'$248.90',c:'+2.3%',up:true},
-  {t:'AMZN',p:'$185.20',c:'+1.3%',up:true},
-  {t:'META',p:'$502.10',c:'-0.6%',up:false},
-]
+function TickerRow({tickers,direction='normal',prices}){
+  const items=[...tickers,...tickers,...tickers]
+  return(
+    <div style={{overflow:'hidden',width:'100%',maskImage:'linear-gradient(to right,transparent 0%,black 8%,black 92%,transparent 100%)'}}>
+      <div style={{
+        display:'flex',gap:'2rem',width:'max-content',
+        animation:`ticker${direction==='reverse'?'Rev':'Fwd'} 45s linear infinite`,
+        willChange:'transform'
+      }}>
+        {items.map((t,i)=>{
+          const d=prices[t]
+          const up=d?d.change>=0:null
+          return(
+            <span key={i} style={{
+              display:'inline-flex',alignItems:'center',gap:'0.45rem',
+              fontSize:'0.76rem',fontWeight:600,whiteSpace:'nowrap',
+              padding:'0.3rem 0.75rem',
+              borderRadius:'100px',
+              background:up===null?'rgba(255,255,255,0.04)':up?'rgba(22,163,74,0.1)':'rgba(220,38,38,0.1)',
+              border:`1px solid ${up===null?'rgba(255,255,255,0.08)':up?'rgba(22,163,74,0.2)':'rgba(220,38,38,0.2)'}`,
+              color:up===null?'rgba(255,255,255,0.45)':up?'#4ade80':'#f87171',
+            }}>
+              <span style={{color:'rgba(255,255,255,0.7)',fontWeight:700,letterSpacing:'0.03em'}}>{t}</span>
+              {d&&<><span>{d.price}</span><span style={{opacity:0.85}}>{up?'▲':'▼'}{Math.abs(d.change).toFixed(2)}%</span></>}
+              {!d&&<span style={{opacity:0.35}}>—</span>}
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 export default function Landing(){
   const navigate=useNavigate()
+  const [prices,setPrices]=useState({})
+
+  useEffect(()=>{
+    const all=[...ROW1,...ROW2]
+    const init={}
+    all.forEach(t=>{
+      const vals=[
+        {t:'AAPL',p:'$213.50',c:1.2},{t:'NVDA',p:'$875.40',c:-1.4},{t:'MSFT',p:'$415.30',c:0.8},
+        {t:'TSLA',p:'$248.90',c:2.3},{t:'AMZN',p:'$185.20',c:1.3},{t:'META',p:'$502.10',c:-0.6},
+        {t:'GOOG',p:'$175.80',c:0.4},{t:'SPY',p:'$527.20',c:0.5},{t:'QQQ',p:'$448.60',c:0.7},
+        {t:'BRK-B',p:'$410.30',c:-0.2},{t:'JPM',p:'$208.40',c:1.1},{t:'V',p:'$280.50',c:0.9},
+        {t:'WMT',p:'$79.20',c:0.3},{t:'AVGO',p:'$162.80',c:-0.8},{t:'LLY',p:'$890.40',c:1.5},
+        {t:'XOM',p:'$118.30',c:-0.4},{t:'JNJ',p:'$152.60',c:0.6},{t:'PG',p:'$168.40',c:0.2},
+        {t:'MA',p:'$480.20',c:1.0},{t:'HD',p:'$342.80',c:-0.5},{t:'COST',p:'$892.10',c:2.1},
+        {t:'MCD',p:'$295.30',c:0.3},{t:'CSCO',p:'$56.80',c:-0.7},{t:'PEP',p:'$162.40',c:0.4},
+        {t:'KO',p:'$68.90',c:0.1},{t:'UNH',p:'$510.80',c:-1.2},{t:'CVX',p:'$158.30',c:-0.3},
+        {t:'TMO',p:'$528.60',c:0.8},{t:'ABT',p:'$125.40',c:0.5},{t:'CRM',p:'$298.70',c:-0.9},
+      ].find(v=>v.t===t)
+      if(vals) init[t]={price:vals.p,change:vals.c}
+    })
+    setPrices(init)
+    // Try live data
+    all.slice(0,20).forEach(t=>{
+      fetch('/api/quote?ticker='+t).then(r=>r.json()).then(d=>{
+        if(d?.price) setPrices(prev=>({...prev,[t]:{price:'$'+d.price.toFixed(2),change:d.changePercent||0}}))
+      }).catch(()=>{})
+    })
+  },[])
+
   return(
-    <div style={{minHeight:'100vh',direction:'rtl',fontFamily:'Heebo,sans-serif',background:'var(--color-bg)',overflowX:'hidden'}}>
-      
-      {/* Ambient background */}
-      <div style={{position:'fixed',top:0,right:0,width:600,height:600,background:'radial-gradient(circle,rgba(245,166,35,0.06) 0%,transparent 70%)',pointerEvents:'none',zIndex:0}}/>
-      <div style={{position:'fixed',bottom:0,left:0,width:500,height:500,background:'radial-gradient(circle,rgba(79,142,247,0.06) 0%,transparent 70%)',pointerEvents:'none',zIndex:0}}/>
+    <div style={{minHeight:'100vh',direction:'rtl',fontFamily:'Heebo,sans-serif',background:'#0a0b0f',color:'#fff',overflow:'hidden'}}>
+      <style>{`
+        @keyframes tickerFwd{0%{transform:translateX(0)}100%{transform:translateX(-33.333%)}}
+        @keyframes tickerRev{0%{transform:translateX(-33.333%)}100%{transform:translateX(0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:0.7}}
+        .hero-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(245,166,35,0.4)!important}
+        .hero-btn{transition:all .2s ease}
+        .sec-btn:hover{background:rgba(255,255,255,0.08)!important}
+        .sec-btn{transition:all .2s ease}
+        .feat-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.12)!important}
+        .feat-card{transition:all .25s ease}
+      `}</style>
+
+      {/* Ambient glows */}
+      <div style={{position:'fixed',top:-200,right:-200,width:700,height:700,background:'radial-gradient(circle,rgba(245,166,35,0.12) 0%,transparent 70%)',pointerEvents:'none',zIndex:0}}/>
+      <div style={{position:'fixed',bottom:-200,left:-200,width:600,height:600,background:'radial-gradient(circle,rgba(79,142,247,0.1) 0%,transparent 70%)',pointerEvents:'none',zIndex:0}}/>
 
       {/* Header */}
-      <header style={{position:'sticky',top:0,zIndex:100,background:'rgba(13,15,20,0.85)',backdropFilter:'blur(20px)',borderBottom:'1px solid var(--color-border)',padding:'0 2rem'}}>
-        <div style={{maxWidth:1200,margin:'0 auto',height:64,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      <header style={{position:'sticky',top:0,zIndex:100,background:'rgba(10,11,15,0.9)',backdropFilter:'blur(16px)',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{maxWidth:1200,margin:'0 auto',height:64,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 2rem'}}>
           <div style={{display:'flex',alignItems:'center',gap:10}}>
-            <div style={{width:36,height:36,background:'linear-gradient(135deg,#f5a623,#e8871a)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 16px rgba(245,166,35,0.4)'}}>
-              <span style={{color:'#0d0f14',fontSize:18,fontWeight:800}}>G</span>
+            <div style={{width:36,height:36,background:'linear-gradient(135deg,#f5a623,#e8871a)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <span style={{color:'#0a0b0f',fontSize:18,fontWeight:800}}>G</span>
             </div>
             <div>
-              <div style={{fontWeight:700,fontSize:'0.95rem',color:'var(--color-text-primary)'}}>משקיעים עם גלילאו</div>
-              <div style={{fontSize:'0.65rem',color:'var(--color-accent)',letterSpacing:'0.1em',fontWeight:600}}>GALILEO INVESTORS</div>
+              <div style={{fontWeight:700,fontSize:'0.95rem',color:'#fff'}}>משקיעים עם גלילאו</div>
+              <div style={{fontSize:'0.6rem',color:'#f5a623',letterSpacing:'0.12em',fontWeight:600,textTransform:'uppercase',opacity:0.8}}>MARKET INTELLIGENCE</div>
             </div>
           </div>
-          <div style={{display:'flex',gap:10}}>
-            <button className="btn-secondary" onClick={()=>navigate('/auth')} style={{padding:'0.5rem 1.25rem',fontSize:'0.85rem'}}>כניסה</button>
-            <button className="btn-primary" onClick={()=>navigate('/auth?mode=signup')} style={{padding:'0.5rem 1.25rem',fontSize:'0.85rem'}}>התחל בחינם</button>
+          <div style={{display:'flex',gap:'0.75rem'}}>
+            <button className="sec-btn" onClick={()=>navigate('/auth')} style={{padding:'0.5rem 1.25rem',borderRadius:8,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.8)',cursor:'pointer',fontSize:'0.85rem',fontWeight:500}}>כניסה</button>
+            <button className="hero-btn" onClick={()=>navigate('/auth')} style={{padding:'0.5rem 1.25rem',borderRadius:8,background:'linear-gradient(135deg,#f5a623,#e8871a)',border:'none',color:'#0a0b0f',cursor:'pointer',fontSize:'0.85rem',fontWeight:700}}>הצטרף חינם</button>
           </div>
         </div>
       </header>
 
+      {/* Ticker Row 1 */}
+      <div style={{padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.05)',position:'relative',zIndex:1}}>
+        <TickerRow tickers={ROW1} direction="normal" prices={prices}/>
+      </div>
+
       {/* Hero */}
-      <section style={{position:'relative',zIndex:1,padding:'5rem 2rem 4rem',textAlign:'center',maxWidth:900,margin:'0 auto'}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.25)',color:'var(--color-accent)',borderRadius:20,padding:'5px 16px',fontSize:'0.8rem',fontWeight:600,marginBottom:'2rem',backdropFilter:'blur(8px)'}}>
-          <Star size={12} fill="currentColor"/>
-          חודש ניסיון חינם — ללא כרטיס אשראי
+      <section style={{maxWidth:1200,margin:'0 auto',padding:'5rem 2rem 4rem',textAlign:'center',position:'relative',zIndex:1}}>
+        <div style={{display:'inline-flex',alignItems:'center',gap:8,padding:'0.35rem 1rem',borderRadius:100,background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.25)',color:'#f5a623',fontSize:'0.78rem',fontWeight:600,marginBottom:'2rem',animation:'fadeUp 0.6s ease both'}}>
+          <Zap size={12}/> פלטפורמת ההשקעות המובילה לישראלים
         </div>
-        <h1 style={{fontSize:'clamp(2.2rem,5vw,3.5rem)',fontWeight:800,lineHeight:1.15,margin:'0 0 1.5rem',background:'linear-gradient(135deg,#f0f2f8 30%,#9aa0b8 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>
-          כלים, ידע ובניית<br/>תיק השקעות חכם
+        <h1 style={{fontSize:'clamp(2.2rem,5vw,3.8rem)',fontWeight:800,lineHeight:1.15,margin:'0 0 1.5rem',animation:'fadeUp 0.6s ease 0.1s both',letterSpacing:'-0.02em'}}>
+          השקע <span style={{background:'linear-gradient(135deg,#f5a623,#f97316)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>חכם יותר</span><br/>עם נתוני השוק האמיתיים
         </h1>
-        <p style={{fontSize:'1.1rem',color:'var(--color-text-secondary)',margin:'0 0 2.5rem',lineHeight:1.8,maxWidth:580,marginLeft:'auto',marginRight:'auto'}}>
-          מבוסס על תזת ההשקעות של גלילאו — גישה מקצועית לשוק ההון לכל משקיע
+        <p style={{fontSize:'1.1rem',color:'rgba(255,255,255,0.55)',maxWidth:560,margin:'0 auto 2.5rem',lineHeight:1.7,animation:'fadeUp 0.6s ease 0.2s both'}}>
+          גישה למדדים live, ניתוח מניות מעמיק, מעקב תיק השקעות ואקדמיה פיננסית בעברית — הכל במקום אחד.
         </p>
-        <div style={{display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
-          <button className="btn-accent" onClick={()=>navigate('/auth?mode=signup')} style={{display:'flex',alignItems:'center',gap:8,fontSize:'1rem'}}>
-            התחל ניסיון חינם <ArrowLeft size={18}/>
+        <div style={{display:'flex',gap:'1rem',justifyContent:'center',flexWrap:'wrap',animation:'fadeUp 0.6s ease 0.3s both'}}>
+          <button className="hero-btn" onClick={()=>navigate('/auth')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.8rem 2rem',borderRadius:10,background:'linear-gradient(135deg,#f5a623,#e8871a)',border:'none',color:'#0a0b0f',cursor:'pointer',fontSize:'0.95rem',fontWeight:700,boxShadow:'0 4px 20px rgba(245,166,35,0.3)'}}>
+            התחל בחינם <ArrowLeft size={16}/>
           </button>
-          <button className="btn-secondary" onClick={()=>navigate('/auth')}>כבר יש לי חשבון</button>
+          <button className="sec-btn" onClick={()=>navigate('/dashboard')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.8rem 2rem',borderRadius:10,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.85)',cursor:'pointer',fontSize:'0.95rem',fontWeight:600}}>
+            צפה בדמו
+          </button>
+        </div>
+        {/* Trust badge */}
+        <div style={{marginTop:'2.5rem',display:'flex',justifyContent:'center',alignItems:'center',gap:'0.5rem',animation:'fadeUp 0.6s ease 0.4s both',opacity:0.5,fontSize:'0.8rem'}}>
+          <Users size={13}/> נתוני שוק live ממקורות מוסדיים
+          <span style={{margin:'0 0.5rem'}}>·</span>
+          <Star size={13}/> גלילאו 2025 · Market Intelligence
         </div>
       </section>
 
-      {/* Live ticker strip */}
-      <div style={{position:'relative',zIndex:1,background:'var(--color-surface)',borderTop:'1px solid var(--color-border)',borderBottom:'1px solid var(--color-border)',padding:'0.875rem 2rem',overflow:'hidden'}}>
-        <div style={{display:'flex',gap:'2.5rem',justifyContent:'center',flexWrap:'wrap'}}>
-          {TICKERS.map(t=>(
-            <div key={t.t} style={{display:'flex',alignItems:'center',gap:10}}>
-              <span style={{fontFamily:"'IBM Plex Mono',monospace",fontWeight:700,fontSize:'0.82rem',color:'var(--color-accent)',letterSpacing:'0.05em'}}>{t.t}</span>
-              <span style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:'0.82rem',color:'var(--color-text-primary)',fontWeight:600,direction:'ltr'}}>{t.p}</span>
-              <span style={{fontSize:'0.75rem',fontWeight:700,direction:'ltr',color:t.up?'var(--color-success)':'var(--color-danger)'}}>{t.c}</span>
-            </div>
-          ))}
-        </div>
+      {/* Ticker Row 2 — reversed */}
+      <div style={{padding:'0.75rem 0',borderTop:'1px solid rgba(255,255,255,0.05)',borderBottom:'1px solid rgba(255,255,255,0.05)',position:'relative',zIndex:1}}>
+        <TickerRow tickers={ROW2} direction="reverse" prices={prices}/>
       </div>
 
       {/* Features */}
-      <section style={{position:'relative',zIndex:1,padding:'4rem 2rem',maxWidth:1100,margin:'0 auto'}}>
-        <div style={{textAlign:'center',marginBottom:'3rem'}}>
-          <h2 style={{fontSize:'1.8rem',fontWeight:700,margin:'0 0 0.75rem',color:'var(--color-text-primary)'}}>מה תמצאו בפלטפורמה</h2>
-          <p style={{color:'var(--color-text-secondary)',margin:0,fontSize:'0.95rem'}}>ארבעה מודולים שיהפכו אותך למשקיע חכם יותר</p>
-        </div>
+      <section style={{maxWidth:1200,margin:'0 auto',padding:'5rem 2rem',position:'relative',zIndex:1}}>
+        <h2 style={{textAlign:'center',fontSize:'1.8rem',fontWeight:700,marginBottom:'0.75rem',letterSpacing:'-0.01em'}}>כלים מקצועיים לכל משקיע</h2>
+        <p style={{textAlign:'center',color:'rgba(255,255,255,0.45)',marginBottom:'3rem',fontSize:'0.95rem'}}>כל מה שצריך כדי להשקיע בביטחון</p>
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:'1.25rem'}}>
-          {FEATURES.map(({icon:Icon,title,desc,color})=>(
-            <div key={title} style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,padding:'1.5rem',transition:'all 250ms',cursor:'default'}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor=color+'44';e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 8px 32px ${color}18`}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--color-border)';e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}>
-              <div style={{width:48,height:48,background:color+'18',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'1.1rem',border:`1px solid ${color}30`}}>
-                <Icon size={22} style={{color}}/>
+          {FEATURES.map((f,i)=>(
+            <div key={i} className="feat-card" style={{
+              padding:'1.75rem',borderRadius:16,
+              background:'rgba(255,255,255,0.03)',
+              border:'1px solid rgba(255,255,255,0.07)',
+              cursor:'pointer'
+            }} onClick={()=>navigate('/dashboard')}>
+              <div style={{width:44,height:44,borderRadius:12,background:f.color+'20',border:`1px solid ${f.color}40`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'1rem'}}>
+                <f.icon size={20} color={f.color}/>
               </div>
-              <h3 style={{fontSize:'1rem',fontWeight:700,margin:'0 0 0.5rem',color:'var(--color-text-primary)'}}>{title}</h3>
-              <p style={{fontSize:'0.875rem',color:'var(--color-text-secondary)',margin:0,lineHeight:1.65}}>{desc}</p>
+              <div style={{fontWeight:700,fontSize:'1rem',marginBottom:'0.5rem'}}>{f.title}</div>
+              <div style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.45)',lineHeight:1.6}}>{f.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Stats */}
-      <section style={{position:'relative',zIndex:1,padding:'3rem 2rem',maxWidth:800,margin:'0 auto'}}>
-        <div style={{background:'var(--color-surface)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:16,padding:'2.5rem',boxShadow:'0 0 40px rgba(245,166,35,0.08)',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'2rem',textAlign:'center'}}>
-          {[['12+','מושגי השקעה'],['Real-time','נתוני מניות'],['100%','בעברית'],['חינם','לחודש ראשון']].map(([v,l])=>(
-            <div key={l}>
-              <div style={{fontSize:'1.6rem',fontWeight:800,color:'var(--color-accent)',marginBottom:4,fontFamily:"'IBM Plex Mono',monospace"}}>{v}</div>
-              <div style={{fontSize:'0.8rem',color:'var(--color-text-secondary)'}}>{l}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{position:'relative',zIndex:1,padding:'4rem 2rem 5rem',textAlign:'center'}}>
-        <div style={{background:'linear-gradient(135deg,rgba(245,166,35,0.08) 0%,rgba(79,142,247,0.06) 100%)',border:'1px solid rgba(245,166,35,0.15)',borderRadius:20,padding:'3.5rem 2rem',maxWidth:640,margin:'0 auto'}}>
-          <h2 style={{fontSize:'1.8rem',fontWeight:800,margin:'0 0 1rem',color:'var(--color-text-primary)'}}>מוכנים להתחיל?</h2>
-          <p style={{color:'var(--color-text-secondary)',margin:'0 0 2rem',fontSize:'0.95rem',lineHeight:1.7}}>חודש ניסיון מלא — ללא התחייבות וללא כרטיס אשראי</p>
-          <button className="btn-accent" onClick={()=>navigate('/auth?mode=signup')} style={{fontSize:'1rem'}}>
-            פתח חשבון חינם עכשיו
+      {/* CTA bottom */}
+      <section style={{textAlign:'center',padding:'4rem 2rem 6rem',position:'relative',zIndex:1}}>
+        <div style={{maxWidth:600,margin:'0 auto',padding:'3rem',borderRadius:24,background:'linear-gradient(135deg,rgba(245,166,35,0.08),rgba(79,142,247,0.08))',border:'1px solid rgba(245,166,35,0.15)'}}>
+          <h2 style={{fontSize:'1.7rem',fontWeight:700,marginBottom:'1rem'}}>מוכן להתחיל?</h2>
+          <p style={{color:'rgba(255,255,255,0.5)',marginBottom:'2rem',lineHeight:1.6}}>הצטרף למשקיעים שכבר משתמשים בגלילאו לקבלת החלטות מושכלות</p>
+          <button className="hero-btn" onClick={()=>navigate('/auth')} style={{padding:'0.85rem 2.5rem',borderRadius:10,background:'linear-gradient(135deg,#f5a623,#e8871a)',border:'none',color:'#0a0b0f',cursor:'pointer',fontSize:'1rem',fontWeight:700,boxShadow:'0 4px 20px rgba(245,166,35,0.3)'}}>
+            התחל בחינם →
           </button>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer style={{position:'relative',zIndex:1,borderTop:'1px solid var(--color-border)',padding:'1.5rem 2rem',textAlign:'center',background:'var(--color-bg2)'}}>
-        <p style={{margin:0,fontSize:'0.78rem',color:'var(--color-text-muted)'}}>
-          אין לראות במידע המוצג באתר המלצה לפעולות בשוק ההון. © 2026 משקיעים עם גלילאו
-        </p>
-      </footer>
     </div>
   )
 }
