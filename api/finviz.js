@@ -54,21 +54,23 @@ export default async function handler(req,res){
       else if(mcRaw.includes('M'))marketCap=v*1e6;
     }
 
-    // Extract sector
-    let sector=null;
-    const secMatch=html.match(/screener\.ashx\?v=111&f=sec_[^"]*">([^<]+)<\/a>/);
-    if(secMatch) sector=secMatch[1].trim();
-    // Also try industry table pattern
+    // Extract sector — multiple patterns for Finviz HTML
+    let sector=null
+    // Pattern 1: screener link
+    const m1=html.match(/screener\.ashx\?[^"]*f=sec_[^"]*">([^<]+)<\/a>/)
+    if(m1) sector=m1[1].trim()
+    // Pattern 2: sector row in snapshot table
     if(!sector){
-      const secIdx=html.indexOf('>Sector<');
-      if(secIdx>-1){
-        const secSlice=html.substring(secIdx,secIdx+300);
-        const sMatch=secSlice.match(/class="tab-link">([^<]+)<\/a>/);
-        if(sMatch) sector=sMatch[1].trim();
-      }
+      const m2=html.match(/Sector<\/td>[\s\S]{0,200}?<td[^>]*>([^<]{3,30})<\/td>/)
+      if(m2) sector=m2[1].trim()
+    }
+    // Pattern 3: data-boxover or title attribute
+    if(!sector){
+      const m3=html.match(/class="tab-link"[^>]*>([A-Z][a-z]+ ?[A-Za-z]*)<\/a>/)
+      if(m3&&!m3[1].match(/Screener|Quote|Overview/)) sector=m3[1].trim()
     }
 
-    res.setHeader('Cache-Control','public,max-age=3600');
+        res.setHeader('Cache-Control','public,max-age=3600');
     res.json({beta,shortFloat,avgVolume,marketCap:marketCap||null,sector});
   }catch(e){res.status(500).json({error:e.message});}
 }
