@@ -185,7 +185,7 @@ export default function Portfolio() {
   const tips = enriched.length>0 ? analyzePortfolio(enriched.map(h=>({ticker:h.ticker,shares:h.shares,buyPrice:h.buyPrice,currentPrice:h.cur,marketCap:0,beta:1,shortFloat:0,sharesFloat:1e9}))) : []
   const pieData = enriched.map((h,i)=>({name:h.ticker,fullName:(h.name||h.ticker).substring(0,18),value:parseFloat(h.pct.toFixed(1)),color:COLORS[i%COLORS.length]})).filter(d=>d.value>0)
   // Sector pie data
-  const sectorPieData = (() => {
+  const sectorPieData = useMemo(()=>{
     const map = {}
     enriched.forEach(h=>{
       const sec = sectorMap[h.ticker] || 'אחר'
@@ -198,7 +198,7 @@ export default function Portfolio() {
       pct:totalVal>0?((value/totalVal)*100).toFixed(1):'0',
       color:SECTOR_COLORS[i%SECTOR_COLORS.length]
     })).sort((a,b)=>b.value-a.value)
-  })()
+    },[holdings,prices,sectorMap])
 
   const totalPnL = enriched.reduce((s,h)=>s+h.pnl,0)
   const totalCost = enriched.reduce((s,h)=>s+h.cost,0)
