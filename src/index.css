@@ -362,3 +362,76 @@ nav a {
 [style*="padding:'1.5rem'"], [style*="padding: 1.5rem"] {
   padding: 1.75rem !important;
 }
+
+
+/* ═══ PREMIUM COMPONENT UPGRADES ═══ */
+
+/* Dashboard / Portfolio metric cards — add top accent line */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245,166,35,0.35), transparent);
+  border-radius: 14px 14px 0 0;
+}
+
+/* Article cards hover glow */
+[style*="borderRadius:'16px'"], [style*="borderRadius: 16px"],
+[style*="border-radius: 16px"] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+/* Superinvestor investor cards */
+[style*="border:'1px solid var(--color-border)'"] {
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease !important;
+}
+[style*="border:'1px solid var(--color-border)'"]:hover {
+  border-color: rgba(245,166,35,0.3) !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Nav active tab — stronger accent */
+nav a[style*="color:'var(--color-accent)'"],
+nav a[style*="fontWeight:700"] {
+  background: rgba(245,166,35,0.1) !important;
+  border-radius: 8px !important;
+}
+
+/* Portfolio table ticker badges */
+[style*="fontWeight:700"][style*="fontSize:'0.8rem'"],
+[style*="fontWeight:700"][style*="fontSize: 0.8rem"] {
+  letter-spacing: 0.05em !important;
+}
+
+/* Stats circles on superinvestors */
+[style*="borderRadius:'50%'"][style*="border:"] {
+  box-shadow: 0 0 16px rgba(245,166,35,0.12) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+[style*="borderRadius:'50%'"][style*="border:"]:hover {
+  transform: scale(1.04) !important;
+  box-shadow: 0 0 24px rgba(245,166,35,0.22) !important;
+}
+
+/* Academy / articles card read more link */
+[style*="קרא עוד"], a[style*="color:'var(--color-accent)'"] {
+  transition: gap 0.15s ease !important;
+}
+
+/* Market ticker line top glow */
+[style*="background:'var(--color-surface)'"][style*="padding:'0.6rem'"] {
+  box-shadow: inset 0 1px 0 rgba(245,166,35,0.08) !important;
+}
+
+/* Number formatting — large values */
+[style*="fontSize:'1.8rem'"], [style*="fontSize:'2rem'"],
+[style*="fontSize: 1.8rem"], [style*="fontSize: 2rem"] {
+  font-feature-settings: 'tnum' !important;
+  font-variant-numeric: tabular-nums !important;
+}
