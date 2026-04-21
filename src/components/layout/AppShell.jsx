@@ -42,7 +42,7 @@ export default function AppShell({user, children}) {
   const handleSignOut = async () => { await signOut(); navigate('/') }
 
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('galileo-theme') !== 'light'
+    const _t=localStorage.getItem('galileo-theme'); if(!_t){localStorage.setItem('galileo-theme','dark')} return _t!=='light'
   })
 
   useEffect(() => {
