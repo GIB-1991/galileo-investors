@@ -328,12 +328,6 @@ nav a {
   transition: background 0.15s, color 0.15s !important;
 }
 
-/* === MODAL OVERLAYS === */
-[style*="position:'fixed'"][style*="inset:0"],
-[style*="position: fixed"][style*="inset: 0"] {
-  backdrop-filter: blur(4px) !important;
-}
-
 /* === SCROLLBAR === */
 * { scrollbar-width: thin; scrollbar-color: rgba(245,166,35,0.25) transparent; }
 
@@ -359,11 +353,6 @@ nav a {
 [style*="borderRadius:'12px'"], [style*="border-radius: 12px"] {
   transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s !important;
 }
-[style*="borderRadius:'12px'"]:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.5) !important;
-}
-
 /* === MARKET TICKER CARDS (dashboard top) === */
 [style*="borderRadius:'14px'"] {
   box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
