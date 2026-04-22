@@ -38,6 +38,30 @@ function extractTickers(title) {
   return [...new Set([...dollar,...named])].slice(0,5);
 }
 
+
+const TICKER_ROW1 = ['SPY','QQQ','AAPL','MSFT','NVDA','GOOG','AMZN','META','TSLA','BRK-B','JPM','V','WMT','AVGO','LLY']
+const TICKER_ROW2 = ['XOM','JNJ','PG','MA','HD','COST','MCD','CSCO','PEP','KO','UNH','CVX','TMO','ABT','CRM']
+
+function DashTickerRow({tickers,direction='normal',prices}){
+  const items=[...tickers,...tickers,...tickers]
+  return(
+    <div style={{overflow:'hidden',width:'100%',maskImage:'linear-gradient(to right,transparent 0%,black 5%,black 95%,transparent 100%)'}}>
+      <div style={{display:'flex',gap:'2rem',width:'max-content',animation:`dash${direction==='reverse'?'Rev':'Fwd'} 50s linear infinite`,willChange:'transform'}}>
+        {items.map((t,i)=>{
+          const d=prices?.[t]; const up=d?d.change>=0:null
+          return(
+            <span key={i} style={{display:'inline-flex',alignItems:'center',gap:'0.4rem',fontSize:'0.74rem',fontWeight:600,whiteSpace:'nowrap',padding:'0.22rem 0.7rem',borderRadius:'100px',background:up===null?'rgba(255,255,255,0.04)':up?'rgba(22,163,74,0.1)':'rgba(220,38,38,0.1)',border:`1px solid ${up===null?'rgba(255,255,255,0.07)':up?'rgba(22,163,74,0.2)':'rgba(220,38,38,0.2)'}`,color:up===null?'rgba(255,255,255,0.45)':up?'#4ade80':'#f87171'}}>
+              <span style={{color:'rgba(255,255,255,0.7)',fontWeight:700,letterSpacing:'0.04em'}}>{t}</span>
+              {d&&<><span>{d.price}</span><span style={{fontSize:'0.68rem',opacity:0.8}}>{up?'▲':'▼'}{Math.abs(d.change).toFixed(2)}%</span></>}
+              {!d&&<span style={{opacity:0.28}}>—</span>}
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard({ user }) {
   const [market, setMarket] = useState([])
   const [news, setNews] = useState([])
@@ -122,6 +146,11 @@ export default function Dashboard({ user }) {
 
   return (
     <div dir='rtl'>
+      <style>{`@keyframes dashFwd{0%{transform:translateX(0)}100%{transform:translateX(-33.333%)}}@keyframes dashRev{0%{transform:translateX(-33.333%)}100%{transform:translateX(0)}}`}</style>
+      <div style={{padding:'0.55rem 0',borderBottom:'1px solid rgba(255,255,255,0.05)',marginBottom:'0.5rem',background:'rgba(0,0,0,0.15)'}}>
+        <DashTickerRow tickers={TICKER_ROW1} direction="normal" prices={tickerPrices}/>
+      </div>
+
       <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
           <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
