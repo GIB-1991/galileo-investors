@@ -87,6 +87,7 @@ function TickerRow({tickers,direction='normal',prices}){
 export default function Landing(){
   const navigate=useNavigate()
   const [prices,setPrices]=useState({})
+  const [modal,setModal]=useState(null)
 
   useEffect(()=>{
     const all=[...ROW1,...ROW2]
@@ -194,7 +195,7 @@ export default function Landing(){
         </div>
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:'1rem'}}>
           {FEATURES.map((f,i)=>(
-            <div key={i} className="feat" onClick={()=>navigate('/auth')} style={{padding:'1.5rem',borderRadius:16,background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',cursor:'pointer',boxShadow:'0 2px 12px rgba(0,0,0,0.3)'}}>
+            <div key={i} className="feat" onClick={()=>setModal(f)} style={{padding:'1.5rem',borderRadius:16,background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',cursor:'pointer',boxShadow:'0 2px 12px rgba(0,0,0,0.3)'}}>
               <div style={{width:42,height:42,borderRadius:11,background:f.color+'18',border:`1px solid ${f.color}35`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'0.9rem'}}>
                 <f.icon size={19} color={f.color}/>
               </div>
@@ -271,6 +272,29 @@ export default function Landing(){
       <style>{`
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
       `}</style>
+      {modal&&(
+        <div onClick={()=>setModal(null)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.78)',zIndex:600,display:'flex',alignItems:'center',justifyContent:'center',backdropFilter:'blur(6px)',animation:'fadeIn 0.2s ease'}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:'rgba(14,18,32,0.99)',border:'1px solid rgba(245,166,35,0.22)',borderRadius:22,padding:'2.5rem 2.25rem',maxWidth:400,width:'90%',textAlign:'center',boxShadow:'0 24px 80px rgba(0,0,0,0.8)',animation:'fadeUp 0.25s ease',position:'relative'}}>
+            <button onClick={()=>setModal(null)} style={{position:'absolute',top:14,left:16,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:'1.2rem',cursor:'pointer',lineHeight:1}}>✕</button>
+            <div style={{width:54,height:54,borderRadius:14,background:modal.color+'1a',border:`1px solid ${modal.color}40`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 1.2rem'}}>
+              <modal.icon size={24} color={modal.color}/>
+            </div>
+            <h3 style={{fontSize:'1.2rem',fontWeight:700,marginBottom:'0.5rem',color:'#fff'}}>{modal.title}</h3>
+            <p style={{color:'rgba(255,255,255,0.48)',fontSize:'0.86rem',lineHeight:1.65,marginBottom:'1.75rem'}}>
+              פונקציה זו זמינה למשתמשים רשומים בלבד.<br/>
+              הצטרף בחינם וקבל גישה מיידית לכל הכלים של גלילאו.
+            </p>
+            <div style={{display:'flex',gap:'0.7rem',justifyContent:'center'}}>
+              <button onClick={()=>navigate('/auth')} style={{padding:'0.62rem 1.65rem',borderRadius:9,background:'linear-gradient(135deg,#f5a623,#e8871a)',border:'none',color:'#080b14',cursor:'pointer',fontSize:'0.88rem',fontWeight:700,boxShadow:'0 4px 16px rgba(245,166,35,0.32)',transition:'transform .15s'}}>
+                הצטרף חינם ←
+              </button>
+              <button onClick={()=>setModal(null)} style={{padding:'0.62rem 1.1rem',borderRadius:9,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.65)',cursor:'pointer',fontSize:'0.88rem'}}>
+                סגור
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
