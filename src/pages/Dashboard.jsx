@@ -162,6 +162,10 @@ export default function Dashboard({ user }) {
           <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
         </div>
       </div>
+      <div style={{padding:'0.55rem 0',borderTop:'1px solid rgba(255,255,255,0.05)',marginBottom:'1.5rem',background:'rgba(0,0,0,0.15)'}}>
+        <DashTickerRow tickers={TICKER_ROW2} direction="reverse" prices={tickerPrices}/>
+      </div>
+
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
         {mktLoading ? [1,2,3,4].map(i => (
