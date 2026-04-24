@@ -8,7 +8,7 @@ const GOOGLE_CLIENT_ID = '740713160058-jki5k6rp1mnfl9ndsst4dptigiv6e640.apps.goo
 export default function Auth(){
   const navigate=useNavigate()
   const [params]=useSearchParams()
-  const [mode,setMode]=useState(params.get('mode')==='signup'?'signup':'signin')
+  const [mode,setMode]=useState(params.get('mode')||'welcome')
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
   const [showPass,setShowPass]=useState(false)
@@ -64,6 +64,35 @@ export default function Auth(){
       navigate('/dashboard')
     }
   }
+
+
+  if(mode==='welcome') return(
+    <div style={{minHeight:'100vh',display:'flex',direction:'rtl',background:'#080b14',position:'relative',overflow:'hidden',alignItems:'center',justifyContent:'center'}}>
+      <div style={{position:'absolute',top:-200,right:-200,width:600,height:600,background:'radial-gradient(circle,rgba(245,166,35,0.12) 0%,transparent 70%)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:-200,left:-200,width:500,height:500,background:'radial-gradient(circle,rgba(79,142,247,0.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
+      <div style={{textAlign:'center',zIndex:1,padding:'2rem'}}>
+        <div style={{width:64,height:64,background:'linear-gradient(135deg,#f5a623,#e8871a)',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 1.5rem',boxShadow:'0 4px 24px rgba(245,166,35,0.35)'}}>
+          <span style={{color:'#080b14',fontSize:32,fontWeight:800}}>G</span>
+        </div>
+        <h1 style={{fontSize:'2rem',fontWeight:800,color:'#fff',marginBottom:'0.5rem'}}>ברוך הבא לגלילאו</h1>
+        <p style={{color:'rgba(255,255,255,0.5)',marginBottom:'2.5rem',fontSize:'1rem',lineHeight:1.6}}>
+          פלטפורמת ההשקעות המובילה לישראלים<br/>נתוני שוק בזמן אמת, ניתוח מניות ואקדמיה פיננסית
+        </p>
+        <div style={{display:'flex',flexDirection:'column',gap:'0.85rem',maxWidth:340,margin:'0 auto'}}>
+          <button onClick={()=>setMode('signup')} style={{width:'100%',padding:'0.85rem',borderRadius:12,background:'linear-gradient(135deg,#f5a623,#e8871a)',border:'none',color:'#080b14',fontSize:'1rem',fontWeight:700,cursor:'pointer',boxShadow:'0 4px 18px rgba(245,166,35,0.3)'}}>
+            הצטרף חינם ←
+          </button>
+          <button onClick={()=>setMode('signin')} style={{width:'100%',padding:'0.85rem',borderRadius:12,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.85)',fontSize:'1rem',fontWeight:600,cursor:'pointer'}}>
+            כניסה לחשבון קיים
+          </button>
+        </div>
+        <button onClick={()=>window.history.back()} style={{marginTop:'1.5rem',background:'none',border:'none',color:'rgba(255,255,255,0.3)',cursor:'pointer',fontSize:'0.82rem'}}>
+          ← חזרה לדף הבית
+        </button>
+      </div>
+    </div>
+  )
+
 
   return(
     <div style={{minHeight:'100vh',display:'flex',direction:'rtl',background:'var(--color-bg)',position:'relative',overflow:'hidden'}}>
