@@ -74,7 +74,10 @@ export default function Dashboard({ user }) {
     setTickerPrices(init)
     all.slice(0,20).forEach(t=>{
       fetch('/api/quote?ticker='+t).then(r=>r.json()).then(d=>{
-        if(d?.price) setTickerPrices(prev=>({...prev,[t]:{price:'
+        if(d?.price) setTickerPrices(prev=>({...prev,[t]:{price:'$'+d.price.toFixed(2),change:d.changePercent||0}}))
+      }).catch(()=>{})
+    })
+  },[])  // eslint-disable-line
   const [news, setNews] = useState([])
   const [mktLoading, setMktLoading] = useState(true)
   const [newsLoading, setNewsLoading] = useState(true)
