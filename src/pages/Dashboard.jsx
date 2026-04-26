@@ -279,7 +279,6 @@ export default function Dashboard({ user }) {
     </div>
   )
 }+d.price.toFixed(2),change:d.changePercent||0}}))
-      }).catch(()=>{})
     })
   },[])
   const [news, setNews] = useState([])
