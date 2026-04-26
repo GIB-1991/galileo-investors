@@ -364,10 +364,8 @@ export default function Dashboard({ user }) {
 
   return (
     <div dir='rtl'>
-      <style>{`@keyframes dashFwd{0%{transform:translateX(0)}100%{transform:translateX(-33.333%)}}@keyframes dashRev{0%{transform:translateX(-33.333%)}100%{transform:translateX(0)}}`}</style>
-      <div style={{padding:'0.55rem 0',borderBottom:'1px solid rgba(255,255,255,0.05)',marginBottom:'0.5rem',background:'rgba(0,0,0,0.15)'}}>
-        <DashTickerRow tickers={TICKER_ROW1} direction="normal" prices={tickerPrices}/>
-      </div>
+            
+      
 
       <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
@@ -380,9 +378,8 @@ export default function Dashboard({ user }) {
           <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
         </div>
       </div>
-      <div style={{padding:'0.55rem 0',borderTop:'1px solid rgba(255,255,255,0.05)',marginBottom:'1.5rem',background:'rgba(0,0,0,0.15)'}}>
-        <DashTickerRow tickers={TICKER_ROW2} direction="reverse" prices={tickerPrices}/>
-      </div>
+      
+      
 
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
