@@ -39,45 +39,10 @@ function extractTickers(title) {
 }
 
 
-const TICKER_ROW1 = ['SPY','QQQ','AAPL','MSFT','NVDA','GOOG','AMZN','META','TSLA','BRK-B','JPM','V','WMT','AVGO','LLY']
-const TICKER_ROW2 = ['XOM','JNJ','PG','MA','HD','COST','MCD','CSCO','PEP','KO','UNH','CVX','TMO','ABT','CRM']
-
-function DashTickerRow({tickers,direction='normal',prices}){
-  const items=[...tickers,...tickers,...tickers]
-  return(
-    <div style={{overflow:'hidden',width:'100%',maskImage:'linear-gradient(to right,transparent 0%,black 5%,black 95%,transparent 100%)'}}>
-      <div style={{display:'flex',gap:'2rem',width:'max-content',animation:`dash${direction==='reverse'?'Rev':'Fwd'} 50s linear infinite`,willChange:'transform'}}>
-        {items.map((t,i)=>{
-          const d=prices?.[t]; const up=d?d.change>=0:null
-          return(
-            <span key={i} style={{display:'inline-flex',alignItems:'center',gap:'0.4rem',fontSize:'0.74rem',fontWeight:600,whiteSpace:'nowrap',padding:'0.22rem 0.7rem',borderRadius:'100px',background:up===null?'rgba(255,255,255,0.04)':up?'rgba(22,163,74,0.1)':'rgba(220,38,38,0.1)',border:`1px solid ${up===null?'rgba(255,255,255,0.07)':up?'rgba(22,163,74,0.2)':'rgba(220,38,38,0.2)'}`,color:up===null?'rgba(255,255,255,0.45)':up?'#4ade80':'#f87171'}}>
-              <span style={{color:'rgba(255,255,255,0.7)',fontWeight:700,letterSpacing:'0.04em'}}>{t}</span>
-              {d&&<><span>{d.price}</span><span style={{fontSize:'0.68rem',opacity:0.8}}>{up?'▲':'▼'}{Math.abs(d.change).toFixed(2)}%</span></>}
-              {!d&&<span style={{opacity:0.28}}>—</span>}
-            </span>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
 
 export default function Dashboard({ user }) {
   const [market, setMarket] = useState([])
-  const [tickerPrices, setTickerPrices] = useState({})
 
-  useEffect(()=>{
-    const base={AAPL:{p:'$213.50',c:1.2},NVDA:{p:'$875.40',c:-1.4},MSFT:{p:'$415.30',c:0.8},TSLA:{p:'$248.90',c:2.3},AMZN:{p:'$185.20',c:1.3},META:{p:'$502.10',c:-0.6},GOOG:{p:'$175.80',c:0.4},SPY:{p:'$527.20',c:0.5},QQQ:{p:'$448.60',c:0.7},'BRK-B':{p:'$410.30',c:-0.2},JPM:{p:'$208.40',c:1.1},V:{p:'$280.50',c:0.9},WMT:{p:'$79.20',c:0.3},AVGO:{p:'$162.80',c:-0.8},LLY:{p:'$890.40',c:1.5},XOM:{p:'$118.30',c:-0.4},JNJ:{p:'$152.60',c:0.6},PG:{p:'$168.40',c:0.2},MA:{p:'$480.20',c:1.0},HD:{p:'$342.80',c:-0.5},COST:{p:'$892.10',c:2.1},MCD:{p:'$295.30',c:0.3},CSCO:{p:'$56.80',c:-0.7},PEP:{p:'$162.40',c:0.4},KO:{p:'$68.90',c:0.1},UNH:{p:'$510.80',c:-1.2},CVX:{p:'$158.30',c:-0.3},TMO:{p:'$528.60',c:0.8},ABT:{p:'$125.40',c:0.5},CRM:{p:'$298.70',c:-0.9}}
-    const all=[...TICKER_ROW1,...TICKER_ROW2]
-    const init={}
-    all.forEach(t=>{if(base[t]) init[t]={price:base[t].p,change:base[t].c}})
-    setTickerPrices(init)
-    all.slice(0,20).forEach(t=>{
-      fetch('/api/quote?ticker='+t).then(r=>r.json()).then(d=>{
-        if(d?.price) setTickerPrices(prev=>({...prev,[t]:{price:'$'+d.price.toFixed(2),change:d.changePercent||0}}))
-      }).catch(()=>{})
-    })
-  },[])  // eslint-disable-line
   const [news, setNews] = useState([])
   const [mktLoading, setMktLoading] = useState(true)
   const [newsLoading, setNewsLoading] = useState(true)
@@ -160,11 +125,6 @@ export default function Dashboard({ user }) {
 
   return (
     <div dir='rtl'>
-      <style>{`@keyframes dashFwd{0%{transform:translateX(0)}100%{transform:translateX(-33.333%)}}@keyframes dashRev{0%{transform:translateX(-33.333%)}100%{transform:translateX(0)}}`}</style>
-      <div style={{padding:'0.55rem 0',borderBottom:'1px solid rgba(255,255,255,0.05)',marginBottom:'0.5rem',background:'rgba(0,0,0,0.15)'}}>
-        <DashTickerRow tickers={TICKER_ROW1} direction="normal" prices={tickerPrices}/>
-      </div>
-
       <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
           <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
@@ -176,11 +136,6 @@ export default function Dashboard({ user }) {
           <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
         </div>
       </div>
-      <div style={{padding:'0.55rem 0',borderTop:'1px solid rgba(255,255,255,0.05)',marginBottom:'1.5rem',background:'rgba(0,0,0,0.15)'}}>
-        <DashTickerRow tickers={TICKER_ROW2} direction="reverse" prices={tickerPrices}/>
-      </div>
-
-
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
         {mktLoading ? [1,2,3,4].map(i => (
           <div key={i} style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:14,padding:'1.1rem 1.25rem',height:82,opacity:.4}}/>)
