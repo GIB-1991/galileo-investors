@@ -27,6 +27,25 @@ export default function Auth(){
     return () => { document.head.removeChild(script) }
   },[])
 
+  // Re-render Google button whenever mode changes to signin/signup
+  useEffect(()=>{
+    if(mode==='welcome') return
+    let tries=0
+    const iv=setInterval(()=>{
+      tries++
+      const el=document.getElementById('google-btn')
+      if(el && window.google && window.google.accounts && window.google.accounts.id){
+        el.innerHTML=''
+        try{
+          window.google.accounts.id.renderButton(el,{ theme:'outline', size:'large', width:360, locale:'he' })
+        }catch(e){}
+        clearInterval(iv)
+      }
+      if(tries>40) clearInterval(iv)
+    },100)
+    return ()=>clearInterval(iv)
+  },[mode])
+
   function initGoogleOneTap(){
     if(!window.google) return
     window.google.accounts.id.initialize({
