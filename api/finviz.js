@@ -59,7 +59,7 @@ export default async function handler(req,res){
     const secMatch=html.match(/[?&]f=sec_[^"]*"[^>]*>([^<]+)</)
     if(secMatch) sector=secMatch[1].trim()
 
-        res.setHeader('Cache-Control','public,max-age=3600');
+        res.setHeader('Cache-Control','no-store, max-age=0');
     res.json({beta,shortFloat,avgVolume,marketCap:marketCap||null,sector});
   }catch(e){res.status(500).json({error:e.message});}
 }
