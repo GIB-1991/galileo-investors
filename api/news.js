@@ -12,15 +12,33 @@ export default async function handler(req, res) {
 
   function parseRSS(xml) {
     const items = [];
-    const re = /<item[^>]*>([\s\S]*?)<\/item>/gi;
+    const re = /<item\b[\s\S]*?<\/item>/g;
     let m;
     while ((m = re.exec(xml)) !== null) {
-      const block = m[1];
-      const title = (block.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/) || [])[1] || '';
-      const link  = (block.match(/<link[^>]*>([\s\S]*?)<\/link>/)  || (block.match(/<link[^>]*\/>/)) || [])[1] || '';
-      const pub   = (block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/) || [])[1] || '';
-      const clean = title.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
-      if (clean) items.push({ title: clean, url: link.trim(), pubDate: pub.trim() });
+      const block = m[0];
+      const titleMatch = block.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
+      const linkMatch = block.match(/<link[^>]*>([\s\S]*?)<\/link>/);
+      const pubMatch = block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/);
+      // Image extraction priority: media:content -> media:thumbnail -> enclosure -> img in description/content
+      let image = '';
+      const mc = block.match(/<media:content[^>]*url=["']([^"']+)["']/i);
+      if (mc) image = mc[1];
+      if (!image) { const mt = block.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i); if (mt) image = mt[1]; }
+      if (!image) { const en = block.match(/<enclosure[^>]*url=["']([^"']+\.(?:jpg|jpeg|png|webp|gif)[^"']*)["']/i); if (en) image = en[1]; }
+      if (!image) {
+        const desc = block.match(/<description[^>]*>([\s\S]*?)<\/description>/);
+        if (desc) { const im = desc[1].match(/<img[^>]+src=["']([^"']+)["']/i); if (im) image = im[1]; }
+      }
+      if (!image) {
+        const cnt = block.match(/<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/);
+        if (cnt) { const im = cnt[1].match(/<img[^>]+src=["']([^"']+)["']/i); if (im) image = im[1]; }
+      }
+      if (image) image = image.replace(/&amp;/g,'&');
+      const title = (titleMatch && titleMatch[1]) || '';
+      const link = (linkMatch && linkMatch[1]) || '';
+      const pub = (pubMatch && pubMatch[1]) || '';
+      const clean = title.trim();
+      if (clean) items.push({ title: clean, url: link.trim(), pubDate: pub.trim(), image });
     }
     return items;
   }
@@ -99,6 +117,7 @@ export default async function handler(req, res) {
         time: timeAgo(it.pubDate),
         tickers: extractTickers(it.title),
         source: new URL(feedUrl).hostname.replace('feeds.','').replace('www.',''),
+        image: it.image || '',
       }));
 
       return res.status(200).json({ news, source: feedUrl });
@@ -109,10 +128,10 @@ export default async function handler(req, res) {
 
   // All feeds failed — return helpful fallback
   return res.status(200).json({ news: [
-    { id:1, title:'שוק המניות האמריקאי עולה על רקע נתוני תעסוקה חיוביים', url:'https://finance.yahoo.com', time:'3 שעות', tickers:[], source:'yahoo' },
-    { id:2, title:'הפד שומר על הריבית ללא שינוי ברבעון הראשון של 2026', url:'https://finance.yahoo.com', time:'5 שעות', tickers:[], source:'yahoo' },
-    { id:3, title:'מניות טכנולוגיה בראשות Nvidia ו-Meta מובילות עליות', url:'https://finance.yahoo.com', time:'6 שעות', tickers:['NVDA','META'], source:'yahoo' },
-    { id:4, title:'תוצאות רבעוניות של Apple עולות על התחזיות', url:'https://finance.yahoo.com', time:'8 שעות', tickers:['AAPL'], source:'yahoo' },
-    { id:5, title:'Amazon מכריזה על השקעה של 4 מיליארד דולר בתשתיות AI', url:'https://finance.yahoo.com', time:'10 שעות', tickers:['AMZN'], source:'yahoo' },
+    { id:1, title:'שוק המניות האמריקאי עולה על רקע נתוני תעסוקה חיוביים', url:'https://finance.yahoo.com', time:'3 שעות', tickers:[], source:'yahoo', image:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80' },
+    { id:2, title:'הפד שומר על הריבית ללא שינוי ברבעון הראשון של 2026', url:'https://finance.yahoo.com', time:'5 שעות', tickers:[], source:'yahoo', image:'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80' },
+    { id:3, title:'מניות טכנולוגיה בראשות Nvidia ו-Meta מובילות עליות', url:'https://finance.yahoo.com', time:'6 שעות', tickers:['NVDA','META'], source:'yahoo', image:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80' },
+    { id:4, title:'תוצאות רבעוניות של Apple עולות על התחזיות', url:'https://finance.yahoo.com', time:'8 שעות', tickers:['AAPL'], source:'yahoo', image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80' },
+    { id:5, title:'Amazon מכריזה על השקעה של 4 מיליארד דולר בתשתיות AI', url:'https://finance.yahoo.com', time:'10 שעות', tickers:['AMZN'], source:'yahoo', image:'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=80' },
   ]});
 }
