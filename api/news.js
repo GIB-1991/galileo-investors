@@ -4,7 +4,8 @@ export default async function handler(req, res) {
 
   // Multiple RSS sources — try each until one works
   const FEEDS = [
-    'https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC,^DJI,^IXIC&region=US&lang=en-US',
+    'https://finance.yahoo.com/news/rssindex',
+    'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC,%5EDJI,%5EIXIC&region=US&lang=en-US',
     'https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US',
     'https://rss.cnn.com/rss/money_markets.rss',
     'https://feeds.reuters.com/reuters/businessNews',
@@ -119,6 +120,26 @@ export default async function handler(req, res) {
         source: new URL(feedUrl).hostname.replace('feeds.','').replace('www.',''),
         image: it.image || '',
       }));
+
+      // Fetch og:image for first items missing image (parallel, with timeout)
+      const needImage = news.slice(0, 5).map((n, idx) => ({ n, idx })).filter(x => !x.n.image);
+      if (needImage.length > 0) {
+        const ogPromises = needImage.map(async ({ n, idx }) => {
+          try {
+            const pr = await fetch(n.url, {
+              headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+              signal: AbortSignal.timeout(3500)
+            });
+            if (!pr.ok) return;
+            const html = await pr.text();
+            const og = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+                     || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
+                     || html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+            if (og && og[1]) news[idx].image = og[1].replace(/&amp;/g, '&');
+          } catch(e) {}
+        });
+        await Promise.all(ogPromises);
+      }
 
       return res.status(200).json({ news, source: feedUrl });
     } catch(e) {
