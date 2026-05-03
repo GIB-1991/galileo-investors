@@ -174,23 +174,51 @@ export default function Dashboard({ user }) {
             <p style={{margin:0}}>טוען חדשות...</p>
           </div>
         ) : (
-          <div>{news.map((item, i) => (
-            <a key={item.id} href={item.url} target='_blank' rel='noopener noreferrer'
-              style={{padding:'.95rem 1.5rem',borderBottom:i<news.length-1?'1px solid var(--color-border)':'none',display:'flex',alignItems:'flex-start',gap:'1rem',textDecoration:'none',color:'inherit',direction:'rtl'}}
-              onMouseEnter={e=>e.currentTarget.style.background='var(--color-bg2)'}
-              onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-              <ExternalLink size={13} style={{color:'var(--color-accent)',flexShrink:0,marginTop:6}}/>
-              <div style={{flex:1}}>
-                <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,justifyContent:'flex-start',flexWrap:'wrap'}}>
-                  <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-text-secondary)',background:'var(--color-bg2)',padding:'2px 8px',borderRadius:8,border:'1px solid var(--color-border)'}}>{item.source}</span>
-                  {(item.time||item.pubDate) && <span style={{fontSize:'.7rem',color:'var(--color-text-secondary)'}}>{item.time||timeAgo(item.pubDate)}</span>}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1.6fr',gap:'1rem',padding:'1rem'}}>
+            {/* Side stack: 3 small cards */}
+            <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+              {news.slice(1,4).map((item,i)=>(
+                <a key={item.id} href={item.url} target='_blank' rel='noopener noreferrer'
+                  style={{display:'flex',flexDirection:'column',gap:'.55rem',textDecoration:'none',color:'inherit'}}>
+                  <div style={{width:'100%',aspectRatio:'16/10',borderRadius:10,overflow:'hidden',background:'var(--color-bg)',border:'1px solid var(--color-border)'}}>
+                    {item.image ? (
+                      <img src={item.image} alt='' loading='lazy' onError={(e)=>{e.target.style.display='none'}}
+                        style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+                    ) : null}
+                  </div>
+                  <div style={{fontSize:'.85rem',fontWeight:700,lineHeight:1.4,color:'var(--color-text)',textAlign:'right'}}>
+                    <span style={{color:'var(--color-accent)',marginLeft:6,fontWeight:800}}>SKN |</span>
+                    {item.title}
+                  </div>
+                </a>
+              ))}
+            </div>
+            {/* Hero: large featured card */}
+            {news[0] && (
+              <a href={news[0].url} target='_blank' rel='noopener noreferrer'
+                style={{position:'relative',display:'block',borderRadius:14,overflow:'hidden',minHeight:380,textDecoration:'none',color:'#fff',background:news[0].image?'#1a3d2e':'linear-gradient(135deg,#1a3d2e,#2d5a3d)'}}>
+                {news[0].image && (
+                  <img src={news[0].image} alt='' loading='lazy' onError={(e)=>{e.target.style.display='none'}}
+                    style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.9}}/>
+                )}
+                <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(20,60,40,.95) 0%, rgba(20,60,40,.55) 50%, rgba(20,60,40,.15) 100%)'}}/>
+                <div style={{position:'relative',padding:'1.5rem',display:'flex',flexDirection:'column',justifyContent:'flex-end',height:'100%',minHeight:380,textAlign:'right'}}>
+                  <h2 style={{fontSize:'1.35rem',fontWeight:800,margin:'0 0 .75rem',lineHeight:1.4,color:'#fff',textShadow:'0 2px 8px rgba(0,0,0,.4)'}}>
+                    <span style={{color:'#ffd166',fontWeight:800}}>SKN | </span>
+                    {news[0].title}
+                  </h2>
+                  <div style={{height:1,background:'rgba(255,255,255,.3)',margin:'.5rem 0 .75rem'}}/>
+                  <div style={{display:'flex',justifyContent:'flex-end',marginBottom:'.5rem'}}>
+                    <span style={{display:'inline-block',background:'#7a1f1f',color:'#fff',fontSize:'.7rem',fontWeight:700,padding:'.25rem .65rem',borderRadius:4,letterSpacing:'.02em'}}>חדשות ועדכונים מתפרצים</span>
+                  </div>
+                  <p style={{fontSize:'.85rem',lineHeight:1.6,margin:0,color:'rgba(255,255,255,.92)'}}>
+                    {news[0].time && <span style={{opacity:.85}}>{news[0].time} · </span>}
+                    {news[0].source}
+                  </p>
                 </div>
-                <p style={{margin:'0 0 4px',fontSize:'.92rem',fontWeight:600,lineHeight:1.6,color:'var(--color-text-primary)',textAlign:'right'}}>{item.title}</p>
-                {item.summary && <p style={{margin:0,fontSize:'.82rem',color:'var(--color-text-secondary)',lineHeight:1.6,textAlign:'right'}}>{item.summary}</p>}
-                {item.tickers&&item.tickers.length>0&&<div style={{marginTop:8,textAlign:'right'}}><div style={{fontSize:'.65rem',color:'var(--color-text-secondary)',marginBottom:3,fontWeight:600}}>מניות רלוונטיות</div><div style={{display:'flex',gap:4,flexWrap:'wrap',justifyContent:'flex-end'}}>{item.tickers.map(t=><span key={t} style={{fontSize:'.68rem',fontWeight:700,padding:'2px 7px',borderRadius:5,background:'rgba(79,142,247,0.12)',color:'#4f8ef7',border:'1px solid rgba(79,142,247,0.25)',fontFamily:"'IBM Plex Mono',monospace",direction:'ltr',display:'inline-block'}}>{'$'+t}</span>)}</div></div>}
-              </div>
-            </a>
-          ))}</div>
+              </a>
+            )}
+          </div>
         )}
       </div>
       <p style={{fontSize:'.72rem',color:'var(--color-text-secondary)',textAlign:'center',marginTop:'1.5rem'}}>
