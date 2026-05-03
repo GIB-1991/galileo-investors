@@ -54,10 +54,33 @@ export default async function handler(req,res){
       else if(mcRaw.includes('M'))marketCap=v*1e6;
     }
 
-    // Extract sector — Finviz pattern: screener.ashx?v=111&f=sec_X" class="tab-link">SectorName</a>
+    // Extract sector — multi-strategy (Finviz HTML changed in 2025/2026)
     let sector=null
-    const secMatch=html.match(/[?&]f=sec_[^"]*"[^>]*>([^<]+)</)
+    // Strategy 1: classic screener link with f=sec_ param
+    let secMatch=html.match(/[?&]f=sec_[^"]*"[^>]*>([^<]+)</)
+    if(!secMatch) secMatch=html.match(/sec_[a-z]+["'][^>]*>([A-Z][A-Za-z &]+)</)
+    // Strategy 2: snapshot table cell — look for "Sector" label followed by linked text
+    if(!secMatch) secMatch=html.match(/>Sector<[\s\S]{0,200}?<a[^>]*>([^<]+)</)
+    // Strategy 3: data attribute or JSON blob
+    if(!secMatch) secMatch=html.match(/"sector"\s*:\s*"([^"]+)"/i)
     if(secMatch) sector=secMatch[1].trim()
+    // Strategy 4: static fallback for known mega-cap tickers (covers most user portfolios)
+    if(!sector){
+      const KNOWN={AAPL:'Technology',MSFT:'Technology',NVDA:'Technology',AVGO:'Technology',ORCL:'Technology',CRM:'Technology',ADBE:'Technology',INTC:'Technology',AMD:'Technology',CSCO:'Technology',QCOM:'Technology',IBM:'Technology',TXN:'Technology',NOW:'Technology',PLTR:'Technology',AI:'Technology',
+        GOOG:'Communication Services',GOOGL:'Communication Services',META:'Communication Services',NFLX:'Communication Services',DIS:'Communication Services',VZ:'Communication Services',T:'Communication Services',CMCSA:'Communication Services',
+        AMZN:'Consumer Cyclical',TSLA:'Consumer Cyclical',HD:'Consumer Cyclical',MCD:'Consumer Cyclical',NKE:'Consumer Cyclical',SBUX:'Consumer Cyclical',LOW:'Consumer Cyclical',TJX:'Consumer Cyclical',ABNB:'Consumer Cyclical',UBER:'Industrials',
+        WMT:'Consumer Defensive',COST:'Consumer Defensive',PG:'Consumer Defensive',KO:'Consumer Defensive',PEP:'Consumer Defensive',MO:'Consumer Defensive',PM:'Consumer Defensive',CL:'Consumer Defensive',
+        JPM:'Financial',BAC:'Financial',WFC:'Financial',GS:'Financial',MS:'Financial',C:'Financial',BLK:'Financial',SPGI:'Financial','BRK.B':'Financial','BRK-B':'Financial',V:'Financial',MA:'Financial',AXP:'Financial',
+        UNH:'Healthcare',JNJ:'Healthcare',LLY:'Healthcare',PFE:'Healthcare',ABBV:'Healthcare',MRK:'Healthcare',TMO:'Healthcare',ABT:'Healthcare',DHR:'Healthcare',BMY:'Healthcare',AMGN:'Healthcare',CVS:'Healthcare',
+        XOM:'Energy',CVX:'Energy',COP:'Energy',SLB:'Energy',EOG:'Energy',OXY:'Energy',PSX:'Energy',
+        CAT:'Industrials',BA:'Industrials',HON:'Industrials',UPS:'Industrials',GE:'Industrials',RTX:'Industrials',LMT:'Industrials',DE:'Industrials',MMM:'Industrials',RKLB:'Industrials',
+        LIN:'Basic Materials',SHW:'Basic Materials',FCX:'Basic Materials',NEM:'Basic Materials',
+        NEE:'Utilities',DUK:'Utilities',SO:'Utilities',
+        AMT:'Real Estate',PLD:'Real Estate',CCI:'Real Estate',EQIX:'Real Estate',
+        SPY:'ETF',QQQ:'ETF',VTI:'ETF',IWM:'ETF',DIA:'ETF',VOO:'ETF',IVV:'ETF',VGT:'ETF',XLK:'ETF',XLF:'ETF',XLE:'ETF',XLV:'ETF'}
+      const t=ticker.toUpperCase()
+      if(KNOWN[t]) sector=KNOWN[t]
+    }
 
         res.setHeader('Cache-Control','no-store, max-age=0');
     res.json({beta,shortFloat,avgVolume,marketCap:marketCap||null,sector});
