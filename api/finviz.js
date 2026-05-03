@@ -1,3 +1,4 @@
+// deploy 1777836477183
 export default async function handler(req,res){
   const{ticker}=req.query;
   if(!ticker)return res.status(400).json({error:'no ticker'});
