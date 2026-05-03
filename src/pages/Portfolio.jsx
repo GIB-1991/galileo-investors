@@ -191,7 +191,7 @@ export default function Portfolio() {
       if(!totalV) return []
       const map={}
       holdings.forEach(h=>{
-        const sec=sectorMap[h.ticker]; if(!sec) return
+        const ETFS=['SPY','QQQ','VTI','IWM','DIA','VOO','VTV','VUG','SCHD','XLK','XLF','XLE','XLV','XLY','XLP','XLI','XLB','XLRE','XLU','XLC']; const sec=sectorMap[h.ticker] || (ETFS.includes(h.ticker)?'ETF':'אחר')
         map[sec]=(map[sec]||0)+(prices[h.ticker]||h.buyPrice||0)*h.shares
       })
       return Object.entries(map).map(([name,value],i)=>({
