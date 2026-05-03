@@ -77,7 +77,7 @@ export default function Portfolio() {
   useEffect(()=>{
     if(!holdings.length) return
     holdings.forEach(h=>{
-      fetch('/api/finviz?ticker='+h.ticker)
+      fetch('/api/finviz?ticker='+h.ticker,{cache:'no-store'})
         .then(r=>r.json())
         .then(fv=>{ if(fv?.sector) setSectorMap(prev=>({...prev,[h.ticker]:fv.sector})) })
         .catch(()=>{})
@@ -95,7 +95,7 @@ export default function Portfolio() {
       if (p) setBuyPrice(p.toFixed(2))
     } catch(e) {}
     setPriceLoading(false)
-    fetch('/api/finviz?ticker='+ticker).then(r=>r.json()).then(fv=>{
+    fetch('/api/finviz?ticker='+ticker,{cache:'no-store'}).then(r=>r.json()).then(fv=>{
       setFinvizData(fv)
       const st={ticker,name,price:parseFloat(buyPrice)||0,beta:fv.beta,shortFloat:fv.shortFloat,avgVolume:fv.avgVolume,marketCap:fv.marketCap||0}
       setAddAlerts(checkStockAlerts(st,holdings,0,0))
