@@ -174,36 +174,39 @@ export default function Dashboard({ user }) {
             <p style={{margin:0}}>טוען חדשות...</p>
           </div>
         ) : (
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1.6fr',gap:'1rem',padding:'1rem'}}>
-            {/* Side stack: 3 small cards */}
-            <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              {news.slice(1,4).map((item,i)=>(
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1.4fr',gap:'1rem',padding:'1rem'}}>
+            {/* Side stack: 5 small cards */}
+            <div style={{display:'flex',flexDirection:'column',gap:'.7rem'}}>
+              {news.slice(1,6).map((item,i)=>(
                 <a key={item.id} href={item.url} target='_blank' rel='noopener noreferrer'
-                  style={{display:'flex',flexDirection:'column',gap:'.55rem',textDecoration:'none',color:'inherit'}}>
-                  <div style={{width:'100%',aspectRatio:'16/10',borderRadius:10,overflow:'hidden',background:'var(--color-bg)',border:'1px solid var(--color-border)'}}>
+                  style={{display:'grid',gridTemplateColumns:'105px 1fr',gap:'.65rem',textDecoration:'none',color:'inherit',alignItems:'stretch'}}>
+                  <div style={{width:105,aspectRatio:'4/3',borderRadius:8,overflow:'hidden',background:'var(--color-bg)',border:'1px solid var(--color-border)',flexShrink:0}}>
                     {item.image ? (
                       <img src={item.image} alt='' loading='lazy' onError={(e)=>{e.target.style.display='none'}}
                         style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
                     ) : null}
                   </div>
-                  <div style={{fontSize:'.85rem',fontWeight:700,lineHeight:1.4,color:'var(--color-text)',textAlign:'right'}}>
-                    <span style={{color:'var(--color-accent)',marginLeft:6,fontWeight:800}}>SKN |</span>
-                    {item.title}
+                  <div style={{display:'flex',flexDirection:'column',justifyContent:'center',textAlign:'right',minWidth:0}}>
+                    <div style={{fontSize:'.8rem',fontWeight:700,lineHeight:1.4,color:'var(--color-text)',display:'-webkit-box',WebkitLineClamp:3,WebkitBoxOrient:'vertical',overflow:'hidden'}}>
+                      <span style={{color:'var(--color-accent)',marginLeft:5,fontWeight:800}}>SKN |</span>
+                      {item.title}
+                    </div>
+                    <div style={{fontSize:'.68rem',color:'var(--color-text-secondary)',marginTop:4}}>{item.time}</div>
                   </div>
                 </a>
               ))}
             </div>
-            {/* Hero: large featured card */}
+            {/* Hero: featured card */}
             {news[0] && (
               <a href={news[0].url} target='_blank' rel='noopener noreferrer'
-                style={{position:'relative',display:'block',borderRadius:14,overflow:'hidden',minHeight:380,textDecoration:'none',color:'#fff',background:news[0].image?'#1a3d2e':'linear-gradient(135deg,#1a3d2e,#2d5a3d)'}}>
+                style={{position:'relative',display:'block',borderRadius:14,overflow:'hidden',minHeight:520,textDecoration:'none',color:'#fff',background:news[0].image?'#1a3d2e':'linear-gradient(135deg,#1a3d2e,#2d5a3d)'}}>
                 {news[0].image && (
                   <img src={news[0].image} alt='' loading='lazy' onError={(e)=>{e.target.style.display='none'}}
                     style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:.9}}/>
                 )}
                 <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(20,60,40,.95) 0%, rgba(20,60,40,.55) 50%, rgba(20,60,40,.15) 100%)'}}/>
-                <div style={{position:'relative',padding:'1.5rem',display:'flex',flexDirection:'column',justifyContent:'flex-end',height:'100%',minHeight:380,textAlign:'right'}}>
-                  <h2 style={{fontSize:'1.35rem',fontWeight:800,margin:'0 0 .75rem',lineHeight:1.4,color:'#fff',textShadow:'0 2px 8px rgba(0,0,0,.4)'}}>
+                <div style={{position:'relative',padding:'1.5rem',display:'flex',flexDirection:'column',justifyContent:'flex-end',height:'100%',minHeight:520,textAlign:'right'}}>
+                  <h2 style={{fontSize:'1.3rem',fontWeight:800,margin:'0 0 .75rem',lineHeight:1.4,color:'#fff',textShadow:'0 2px 8px rgba(0,0,0,.4)'}}>
                     <span style={{color:'#ffd166',fontWeight:800}}>SKN | </span>
                     {news[0].title}
                   </h2>
