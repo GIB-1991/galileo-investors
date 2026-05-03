@@ -56,7 +56,7 @@ export default async function handler(req,res){
 
     // Extract sector — Finviz pattern: screener.ashx?v=111&f=sec_X" class="tab-link">SectorName</a>
     let sector=null
-    const secMatch=html.match(/screener\.ashx\?v=111&f=sec_[^"]*"\s+class="tab-link">([^<]+)<\/a>/)
+    const secMatch=html.match(/[?&]f=sec_[^"]*"[^>]*>([^<]+)</)
     if(secMatch) sector=secMatch[1].trim()
 
         res.setHeader('Cache-Control','public,max-age=3600');
