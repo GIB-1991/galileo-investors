@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase.js'
 import { Plus, Edit2, Trash2, Save, X, Users, FileText, BookOpen, ChevronDown, ChevronUp, Eye, EyeOff, Image as ImageIcon } from 'lucide-react'
