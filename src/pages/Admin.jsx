@@ -271,7 +271,6 @@ function ArticleForm({ data, onSave, onCancel }) {
   const [form, setForm] = useState({...data})
   const [savedAt, setSavedAt] = useState(null)
   const [saving, setSaving] = useState(false)
-  const skipNextAutosave = useRef(true)
   const formRef = useRef(form)
   formRef.current = form
 
@@ -338,28 +337,53 @@ function ArticleForm({ data, onSave, onCancel }) {
     if (url) editor.chain().focus().setImage({ src:url }).run()
   }, [editor, uploadImage])
 
-  // Autosave: every 2s after change, persist draft to Supabase (NEVER auto-publishes)
+  // Local draft persistence — save to localStorage on every change (instant, never destructive).
+  // Remote save happens ONLY on explicit "save draft" / "publish" button.
+  const draftKey = form.id ? `article-draft:${form.id}` : 'article-draft:new'
+
+  // Hydrate from localStorage on mount (only once)
+  const didHydrate = useRef(false)
   useEffect(() => {
-    if (skipNextAutosave.current) { skipNextAutosave.current = false; return }
-    const t = setTimeout(async () => {
-      const f = formRef.current
-      if (!f.title && !f.content) return
-      setSaving(true)
-      const now = new Date().toISOString()
-      const payload = {...f, updated_at:now}
-      // Always save as draft on autosave - never auto-publish
-      if (f.id) {
-        await supabase.from('articles').update(payload).eq('id', f.id)
-      } else {
-        const insertPayload = {...payload, published:false, created_at:now}
-        const { data:row } = await supabase.from('articles').insert(insertPayload).select().single()
-        if (row) setForm(prev => ({...prev, id:row.id}))
+    if (didHydrate.current) return
+    didHydrate.current = true
+    try {
+      const saved = localStorage.getItem(draftKey)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        // Only hydrate if it's newer/has more content than incoming data
+        const localHasContent = (parsed.title||'').length + (parsed.content||'').length > 0
+        const dataHasContent = (data.title||'').length + (data.content||'').length > 0
+        if (localHasContent && (!dataHasContent || (parsed._savedAt && data.updated_at && new Date(parsed._savedAt) > new Date(data.updated_at)))) {
+          setForm(prev => ({...prev, ...parsed}))
+          if (editor && parsed.content) editor.commands.setContent(parsed.content, false)
+        }
       }
+    } catch(e) {}
+  }, [editor])
+
+  // Persist to localStorage on every change
+  useEffect(() => {
+    try {
+      const f = formRef.current
+      if (!(f.title||f.content||f.summary)) return
+      localStorage.setItem(draftKey, JSON.stringify({...f, _savedAt: new Date().toISOString()}))
       setSavedAt(new Date())
-      setSaving(false)
-    }, 2000)
-    return () => clearTimeout(t)
-  }, [form.title, form.summary, form.content, form.image_url, form.url, form.category])
+    } catch(e) {}
+  }, [form.title, form.summary, form.content, form.image_url, form.url, form.category, form.published])
+
+  // Warn before unloading if there's unsaved draft
+  useEffect(() => {
+    const handler = (e) => {
+      const f = formRef.current
+      if (f.title || f.content) {
+        e.preventDefault()
+        e.returnValue = ''
+        return ''
+      }
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [])
 
   const inp = (label, key, type='text', placeholder='') => (
     <div style={{marginBottom:'1rem'}}>
@@ -409,7 +433,7 @@ function ArticleForm({ data, onSave, onCancel }) {
         <label htmlFor="pub_art" style={{fontSize:'.88rem',fontWeight:600,cursor:'pointer'}}>{form.published?'✓ מאמר מפורסם — גלוי לציבור':'טיוטה — שמור בענן, לא מוצג בציבור'}</label>
       </div>
       <div style={{display:'flex',gap:10}}>
-        <button onClick={()=>onSave(formRef.current)} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:9,border:'none',background:'#f5a623',color:'#0d0f14',cursor:'pointer',fontWeight:700,fontSize:'.88rem'}}>
+        <button onClick={()=>{ onSave(formRef.current); try{localStorage.removeItem(draftKey)}catch(e){} }} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:9,border:'none',background:'#f5a623',color:'#0d0f14',cursor:'pointer',fontWeight:700,fontSize:'.88rem'}}>
           <Save size={14}/> {form.published?'שמור ופרסם':'שמור טיוטה'}
         </button>
         <button onClick={onCancel} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:9,border:'1px solid var(--color-border)',background:'transparent',color:'var(--color-text-primary)',cursor:'pointer',fontWeight:600,fontSize:'.88rem'}}>
