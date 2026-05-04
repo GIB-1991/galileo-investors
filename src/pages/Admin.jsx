@@ -11,8 +11,19 @@ export default function Admin({ user }) {
   const [articles, setArticles] = useState([])
   const [academy, setAcademy] = useState([])
   const [users, setUsers] = useState([])
-  const [editItem, setEditItem] = useState(null)
-  const [showForm, setShowForm] = useState(false)
+  const [editItem, setEditItem] = useState(() => {
+    try { const s = sessionStorage.getItem('admin-editItem'); return s ? JSON.parse(s) : null } catch(e) { return null }
+  })
+  const [showForm, setShowForm] = useState(() => {
+    try { return sessionStorage.getItem('admin-showForm') === '1' } catch(e) { return false }
+  })
+  // Persist these on every render
+  if (typeof window !== 'undefined') {
+    try {
+      if (editItem) sessionStorage.setItem('admin-editItem', JSON.stringify(editItem)); else sessionStorage.removeItem('admin-editItem')
+      if (showForm) sessionStorage.setItem('admin-showForm', '1'); else sessionStorage.removeItem('admin-showForm')
+    } catch(e) {}
+  }
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
 
