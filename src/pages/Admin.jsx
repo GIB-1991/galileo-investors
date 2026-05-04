@@ -241,7 +241,23 @@ export default function Admin({ user }) {
 }
 
 function ArticleForm({ data, onSave, onCancel }) {
-  const [form, setForm] = useState({ ...data })
+  const sessionKey = 'article-form:' + (data.id || 'new')
+  const [form, setForm] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(sessionKey)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        // hydrate only if there's actually content (avoid resurrecting empty stale forms)
+        if (parsed && (parsed.title || parsed.content || parsed.summary)) return parsed
+      }
+    } catch(e) {}
+    return { ...data }
+  })
+
+  // Persist every change to sessionStorage (synchronous, instant — survives navigation within the tab)
+  if (typeof window !== 'undefined') {
+    try { sessionStorage.setItem(sessionKey, JSON.stringify(form)) } catch(e) {}
+  }
   const textareaRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -373,10 +389,10 @@ function ArticleForm({ data, onSave, onCancel }) {
       </div>
 
       <div style={{ display: 'flex', gap: 10 }}>
-        <button onClick={() => onSave(form)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 9, border: 'none', background: '#f5a623', color: '#0d0f14', cursor: 'pointer', fontWeight: 700, fontSize: '.88rem' }}>
+        <button onClick={() => { onSave(form); try { sessionStorage.removeItem(sessionKey) } catch(e) {} }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 9, border: 'none', background: '#f5a623', color: '#0d0f14', cursor: 'pointer', fontWeight: 700, fontSize: '.88rem' }}>
           <Save size={14} /> {form.published ? 'שמור ופרסם' : 'שמור טיוטה'}
         </button>
-        <button onClick={onCancel} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 9, border: '1px solid var(--color-border)', background: 'transparent', color: 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '.88rem' }}>
+        <button onClick={() => { try { sessionStorage.removeItem(sessionKey) } catch(e) {} ; onCancel() }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 9, border: '1px solid var(--color-border)', background: 'transparent', color: 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '.88rem' }}>
           <X size={14} /> סגור
         </button>
       </div>
