@@ -269,8 +269,6 @@ function MenuBar({ editor, onUploadImage }) {
 
 function ArticleForm({ data, onSave, onCancel }) {
   const [form, setForm] = useState({...data})
-  const [savedAt, setSavedAt] = useState(null)
-  const [saving, setSaving] = useState(false)
   const formRef = useRef(form)
   formRef.current = form
 
@@ -337,54 +335,6 @@ function ArticleForm({ data, onSave, onCancel }) {
     if (url) editor.chain().focus().setImage({ src:url }).run()
   }, [editor, uploadImage])
 
-  // Local draft persistence — save to localStorage on every change (instant, never destructive).
-  // Remote save happens ONLY on explicit "save draft" / "publish" button.
-  const draftKey = form.id ? `article-draft:${form.id}` : 'article-draft:new'
-
-  // Hydrate from localStorage on mount (only once)
-  const didHydrate = useRef(false)
-  useEffect(() => {
-    if (didHydrate.current) return
-    didHydrate.current = true
-    try {
-      const saved = localStorage.getItem(draftKey)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        // Only hydrate if it's newer/has more content than incoming data
-        const localHasContent = (parsed.title||'').length + (parsed.content||'').length > 0
-        const dataHasContent = (data.title||'').length + (data.content||'').length > 0
-        if (localHasContent && (!dataHasContent || (parsed._savedAt && data.updated_at && new Date(parsed._savedAt) > new Date(data.updated_at)))) {
-          setForm(prev => ({...prev, ...parsed}))
-          if (editor && parsed.content) editor.commands.setContent(parsed.content, false)
-        }
-      }
-    } catch(e) {}
-  }, [editor])
-
-  // Persist to localStorage on every change
-  useEffect(() => {
-    try {
-      const f = formRef.current
-      if (!(f.title||f.content||f.summary)) return
-      localStorage.setItem(draftKey, JSON.stringify({...f, _savedAt: new Date().toISOString()}))
-      setSavedAt(new Date())
-    } catch(e) {}
-  }, [form.title, form.summary, form.content, form.image_url, form.url, form.category, form.published])
-
-  // Warn before unloading if there's unsaved draft
-  useEffect(() => {
-    const handler = (e) => {
-      const f = formRef.current
-      if (f.title || f.content) {
-        e.preventDefault()
-        e.returnValue = ''
-        return ''
-      }
-    }
-    window.addEventListener('beforeunload', handler)
-    return () => window.removeEventListener('beforeunload', handler)
-  }, [])
-
   const inp = (label, key, type='text', placeholder='') => (
     <div style={{marginBottom:'1rem'}}>
       <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-secondary)',marginBottom:5}}>{label}</label>
@@ -397,15 +347,11 @@ function ArticleForm({ data, onSave, onCancel }) {
     </div>
   )
 
-  const statusLabel = saving ? <span style={{color:'#f5a623',fontSize:'.78rem',display:'flex',alignItems:'center',gap:5}}><Loader size={12} className="spin"/> שומר...</span>
-    : savedAt ? <span style={{color:'#2dd87a',fontSize:'.78rem'}}>✓ נשמר ב-{savedAt.toLocaleTimeString('he-IL')}</span>
-    : <span style={{color:'var(--color-text-secondary)',fontSize:'.78rem'}}>לא נשמר עדיין</span>
 
   return (
     <div style={{background:'var(--color-surface)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:12,padding:'1.5rem',marginBottom:'1rem'}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.2rem'}}>
         <h3 style={{margin:0,fontSize:'.95rem',fontWeight:700,color:'#f5a623'}}>{form.id?'עריכת מאמר':'מאמר חדש'}</h3>
-        {statusLabel}
       </div>
       {inp('כותרת','title','text','כותרת המאמר')}
       {inp('תקציר','summary','textarea','תקציר קצר...')}
@@ -433,7 +379,7 @@ function ArticleForm({ data, onSave, onCancel }) {
         <label htmlFor="pub_art" style={{fontSize:'.88rem',fontWeight:600,cursor:'pointer'}}>{form.published?'✓ מאמר מפורסם — גלוי לציבור':'טיוטה — שמור בענן, לא מוצג בציבור'}</label>
       </div>
       <div style={{display:'flex',gap:10}}>
-        <button onClick={()=>{ onSave(formRef.current); try{localStorage.removeItem(draftKey)}catch(e){} }} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:9,border:'none',background:'#f5a623',color:'#0d0f14',cursor:'pointer',fontWeight:700,fontSize:'.88rem'}}>
+        <button onClick={()=>onSave(formRef.current)} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:9,border:'none',background:'#f5a623',color:'#0d0f14',cursor:'pointer',fontWeight:700,fontSize:'.88rem'}}>
           <Save size={14}/> {form.published?'שמור ופרסם':'שמור טיוטה'}
         </button>
         <button onClick={onCancel} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:9,border:'1px solid var(--color-border)',background:'transparent',color:'var(--color-text-primary)',cursor:'pointer',fontWeight:600,fontSize:'.88rem'}}>
