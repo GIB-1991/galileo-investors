@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase.js'
-import { Plus, Edit2, Trash2, Save, X, Users, FileText, BookOpen, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react'
+import { Plus, Edit2, Trash2, Save, X, Users, FileText, BookOpen, ChevronDown, ChevronUp, Eye, EyeOff, Image as ImageIcon, Bold, Italic, Heading2, Heading3, List, Quote, Link as LinkIcon, Loader } from 'lucide-react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import TiptapImage from '@tiptap/extension-image'
+import Placeholder from '@tiptap/extension-placeholder'
+import TiptapLink from '@tiptap/extension-link'
 
 const ADMIN_EMAIL = 'gilbitan2000@gmail.com'
 
@@ -240,48 +245,181 @@ export default function Admin({ user }) {
   )
 }
 
+function MenuBar({ editor, onUploadImage }) {
+  if (!editor) return null
+  const fileInput = useRef(null)
+  const btn=(active,onClick,children,title)=>(
+    <button type="button" onClick={onClick} title={title}
+      style={{padding:'6px 8px',borderRadius:6,border:'1px solid var(--color-border)',background:active?'#f5a623':'var(--color-bg2)',color:active?'#0d0f14':'var(--color-text-primary)',cursor:'pointer',display:'flex',alignItems:'center',gap:4,fontSize:'.78rem'}}>{children}</button>
+  )
+  return (
+    <div style={{display:'flex',gap:5,flexWrap:'wrap',padding:8,borderBottom:'1px solid var(--color-border)',background:'var(--color-bg2)',borderTopLeftRadius:8,borderTopRightRadius:8}}>
+      {btn(editor.isActive('bold'),()=>editor.chain().focus().toggleBold().run(),<Bold size={14}/>,'מודגש')}
+      {btn(editor.isActive('italic'),()=>editor.chain().focus().toggleItalic().run(),<Italic size={14}/>,'נטוי')}
+      {btn(editor.isActive('heading',{level:2}),()=>editor.chain().focus().toggleHeading({level:2}).run(),<Heading2 size={14}/>,'כותרת 2')}
+      {btn(editor.isActive('heading',{level:3}),()=>editor.chain().focus().toggleHeading({level:3}).run(),<Heading3 size={14}/>,'כותרת 3')}
+      {btn(editor.isActive('bulletList'),()=>editor.chain().focus().toggleBulletList().run(),<List size={14}/>,'רשימה')}
+      {btn(editor.isActive('blockquote'),()=>editor.chain().focus().toggleBlockquote().run(),<Quote size={14}/>,'ציטוט')}
+      {btn(editor.isActive('link'),()=>{const url=window.prompt('הזן URL:');if(url)editor.chain().focus().setLink({href:url}).run();else if(url==='')editor.chain().focus().unsetLink().run()},<LinkIcon size={14}/>,'קישור')}
+      <input type="file" ref={fileInput} accept="image/*" style={{display:'none'}} onChange={async(e)=>{const f=e.target.files?.[0];if(f){await onUploadImage(f);e.target.value=''}}}/>
+      {btn(false,()=>fileInput.current?.click(),<ImageIcon size={14}/>,'הוסף תמונה')}
+    </div>
+  )
+}
+
 function ArticleForm({ data, onSave, onCancel }) {
   const [form, setForm] = useState({...data})
+  const [savedAt, setSavedAt] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const skipNextAutosave = useRef(true)
+  const formRef = useRef(form)
+  formRef.current = form
+
+  // Upload image to Supabase Storage and return public URL
+  const uploadImage = useCallback(async (file) => {
+    const ext = file.name.split('.').pop().toLowerCase()
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`
+    const { error } = await supabase.storage.from('article-images').upload(path, file, { cacheControl:'3600', upsert:false })
+    if (error) { alert('שגיאה בהעלאת תמונה: '+error.message); return null }
+    const { data:{ publicUrl } } = supabase.storage.from('article-images').getPublicUrl(path)
+    return publicUrl
+  }, [])
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TiptapImage.configure({ HTMLAttributes:{ style:'max-width:100%;height:auto;border-radius:8px;margin:1rem 0;display:block' } }),
+      Placeholder.configure({ placeholder:'התחל לכתוב את המאמר... גרור תמונות לתוך הטקסט או השתמש בכפתור התמונה למעלה' }),
+      TiptapLink.configure({ openOnClick:false, HTMLAttributes:{ style:'color:#f5a623;text-decoration:underline' } })
+    ],
+    content: data.content || '',
+    onUpdate: ({ editor }) => {
+      setForm(f => ({...f, content: editor.getHTML()}))
+    },
+    editorProps: {
+      attributes: { dir:'rtl', style:'min-height:400px;padding:1rem;outline:none;line-height:1.7;color:var(--color-text-primary);font-size:1rem' },
+      handleDrop: (view, event, slice, moved) => {
+        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+          const file = event.dataTransfer.files[0]
+          if (file.type.startsWith('image/')) {
+            event.preventDefault()
+            uploadImage(file).then(url => {
+              if (url) editor.chain().focus().setImage({ src:url }).run()
+            })
+            return true
+          }
+        }
+        return false
+      },
+      handlePaste: (view, event) => {
+        const items = event.clipboardData?.items
+        if (items) {
+          for (const item of items) {
+            if (item.type.startsWith('image/')) {
+              const file = item.getAsFile()
+              if (file) {
+                event.preventDefault()
+                uploadImage(file).then(url => {
+                  if (url) editor.chain().focus().setImage({ src:url }).run()
+                })
+                return true
+              }
+            }
+          }
+        }
+        return false
+      }
+    }
+  })
+
+  const insertImageFromUpload = useCallback(async (file) => {
+    if (!editor) return
+    const url = await uploadImage(file)
+    if (url) editor.chain().focus().setImage({ src:url }).run()
+  }, [editor, uploadImage])
+
+  // Autosave: every 2s after change, persist draft to Supabase (NEVER auto-publishes)
+  useEffect(() => {
+    if (skipNextAutosave.current) { skipNextAutosave.current = false; return }
+    const t = setTimeout(async () => {
+      const f = formRef.current
+      if (!f.title && !f.content) return
+      setSaving(true)
+      const now = new Date().toISOString()
+      const payload = {...f, updated_at:now}
+      // Always save as draft on autosave - never auto-publish
+      if (f.id) {
+        await supabase.from('articles').update(payload).eq('id', f.id)
+      } else {
+        const insertPayload = {...payload, published:false, created_at:now}
+        const { data:row } = await supabase.from('articles').insert(insertPayload).select().single()
+        if (row) setForm(prev => ({...prev, id:row.id}))
+      }
+      setSavedAt(new Date())
+      setSaving(false)
+    }, 2000)
+    return () => clearTimeout(t)
+  }, [form.title, form.summary, form.content, form.image_url, form.url, form.category])
+
   const inp = (label, key, type='text', placeholder='') => (
     <div style={{marginBottom:'1rem'}}>
       <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-secondary)',marginBottom:5}}>{label}</label>
       {type==='textarea'
-        ? <textarea value={form[key]||''} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={placeholder} rows={4}
-            style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--color-border2)',background:'var(--color-bg2)',color:'var(--color-text-primary)',fontFamily:'inherit',fontSize:'.88rem',resize:'vertical'}}/>
+        ? <textarea value={form[key]||''} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={placeholder} rows={3}
+            style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--color-border2)',background:'var(--color-bg2)',color:'var(--color-text-primary)',fontFamily:'inherit',fontSize:'.9rem',resize:'vertical'}}/>
         : <input type={type} value={form[key]||''} onChange={e=>setForm(f=>({...f,[key]:e.target.value}))} placeholder={placeholder}
-            style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--color-border2)',background:'var(--color-bg2)',color:'var(--color-text-primary)',fontFamily:'inherit',fontSize:'.88rem'}}/>
+            style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--color-border2)',background:'var(--color-bg2)',color:'var(--color-text-primary)',fontFamily:'inherit',fontSize:'.9rem'}}/>
       }
     </div>
   )
+
+  const statusLabel = saving ? <span style={{color:'#f5a623',fontSize:'.78rem',display:'flex',alignItems:'center',gap:5}}><Loader size={12} className="spin"/> שומר...</span>
+    : savedAt ? <span style={{color:'#2dd87a',fontSize:'.78rem'}}>✓ נשמר ב-{savedAt.toLocaleTimeString('he-IL')}</span>
+    : <span style={{color:'var(--color-text-secondary)',fontSize:'.78rem'}}>לא נשמר עדיין</span>
+
   return (
     <div style={{background:'var(--color-surface)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:12,padding:'1.5rem',marginBottom:'1rem'}}>
-      <h3 style={{margin:'0 0 1.2rem',fontSize:'.95rem',fontWeight:700,color:'#f5a623'}}>{form.id?'עריכת מאמר':'מאמר חדש'}</h3>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.2rem'}}>
+        <h3 style={{margin:0,fontSize:'.95rem',fontWeight:700,color:'#f5a623'}}>{form.id?'עריכת מאמר':'מאמר חדש'}</h3>
+        {statusLabel}
+      </div>
       {inp('כותרת','title','text','כותרת המאמר')}
-      {inp('תקציר','summary','textarea','תיאור קצר...')}
-      {inp('קישור לכתבה','url','url','https://...')}
-      {inp('קישור תמונה (אופציונלי)','image_url','url','https://...')}
+      {inp('תקציר','summary','textarea','תקציר קצר...')}
+      {inp('תמונה ראשית (URL)','image_url','url','https://...')}
+      {inp('קישור חיצוני (אופציונלי)','url','url','https://...')}
       <div style={{marginBottom:'1rem'}}>
         <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-secondary)',marginBottom:5}}>קטגוריה</label>
         <select value={form.category||'כללי'} onChange={e=>setForm(f=>({...f,category:e.target.value}))}
-          style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--color-border2)',background:'var(--color-bg2)',color:'var(--color-text-primary)',fontFamily:'inherit'}}>
-          {['כללי','מניות','אג"ח','מאקרו','קריפטו','פורקס','סקטורים'].map(c=><option key={c} value={c}>{c}</option>)}
+          style={{width:'100%',padding:10,borderRadius:8,border:'1px solid var(--color-border2)',background:'var(--color-bg2)',color:'var(--color-text-primary)',fontFamily:'inherit',fontSize:'.9rem'}}>
+          {['כללי','ניתוח','דו"ח','חינוך','השקעות','מאקרו','גיאופוליטי'].map(c=><option key={c} value={c}>{c}</option>)}
         </select>
       </div>
-      <div style={{marginBottom:'1.2rem',display:'flex',alignItems:'center',gap:10}}>
-        <input type="checkbox" id="pub_art" checked={form.published||false} onChange={e=>setForm(f=>({...f,published:e.target.checked}))} style={{width:16,height:16}}/>
-        <label htmlFor="pub_art" style={{fontSize:'.85rem',fontWeight:600,cursor:'pointer'}}>פורסם (גלוי לכולם)</label>
+      {/* RICH TEXT EDITOR */}
+      <div style={{marginBottom:'1rem'}}>
+        <label style={{display:'block',fontSize:'.82rem',fontWeight:600,color:'var(--color-text-secondary)',marginBottom:5}}>תוכן המאמר</label>
+        <div style={{border:'1px solid var(--color-border2)',borderRadius:8,background:'var(--color-bg2)'}}>
+          <MenuBar editor={editor} onUploadImage={insertImageFromUpload}/>
+          <EditorContent editor={editor}/>
+        </div>
+        <p style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginTop:6}}>טיפ: אפשר לגרור תמונות מהמחשב לתוך העורך, או להדביק תמונה מהקליפבורד.</p>
+      </div>
+
+      <div style={{marginBottom:'1.2rem',display:'flex',alignItems:'center',gap:10,padding:'.8rem',background:form.published?'rgba(45,216,122,.08)':'rgba(245,166,35,.08)',borderRadius:8,border:'1px solid '+(form.published?'rgba(45,216,122,.2)':'rgba(245,166,35,.2)')}}>
+        <input type="checkbox" id="pub_art" checked={form.published||false} onChange={e=>setForm(f=>({...f,published:e.target.checked}))} style={{width:18,height:18,cursor:'pointer'}}/>
+        <label htmlFor="pub_art" style={{fontSize:'.88rem',fontWeight:600,cursor:'pointer'}}>{form.published?'✓ מאמר מפורסם — גלוי לציבור':'טיוטה — שמור בענן, לא מוצג בציבור'}</label>
       </div>
       <div style={{display:'flex',gap:10}}>
-        <button onClick={()=>onSave(form)} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:9,border:'none',background:'#f5a623',color:'#0d0f14',cursor:'pointer',fontFamily:'inherit',fontWeight:700,fontSize:'.88rem'}}>
-          <Save size={14}/> שמור
+        <button onClick={()=>onSave(formRef.current)} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 18px',borderRadius:9,border:'none',background:'#f5a623',color:'#0d0f14',cursor:'pointer',fontWeight:700,fontSize:'.88rem'}}>
+          <Save size={14}/> {form.published?'שמור ופרסם':'שמור טיוטה'}
         </button>
-        <button onClick={onCancel} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:9,border:'1px solid var(--color-border)',background:'transparent',color:'var(--color-text-muted)',cursor:'pointer',fontFamily:'inherit',fontSize:'.88rem'}}>
-          <X size={14}/> ביטול
+        <button onClick={onCancel} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:9,border:'1px solid var(--color-border)',background:'transparent',color:'var(--color-text-primary)',cursor:'pointer',fontWeight:600,fontSize:'.88rem'}}>
+          <X size={14}/> סגור
         </button>
       </div>
     </div>
   )
 }
+
 
 function AcademyForm({ data, onSave, onCancel }) {
   const [form, setForm] = useState({...data})
