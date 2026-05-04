@@ -3,6 +3,39 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowRight, Tag, Calendar, RefreshCw } from 'lucide-react'
 import { supabase } from '../services/supabase.js'
 
+// Minimal markdown -> HTML converter (covers what we need)
+function mdToHtml(md) {
+  if (!md) return ''
+  // Escape HTML entities first
+  let s = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  // Images: ![alt](url)
+  s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img alt="$1" src="$2"/>')
+  // Links: [text](url)
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+  // Bold: **text**
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  // Italic: *text* (not preceded by *)
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+  // Inline code: `text`
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>')
+  // Headings (line-start)
+  s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>')
+  s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>')
+  s = s.replace(/^# (.+)$/gm, '<h1>$1</h1>')
+  // Blockquote
+  s = s.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+  // Bullet list (group consecutive lines)
+  s = s.replace(/(^- .+(\n- .+)*)/gm, m => '<ul>' + m.split('\n').map(l => '<li>' + l.replace(/^- /, '') + '</li>').join('') + '</ul>')
+  // Paragraphs: double-newline separated blocks. Lines that are already block-level stay as-is.
+  const blocks = s.split(/\n{2,}/).map(b => {
+    const t = b.trim()
+    if (!t) return ''
+    if (/^<(h[1-6]|ul|ol|blockquote|img|p|div|pre)/.test(t)) return t
+    return '<p>' + t.replace(/\n/g, '<br/>') + '</p>'
+  })
+  return blocks.join('\n')
+}
+
 export default function ArticleView() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -18,39 +51,41 @@ export default function ArticleView() {
     setLoading(false)
   }
 
-  if (loading) return <div style={{textAlign:'center',padding:'4rem',color:'var(--color-text-muted)'}}><RefreshCw size={22} style={{animation:'spin 1s linear infinite'}}/></div>
-  if (!article) return <div style={{textAlign:'center',padding:'3rem',color:'var(--color-text-muted)'}}>המאמר לא נמצא או לא פורסם</div>
+  if (loading) return <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-muted)' }}><RefreshCw size={22} style={{ animation: 'spin 1s linear infinite' }} /></div>
+  if (!article) return <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>המאמר לא נמצא או לא פורסם</div>
+
+  const html = mdToHtml(article.content || '')
 
   return (
-    <div style={{maxWidth:780,margin:'0 auto'}}>
-      <button onClick={()=>navigate('/articles')} style={{display:'flex',alignItems:'center',gap:6,padding:'6px 12px',marginBottom:'1.5rem',borderRadius:8,border:'1px solid var(--color-border)',background:'transparent',color:'var(--color-text-primary)',cursor:'pointer',fontSize:'.85rem',fontWeight:600}}>
-        <ArrowRight size={14}/> חזרה למאמרים
+    <div style={{ maxWidth: 780, margin: '0 auto' }}>
+      <button onClick={() => navigate('/articles')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', marginBottom: '1.5rem', borderRadius: 8, border: '1px solid var(--color-border)', background: 'transparent', color: 'var(--color-text-primary)', cursor: 'pointer', fontSize: '.85rem', fontWeight: 600 }}>
+        <ArrowRight size={14} /> חזרה למאמרים
       </button>
 
-      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:'1rem',flexWrap:'wrap'}}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem', flexWrap: 'wrap' }}>
         {article.category && (
-          <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.78rem',fontWeight:600,color:'#f5a623',background:'rgba(245,166,35,0.1)',padding:'4px 11px',borderRadius:14}}>
-            <Tag size={11}/>{article.category}
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600, color: '#f5a623', background: 'rgba(245,166,35,0.1)', padding: '4px 11px', borderRadius: 14 }}>
+            <Tag size={11} />{article.category}
           </span>
         )}
         {article.created_at && (
-          <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.78rem',color:'var(--color-text-muted)'}}>
-            <Calendar size={11}/>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.78rem', color: 'var(--color-text-muted)' }}>
+            <Calendar size={11} />
             {new Date(article.created_at).toLocaleDateString('he-IL')}
           </span>
         )}
       </div>
 
-      <h1 style={{fontSize:'2rem',fontWeight:800,lineHeight:1.3,margin:'0 0 1.2rem',color:'var(--color-text-primary)'}}>{article.title}</h1>
-      {article.summary && <p style={{fontSize:'1.05rem',lineHeight:1.6,color:'var(--color-text-secondary)',margin:'0 0 1.5rem',fontWeight:500}}>{article.summary}</p>}
+      <h1 style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1.3, margin: '0 0 1.2rem', color: 'var(--color-text-primary)' }}>{article.title}</h1>
+      {article.summary && <p style={{ fontSize: '1.05rem', lineHeight: 1.6, color: 'var(--color-text-secondary)', margin: '0 0 1.5rem', fontWeight: 500 }}>{article.summary}</p>}
 
       {article.image_url && (
-        <div style={{borderRadius:12,overflow:'hidden',marginBottom:'2rem',background:'var(--color-bg2)'}}>
-          <img src={article.image_url} alt={article.title} style={{width:'100%',height:'auto',display:'block'}} onError={e=>e.target.parentElement.style.display='none'}/>
+        <div style={{ borderRadius: 12, overflow: 'hidden', marginBottom: '2rem', background: 'var(--color-bg2)' }}>
+          <img src={article.image_url} alt={article.title} style={{ width: '100%', height: 'auto', display: 'block' }} onError={e => e.target.parentElement.style.display = 'none'} />
         </div>
       )}
 
-      <div className="article-content" style={{fontSize:'1.05rem',lineHeight:1.85,color:'var(--color-text-primary)'}} dangerouslySetInnerHTML={{__html: article.content || ''}}/>
+      <div className="article-content" style={{ fontSize: '1.05rem', lineHeight: 1.85, color: 'var(--color-text-primary)' }} dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   )
 }
