@@ -9,6 +9,7 @@ import Academy from './pages/Academy.jsx'
 import Screener from './pages/Screener.jsx'
 import Portfolio from './pages/Portfolio.jsx'
 import Articles from './pages/Articles.jsx'
+import ArticleView from './pages/ArticleView.jsx'
 import Calculator from './pages/Calculator.jsx'
 import Superinvestors from './pages/Superinvestors.jsx'
 import Admin from './pages/Admin.jsx'
@@ -49,6 +50,7 @@ export default function App() {
 <Route path="/superinvestors" element={<AppShell user={user}><Superinvestors/></AppShell>}/>
           <Route path="/academy" element={<AppShell user={user}><Academy/></AppShell>}/>
           <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
+          <Route path="/articles/:id" element={<AppShell user={user}><ArticleView/></AppShell>}/>
           {user.email === ADMIN_EMAIL && (
             <Route path="/admin" element={<AppShell user={user}><Admin user={user}/></AppShell>}/>
           )}
