@@ -11,19 +11,8 @@ export default function Admin({ user }) {
   const [articles, setArticles] = useState([])
   const [academy, setAcademy] = useState([])
   const [users, setUsers] = useState([])
-  const [editItem, setEditItem] = useState(() => {
-    try { const s = sessionStorage.getItem('admin-editItem'); return s ? JSON.parse(s) : null } catch(e) { return null }
-  })
-  const [showForm, setShowForm] = useState(() => {
-    try { return sessionStorage.getItem('admin-showForm') === '1' } catch(e) { return false }
-  })
-  // Persist these on every render
-  if (typeof window !== 'undefined') {
-    try {
-      if (editItem) sessionStorage.setItem('admin-editItem', JSON.stringify(editItem)); else sessionStorage.removeItem('admin-editItem')
-      if (showForm) sessionStorage.setItem('admin-showForm', '1'); else sessionStorage.removeItem('admin-showForm')
-    } catch(e) {}
-  }
+  const [editItem, setEditItem] = useState(null)
+  const [showForm, setShowForm] = useState(false)
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -122,19 +111,12 @@ export default function Admin({ user }) {
       {tab==='articles' && !loading && (
         <div>
           <div style={{display:'flex',justifyContent:'flex-start',marginBottom:'1rem'}}>
-            <button onClick={()=>{setShowForm(true);setEditItem({title:'',summary:'',url:'',category:'כללי',published:true})}}
-              style={{display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:9,border:'1px solid rgba(245,166,35,0.4)',background:'rgba(245,166,35,0.1)',color:'#f5a623',cursor:'pointer',fontFamily:'inherit',fontWeight:600,fontSize:'.85rem'}}>
+            <button onClick={() => navigate('/admin/article/new')}
+              style={{display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:9,border:'1px solid rgba(245,166,35,0.4)',background:'rgba(245,166,35,0.1)',color:'#f5a623',cursor:'pointer',fontWeight:700,fontSize:'.85rem'}}>
               <Plus size={15}/> מאמר חדש
             </button>
           </div>
 
-          {showForm && (
-            <ArticleForm
-              data={editItem}
-              onSave={saveArticle}
-              onCancel={()=>{setShowForm(false);setEditItem(null)}}
-            />
-          )}
 
           <div style={{display:'flex',flexDirection:'column',gap:8}}>
             {articles.map(a=>(
@@ -149,7 +131,7 @@ export default function Admin({ user }) {
                 </div>
                 <div style={{display:'flex',gap:6,flexShrink:0}}>
                   {a.url && <a href={a.url} target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',padding:6,borderRadius:7,color:'var(--color-text-muted)',border:'1px solid var(--color-border)',textDecoration:'none'}}><Eye size={14}/></a>}
-                  <button onClick={()=>{setEditItem(a);setShowForm(true)}}
+                  <button onClick={()=>navigate('/admin/article/'+a.id)}
                     style={{display:'flex',alignItems:'center',padding:6,borderRadius:7,border:'1px solid rgba(245,166,35,0.3)',background:'rgba(245,166,35,0.08)',color:'#f5a623',cursor:'pointer'}}>
                     <Edit2 size={14}/>
                   </button>
@@ -194,7 +176,7 @@ export default function Admin({ user }) {
                   <p style={{margin:0,fontSize:'.78rem',color:'var(--color-text-muted)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{a.definition}</p>
                 </div>
                 <div style={{display:'flex',gap:6,flexShrink:0}}>
-                  <button onClick={()=>{setEditItem(a);setShowForm(true)}}
+                  <button onClick={()=>navigate('/admin/article/'+a.id)}
                     style={{display:'flex',alignItems:'center',padding:6,borderRadius:7,border:'1px solid rgba(245,166,35,0.3)',background:'rgba(245,166,35,0.08)',color:'#f5a623',cursor:'pointer'}}>
                     <Edit2 size={14}/>
                   </button>
@@ -250,214 +232,6 @@ export default function Admin({ user }) {
     </div>
   )
 }
-
-function ArticleForm({ data, onSave, onCancel }) {
-  const sessionKey = 'article-form:' + (data.id || 'new')
-  const [form, setForm] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(sessionKey)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        // hydrate only if there's actually content (avoid resurrecting empty stale forms)
-        if (parsed && (parsed.title || parsed.content || parsed.summary)) return parsed
-      }
-    } catch(e) {}
-    return { ...data }
-  })
-
-  // Persist every change to sessionStorage (synchronous, instant — survives navigation within the tab)
-  if (typeof window !== 'undefined') {
-    try { sessionStorage.setItem(sessionKey, JSON.stringify(form)) } catch(e) {}
-  }
-  const textareaRef = useRef(null)
-  const fileInputRef = useRef(null)
-
-  function set(key, value) {
-    setForm(f => ({ ...f, [key]: value }))
-  }
-
-  // Insert text at the textarea cursor position (or at end if not focused)
-  function insertAtCursor(text) {
-    const ta = textareaRef.current
-    const current = form.content || ''
-    if (!ta) {
-      set('content', current + text)
-      return
-    }
-    const start = ta.selectionStart ?? current.length
-    const end = ta.selectionEnd ?? current.length
-    const next = current.slice(0, start) + text + current.slice(end)
-    set('content', next)
-    // restore cursor position after the inserted text
-    setTimeout(() => {
-      ta.focus()
-      const pos = start + text.length
-      ta.setSelectionRange(pos, pos)
-    }, 0)
-  }
-
-  async function handleImageUpload(file) {
-    if (!file) return
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase()
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
-    const { error } = await supabase.storage
-      .from('article-images')
-      .upload(path, file, { cacheControl: '3600', upsert: false })
-    if (error) {
-      alert('שגיאה בהעלאת תמונה: ' + error.message)
-      return
-    }
-    const { data: { publicUrl } } = supabase.storage.from('article-images').getPublicUrl(path)
-    insertAtCursor(`\n\n![](${publicUrl})\n\n`)
-  }
-
-  function inp(label, key, type = 'text', placeholder = '') {
-    return (
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 5 }}>{label}</label>
-        <input
-          type={type}
-          value={form[key] || ''}
-          onChange={e => set(key, e.target.value)}
-          placeholder={placeholder}
-          style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.9rem' }}
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div style={{ background: 'var(--color-surface)', border: '1px solid rgba(245,166,35,0.2)', borderRadius: 12, padding: '1.5rem', marginBottom: '1rem' }}>
-      <h3 style={{ margin: '0 0 1.2rem', fontSize: '.95rem', fontWeight: 700, color: '#f5a623' }}>
-        {form.id ? 'עריכת מאמר' : 'מאמר חדש'}
-      </h3>
-
-      {inp('כותרת', 'title', 'text', 'כותרת המאמר')}
-
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 5 }}>תקציר</label>
-        <textarea
-          value={form.summary || ''}
-          onChange={e => set('summary', e.target.value)}
-          placeholder="תקציר קצר..."
-          rows={3}
-          style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.9rem', resize: 'vertical' }}
-        />
-      </div>
-
-      {inp('תמונה ראשית (URL)', 'image_url', 'url', 'https://...')}
-      {inp('קישור חיצוני (אופציונלי)', 'url', 'url', 'https://...')}
-
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', fontSize: '.82rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 5 }}>קטגוריה</label>
-        <select
-          value={form.category || 'כללי'}
-          onChange={e => set('category', e.target.value)}
-          style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.9rem' }}
-        >
-          {['כללי', 'ניתוח', 'דו"ח', 'חינוך', 'השקעות', 'מאקרו', 'גיאופוליטי'].map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </div>
-
-      {/* Content area: plain textarea + image upload button */}
-      <div style={{ marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-          <label style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>תוכן המאמר</label>
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={e => { handleImageUpload(e.target.files?.[0]); e.target.value = '' }}
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 7, border: '1px solid var(--color-border)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', cursor: 'pointer', fontSize: '.78rem', fontWeight: 600 }}
-          >
-            <ImageIcon size={13} /> הוסף תמונה
-          </button>
-        </div>
-        <textarea
-          ref={textareaRef}
-          value={form.content || ''}
-          onChange={e => set('content', e.target.value)}
-          onPaste={async e => {
-            const items = e.clipboardData?.items
-            if (!items) return
-            for (const item of items) {
-              if (item.type && item.type.startsWith('image/')) {
-                const file = item.getAsFile()
-                if (file) {
-                  e.preventDefault()
-                  await handleImageUpload(file)
-                  return
-                }
-              }
-            }
-          }}
-          placeholder={'כתוב כאן את תוכן המאמר.\n\nניתן להשתמש ב-Markdown:\n# כותרת גדולה\n## כותרת משנית\n**טקסט מודגש**\n*טקסט נטוי*\n[קישור](https://example.com)\n\nלהוספת תמונה לחץ על הכפתור למעלה — היא תוכנס במיקום הסמן.'}
-          rows={20}
-          dir="auto"
-          style={{ width: '100%', padding: 14, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.95rem', lineHeight: 1.7, resize: 'vertical', minHeight: 360, unicodeBidi: 'plaintext' }}
-        />
-        {/* Image preview gallery — extracts all ![](url) from content */}
-        {(() => {
-          const urls = []
-          const re = /!\[[^\]]*\]\(([^)\s]+)\)/g
-          let m
-          const text = form.content || ''
-          while ((m = re.exec(text)) !== null) urls.push(m[1])
-          if (urls.length === 0) return null
-          return (
-            <div style={{ marginTop: 10, padding: 10, background: 'var(--color-bg2)', borderRadius: 8, border: '1px solid var(--color-border)' }}>
-              <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8 }}>תמונות במאמר ({urls.length})</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {urls.map((u, i) => (
-                  <div key={u+i} style={{ position: 'relative', width: 90, height: 90, borderRadius: 6, overflow: 'hidden', border: '1px solid var(--color-border)' }}>
-                    <img src={u} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!window.confirm('להסיר את התמונה הזו מהמאמר?')) return
-                        const next = (form.content || '').replace(new RegExp('!\\[[^\\]]*\\]\\(' + u.replace(/[.*+?^=!:${}()|\[\]/\\]/g, '\\\\        <p style={{ fontSize: '.72rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
-          תומך ב-Markdown. ניתן להוסיף תמונות בכפתור למעלה או על-ידי הדבקה ישירה (Ctrl+V).
-        </p>') + '\\)', 'g'), '').replace(/\n{3,}/g, '\n\n')
-                        set('content', next)
-                      }}
-                      title="הסר תמונה"
-                      style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.7)', color: '#fff', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-                    >×</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        })()}
-                <p style={{ fontSize: '.72rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
-          תומך ב-Markdown. תמונות נשמרות ב-Supabase ומופיעות אוטומטית בתוך הטקסט.
-        </p>
-      </div>
-
-      <div style={{ marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: 10, padding: '.8rem', background: form.published ? 'rgba(45,216,122,.08)' : 'rgba(245,166,35,.08)', borderRadius: 8, border: '1px solid ' + (form.published ? 'rgba(45,216,122,.2)' : 'rgba(245,166,35,.2)') }}>
-        <input type="checkbox" id="pub_art" checked={form.published || false} onChange={e => set('published', e.target.checked)} style={{ width: 18, height: 18, cursor: 'pointer' }} />
-        <label htmlFor="pub_art" style={{ fontSize: '.88rem', fontWeight: 600, cursor: 'pointer' }}>
-          {form.published ? '✓ מאמר מפורסם — גלוי לציבור' : 'טיוטה — לא גלוי לציבור'}
-        </label>
-      </div>
-
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button onClick={() => { onSave(form); try { sessionStorage.removeItem(sessionKey) } catch(e) {} }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 9, border: 'none', background: '#f5a623', color: '#0d0f14', cursor: 'pointer', fontWeight: 700, fontSize: '.88rem' }}>
-          <Save size={14} /> {form.published ? 'שמור ופרסם' : 'שמור טיוטה'}
-        </button>
-        <button onClick={() => { try { sessionStorage.removeItem(sessionKey) } catch(e) {} ; onCancel() }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 9, border: '1px solid var(--color-border)', background: 'transparent', color: 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '.88rem' }}>
-          <X size={14} /> סגור
-        </button>
-      </div>
-    </div>
-  )
-}
-
 
 function AcademyForm({ data, onSave, onCancel }) {
   const [form, setForm] = useState({...data})
