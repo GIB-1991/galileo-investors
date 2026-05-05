@@ -382,12 +382,59 @@ function ArticleForm({ data, onSave, onCancel }) {
           ref={textareaRef}
           value={form.content || ''}
           onChange={e => set('content', e.target.value)}
+          onPaste={async e => {
+            const items = e.clipboardData?.items
+            if (!items) return
+            for (const item of items) {
+              if (item.type && item.type.startsWith('image/')) {
+                const file = item.getAsFile()
+                if (file) {
+                  e.preventDefault()
+                  await handleImageUpload(file)
+                  return
+                }
+              }
+            }
+          }}
           placeholder={'כתוב כאן את תוכן המאמר.\n\nניתן להשתמש ב-Markdown:\n# כותרת גדולה\n## כותרת משנית\n**טקסט מודגש**\n*טקסט נטוי*\n[קישור](https://example.com)\n\nלהוספת תמונה לחץ על הכפתור למעלה — היא תוכנס במיקום הסמן.'}
           rows={20}
           dir="auto"
           style={{ width: '100%', padding: 14, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.95rem', lineHeight: 1.7, resize: 'vertical', minHeight: 360, unicodeBidi: 'plaintext' }}
         />
-        <p style={{ fontSize: '.72rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
+        {/* Image preview gallery — extracts all ![](url) from content */}
+        {(() => {
+          const urls = []
+          const re = /!\[[^\]]*\]\(([^)\s]+)\)/g
+          let m
+          const text = form.content || ''
+          while ((m = re.exec(text)) !== null) urls.push(m[1])
+          if (urls.length === 0) return null
+          return (
+            <div style={{ marginTop: 10, padding: 10, background: 'var(--color-bg2)', borderRadius: 8, border: '1px solid var(--color-border)' }}>
+              <div style={{ fontSize: '.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8 }}>תמונות במאמר ({urls.length})</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {urls.map((u, i) => (
+                  <div key={u+i} style={{ position: 'relative', width: 90, height: 90, borderRadius: 6, overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                    <img src={u} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!window.confirm('להסיר את התמונה הזו מהמאמר?')) return
+                        const next = (form.content || '').replace(new RegExp('!\\[[^\\]]*\\]\\(' + u.replace(/[.*+?^=!:${}()|\[\]/\\]/g, '\\\\        <p style={{ fontSize: '.72rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
+          תומך ב-Markdown. ניתן להוסיף תמונות בכפתור למעלה או על-ידי הדבקה ישירה (Ctrl+V).
+        </p>') + '\\)', 'g'), '').replace(/\n{3,}/g, '\n\n')
+                        set('content', next)
+                      }}
+                      title="הסר תמונה"
+                      style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.7)', color: '#fff', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                    >×</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+                <p style={{ fontSize: '.72rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
           תומך ב-Markdown. תמונות נשמרות ב-Supabase ומופיעות אוטומטית בתוך הטקסט.
         </p>
       </div>
