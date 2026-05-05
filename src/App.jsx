@@ -53,8 +53,10 @@ export default function App() {
           <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
           <Route path="/articles/:id" element={<AppShell user={user}><ArticleView/></AppShell>}/>
           {user.email === ADMIN_EMAIL && (
-            <Route path="/admin" element={<AppShell user={user}><Admin user={user}/></AppShell>}/>
-            <Route path="/admin/article/:id" element={<AppShell user={user}><ArticleEditor/></AppShell>}/>
+            <>
+              <Route path="/admin" element={<AppShell user={user}><Admin user={user}/></AppShell>}/>
+              <Route path="/admin/article/:id" element={<AppShell user={user}><ArticleEditor/></AppShell>}/>
+            </>
           )}
           <Route path="*" element={<Navigate to="/dashboard"/>}/>
         </>
