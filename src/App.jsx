@@ -13,6 +13,7 @@ import ArticleView from './pages/ArticleView.jsx'
 import Calculator from './pages/Calculator.jsx'
 import Superinvestors from './pages/Superinvestors.jsx'
 import Admin from './pages/Admin.jsx'
+import ArticleEditor from './pages/ArticleEditor.jsx'
 
 const ADMIN_EMAIL = 'gilbitan2000@gmail.com'
 
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/articles/:id" element={<AppShell user={user}><ArticleView/></AppShell>}/>
           {user.email === ADMIN_EMAIL && (
             <Route path="/admin" element={<AppShell user={user}><Admin user={user}/></AppShell>}/>
+            <Route path="/admin/article/:id" element={<AppShell user={user}><ArticleEditor/></AppShell>}/>
           )}
           <Route path="*" element={<Navigate to="/dashboard"/>}/>
         </>
