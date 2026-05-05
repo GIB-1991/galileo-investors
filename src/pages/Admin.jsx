@@ -384,8 +384,8 @@ function ArticleForm({ data, onSave, onCancel }) {
           onChange={e => set('content', e.target.value)}
           placeholder={'כתוב כאן את תוכן המאמר.\n\nניתן להשתמש ב-Markdown:\n# כותרת גדולה\n## כותרת משנית\n**טקסט מודגש**\n*טקסט נטוי*\n[קישור](https://example.com)\n\nלהוספת תמונה לחץ על הכפתור למעלה — היא תוכנס במיקום הסמן.'}
           rows={20}
-          dir="rtl"
-          style={{ width: '100%', padding: 14, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.95rem', lineHeight: 1.7, resize: 'vertical', minHeight: 360 }}
+          dir="auto"
+          style={{ width: '100%', padding: 14, borderRadius: 8, border: '1px solid var(--color-border2)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', fontFamily: 'inherit', fontSize: '.95rem', lineHeight: 1.7, resize: 'vertical', minHeight: 360, unicodeBidi: 'plaintext' }}
         />
         <p style={{ fontSize: '.72rem', color: 'var(--color-text-muted)', marginTop: 6 }}>
           תומך ב-Markdown. תמונות נשמרות ב-Supabase ומופיעות אוטומטית בתוך הטקסט.
