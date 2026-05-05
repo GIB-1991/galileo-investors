@@ -3,41 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowRight, Tag, Calendar, RefreshCw } from 'lucide-react'
 import { supabase } from '../services/supabase.js'
 
-// Render either pure markdown, pure HTML, or a mix.
-// Strategy: handle markdown patterns FIRST (anywhere in the string), then leave
-// any existing HTML tags alone. Wrap orphan text in <p>.
-function renderContent(src) {
-  if (!src) return ''
-  let s = src
-  // Image markdown: ![alt](url)  ->  <img>
-  s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img alt="$1" src="$2"/>')
-  // Link markdown: [text](url)  ->  <a>
-  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-  // Bold: **text**
-  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
-  // Italic: *text*
-  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
-  // Inline code
-  s = s.replace(/`([^`]+)`/g, '<code>$1</code>')
-  // Headings (line-start)
-  s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>')
-  s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>')
-  s = s.replace(/^# (.+)$/gm, '<h1>$1</h1>')
-  // Blockquote
-  s = s.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-  // If src is purely HTML (already wrapped in <p>/<h>/etc), don't double-wrap.
-  // Otherwise wrap orphan text blocks in <p>.
-  const isMostlyHtml = /^\s*<(p|h[1-6]|ul|ol|blockquote|div)/i.test(s.trim())
-  if (!isMostlyHtml) {
-    const blocks = s.split(/\n{2,}/).map(b => {
-      const t = b.trim()
-      if (!t) return ''
-      if (/^<(h[1-6]|ul|ol|blockquote|img|p|div|pre)/i.test(t)) return t
-      return '<p>' + t.replace(/\n/g, '<br/>') + '</p>'
-    })
-    s = blocks.join('\n')
-  }
-  return s
+function sanitizeHtml(html) {
+  if (!html) return ''
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/ on[a-z]+\s*=\s*"[^"]*"/gi, '')
+    .replace(/ on[a-z]+\s*=\s*'[^']*'/gi, '')
+    .replace(/javascript:/gi, '')
 }
 
 export default function ArticleView() {
@@ -57,8 +30,6 @@ export default function ArticleView() {
 
   if (loading) return <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-muted)' }}><RefreshCw size={22} style={{ animation: 'spin 1s linear infinite' }} /></div>
   if (!article) return <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>המאמר לא נמצא או לא פורסם</div>
-
-  const html = renderContent(article.content || '')
 
   return (
     <div style={{ maxWidth: 780, margin: '0 auto' }}>
@@ -89,7 +60,7 @@ export default function ArticleView() {
         </div>
       )}
 
-      <div className="article-content" style={{ fontSize: '1.05rem', lineHeight: 1.85, color: 'var(--color-text-primary)' }} dangerouslySetInnerHTML={{ __html: html }} />
+      <div className="article-content" style={{ fontSize: '1.05rem', lineHeight: 1.85, color: 'var(--color-text-primary)' }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content || '') }} />
     </div>
   )
 }
