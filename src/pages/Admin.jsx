@@ -13,7 +13,7 @@ function mdToHtml(src) {
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
   s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
-  s = s.replace(/\`([^`]+)\`/g, '<code>$1</code>')
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>')
   s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>')
   s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>')
   s = s.replace(/^# (.+)$/gm, '<h1>$1</h1>')
