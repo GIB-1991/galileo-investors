@@ -262,30 +262,6 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
 
   return createPortal(
     <div style={{ position:'fixed', inset:0, background:'var(--color-bg)', zIndex:9999, display:'flex', flexDirection:'column' }}>
-      {/* Top bar */}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 24px', borderBottom:'1px solid var(--color-border)', background:'var(--color-surface)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <button onClick={onClose} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 12px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontSize:'.85rem' }}>
-            <ArrowLeft size={14}/> סגור
-          </button>
-          <span style={{ fontSize:'.85rem', color:'var(--color-text-muted)' }}>
-            {form.id ? 'עריכת מאמר' : 'מאמר חדש'} · {form.published ? <span style={{color:'#2dd87a',fontWeight:600}}>מפורסם</span> : <span style={{color:'#f5a623',fontWeight:600}}>טיוטה</span>}
-          </span>
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          {msg && <span style={{ fontSize:'.8rem', color:'#2dd87a', fontWeight:600 }}>{msg}</span>}
-          <button onClick={() => setShowPreview(!showPreview)} style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontSize:'.82rem' }}>
-            {showPreview ? <EyeOff size={13}/> : <Eye size={13}/>} {showPreview ? 'הסתר תצוגה' : 'הצג תצוגה'}
-          </button>
-          <button onClick={() => handleSave(false)} style={{ padding:'7px 14px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontWeight:600, fontSize:'.85rem' }}>
-            שמור טיוטה
-          </button>
-          <button onClick={() => handleSave(true)} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 18px', borderRadius:8, border:'none', background:'#f5a623', color:'#0d0f14', cursor:'pointer', fontWeight:700, fontSize:'.88rem' }}>
-            <Send size={13}/> {form.published ? 'עדכן פרסום' : 'פרסם'}
-          </button>
-        </div>
-      </div>
-
       {/* Body: split view */}
       <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
         {/* LEFT: Editor */}
@@ -347,6 +323,31 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
           </div>
         )}
       </div>
+      {/* Bottom action bar */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 24px', borderTop:'1px solid var(--color-border)', background:'var(--color-surface)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <button onClick={onClose} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 12px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontSize:'.85rem' }}>
+            <ArrowLeft size={14}/> סגור
+          </button>
+          <span style={{ fontSize:'.85rem', color:'var(--color-text-muted)' }}>
+            {form.id ? 'עריכת מאמר' : 'מאמר חדש'} · {form.published ? <span style={{color:'#2dd87a',fontWeight:600}}>מפורסם</span> : <span style={{color:'#f5a623',fontWeight:600}}>טיוטה</span>}
+          </span>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          {msg && <span style={{ fontSize:'.8rem', color:'#2dd87a', fontWeight:600 }}>{msg}</span>}
+          <button onClick={() => setShowPreview(!showPreview)} style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontSize:'.82rem' }}>
+            {showPreview ? <EyeOff size={13}/> : <Eye size={13}/>} {showPreview ? 'הסתר תצוגה' : 'הצג תצוגה'}
+          </button>
+          <button onClick={() => handleSave(false)} style={{ padding:'7px 14px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontWeight:600, fontSize:'.85rem' }}>
+            שמור טיוטה
+          </button>
+          <button onClick={() => handleSave(true)} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 18px', borderRadius:8, border:'none', background:'#f5a623', color:'#0d0f14', cursor:'pointer', fontWeight:700, fontSize:'.88rem' }}>
+            <Send size={13}/> {form.published ? 'עדכן פרסום' : 'פרסם'}
+          </button>
+        </div>
+      </div>
+
+
     </div>
   , document.body)
 }
