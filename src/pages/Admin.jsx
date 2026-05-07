@@ -248,7 +248,7 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
 
   function removeImage(url) {
     if (!window.confirm('להסיר את התמונה?')) return
-    const escaped = url.replace(/[.*+?^=!:${}()|\[\]/\\]/g, '\\$&')
+    const escaped = url.split('').map(ch => /[.*+?^=!:${}()|[\]\\\/]/.test(ch) ? '\\' + ch : ch).join('')
     const re = new RegExp('!\\[[^\\]]*\\]\\(' + escaped + '\\)', 'g')
     const next = (form.content || '').replace(re, '').replace(/\n{3,}/g, '\n\n')
     set('content', next)
