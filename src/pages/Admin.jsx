@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase.js'
 import { Plus, Edit2, Trash2, Save, X, Users, FileText, BookOpen, ChevronDown, ChevronUp, Eye, EyeOff, Image as ImageIcon, Send, ArrowLeft } from 'lucide-react'
@@ -259,8 +260,8 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
     if (publish) onClose()
   }
 
-  return (
-    <div style={{ position:'fixed', inset:0, background:'var(--color-bg)', zIndex:100, display:'flex', flexDirection:'column' }}>
+  return createPortal(
+    <div style={{ position:'fixed', inset:0, background:'var(--color-bg)', zIndex:9999, display:'flex', flexDirection:'column' }}>
       {/* Top bar */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 24px', borderBottom:'1px solid var(--color-border)', background:'var(--color-surface)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
@@ -347,7 +348,7 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
         )}
       </div>
     </div>
-  )
+  , document.body)
 }
 
 function AcademyForm({ data, onSave, onCancel }) {
