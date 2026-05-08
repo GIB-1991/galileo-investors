@@ -261,7 +261,7 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
   }
 
   return createPortal(
-    <div style={{ position:'fixed', inset:0, background:'var(--color-bg)', zIndex:9999, display:'flex', flexDirection:'column' }}>
+    <div style={{ position:'fixed', top:72, left:0, right:0, bottom:0, background:'var(--color-bg)', zIndex:50, display:'flex', flexDirection:'column' }}>
       {/* Body: split view */}
       <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
         {/* LEFT: Editor */}
