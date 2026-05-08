@@ -38,7 +38,7 @@ const SOCIAL = [
 export default function AppShell({user, children}) {
   const location = useLocation()
   const navigate = useNavigate()
-  const daysLeft = useTrialTimer(user)
+  const { daysLeft, plan, isAdmin } = useTrialTimer(user)
   const handleSignOut = async () => { await signOut(); navigate('/') }
 
   const [darkMode, setDarkMode] = useState(() => {
@@ -118,9 +118,9 @@ export default function AppShell({user, children}) {
             )}
 
             {daysLeft <= 7 && (
-              <div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.3)',borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:'#f5a623'}}>
-                <Clock size={11}/>{daysLeft} ימים
-              </div>
+              <Link to="/pricing" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:5,background: isAdmin?'rgba(168,85,247,0.12)':plan==='monthly'||plan==='yearly'?'rgba(45,216,122,0.12)':daysLeft<=2?'rgba(240,82,82,0.12)':'rgba(245,166,35,0.1)',border:'1px solid '+(isAdmin?'rgba(168,85,247,0.35)':plan==='monthly'||plan==='yearly'?'rgba(45,216,122,0.35)':daysLeft<=2?'rgba(240,82,82,0.35)':'rgba(245,166,35,0.3)'),borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:isAdmin?'#a855f7':plan==='monthly'||plan==='yearly'?'#2dd87a':daysLeft<=2?'#f05252':'#f5a623'}}>
+                <Clock size={11}/>{isAdmin?'ניהול':plan==='monthly'?'מנוי חודשי':plan==='yearly'?'מנוי שנתי':daysLeft>0?(daysLeft+' ימי ניסיון'):'הניסיון הסתיים'}
+              </Link>
             )}
             <span style={{fontSize:'.78rem',color:'var(--color-text-secondary)',background:'var(--color-surface)',padding:'4px 10px',borderRadius:8,border:'1px solid var(--color-border)'}}>
               {user?.email?.split('@')[0]}
