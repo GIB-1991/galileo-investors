@@ -63,6 +63,7 @@ export default function Screener() {
   const debRef  = useRef(null)
   const inputRef= useRef(null)
   const wrapRef = useRef(null)
+  const skipSuggRef = useRef(false)
 
   useEffect(()=>{
     const h = e => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setShowSugg(false) }
@@ -71,6 +72,7 @@ export default function Screener() {
   },[])
 
   useEffect(()=>{
+    if (skipSuggRef.current){ skipSuggRef.current=false; setSugg([]); setShowSugg(false); return }
     if (!query||query.length<1){setSugg([]);return}
     clearTimeout(debRef.current)
     debRef.current = setTimeout(async()=>{
@@ -93,6 +95,7 @@ export default function Screener() {
   }
 
   async function loadStock(ticker) {
+    skipSuggRef.current = true
     setLoading(true); setErr(null); setShowSugg(false); setSugg([])
     try {
       const r = await fetch('/api/quote?ticker='+encodeURIComponent(ticker)+'&range=3mo&interval=1d')
