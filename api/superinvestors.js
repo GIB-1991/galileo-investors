@@ -144,7 +144,7 @@ export default async function handler(req, res){
       .slice(0,10)
       .map((s,i)=>({
         r:i+1, t:s.t, n:s.n, inv:s.inv,
-        pct:+(s.pctSum).toFixed(1),
+        pct:+(s.pctSum / s.inv).toFixed(1),
         c: s.cCount ? +(s.cSum/s.cCount).toFixed(1) : 0,
         logo:'https://logo.clearbit.com/'+s.t.toLowerCase().replace(/[^a-z]/g,'')+'.com',
       }));
