@@ -67,7 +67,7 @@ const live = !!data
 const QUARTER = live ? data.quarter : FB_QUARTER
 const REPORT_DATE = live ? data.reportDate : FB_REPORT_DATE
 const FILING_DATE = live ? data.filingDate : FB_FILING_DATE
-const INV = live ? data.investors.map((i,idx)=>({...i, color:i.color||FB_SECTORS[idx%6].color})) : FB_INV
+const INV = live ? data.investors.map((i,idx)=>({...i, aum:(i.aum||0)/1e6, color:i.color||FB_SECTORS[idx%6].color})) : FB_INV
 const TOP10 = live ? data.top10 : FB_TOP10
 const SECTORS = live ? data.sectors : FB_SECTORS
 const totalAUM = live ? (data.stats.totalAUM/1e6) : INV.reduce((s,i)=>s+i.aum,0)
