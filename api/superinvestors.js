@@ -11,6 +11,7 @@ const MANAGERS = [
   { id:'AM',  code:'AM',      name:'David Tepper',     fund:'Appaloosa Management', style:'Value',      color:'#a855f7', img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F3%2F3d%2FDavid_Tepper_01.jpg%2F330px-David_Tepper_01.jpg' },
   { id:'SC',  code:'SAM',     name:'Michael Burry',    fund:'Scion Asset Management', style:'Contrarian', color:'#f05252', img:'https://hihmkuaxnizvufwrtmgm.supabase.co/storage/v1/object/public/investors/rJvBIAyOK_0_175_3000_1688_0_x-large.jpg' },
   { id:'BG',  code:'BAUPOST', name:'Seth Klarman',     fund:'Baupost Group',        style:'Deep Value', color:'#06b6d4', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Seth_Klarman_at_147th_Preakness_Stakes.jpg/250px-Seth_Klarman_at_147th_Preakness_Stakes.jpg' },
+  { id:'TP',  code:'tp',      name:'Daniel Loeb',      fund:'Third Point',          style:'Activist',   color:'#fb923c', img:'https://ui-avatars.com/api/?name=Daniel+Loeb&size=120&background=fb923c&color=fff&bold=true' },
 ];
 
 const SECTOR_HE = {
