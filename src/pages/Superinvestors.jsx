@@ -90,7 +90,7 @@ return(
 <Star size={20} style={{color:'var(--color-accent)',flexShrink:0}}/> המשקיעים הגדולים
 </h1>
 <p style={{margin:'4px 0 0',color:'var(--color-text-muted)',fontSize:'.82rem'}}>
-אחזקות Superinvestors לפי גשות 13F — {QUARTER} | {REPORT_DATE} | פורסם {FILING_DATE}
+אחזקות מנהלי ההשקעות הגדולים לפי דיווחי 13F — {QUARTER} · ליום {REPORT_DATE} · פורסם {FILING_DATE}
 {loading && <span style={{marginInlineStart:8,opacity:.7}}>· טוען נתונים חיים…</span>}
 {live && <span style={{marginInlineStart:8,color:'var(--color-success)',fontSize:'.72rem'}}>● חי</span>}
 </p>
@@ -240,7 +240,7 @@ style={{width:26,height:26,borderRadius:5,objectFit:'contain',background:'white'
 
 <div style={{padding:'1rem 1.25rem',background:'var(--color-bg2)',borderRadius:12,border:'1px solid var(--color-border)',fontSize:'.75rem',color:'var(--color-text-muted)',lineHeight:1.7,display:'flex',gap:10,alignItems:'flex-start'}}>
 <DollarSign size={13} style={{flexShrink:0,marginTop:2}}/>
-<span>הנתונים נמשכים אוטומטית מ-Dataroma (גשות 13F לרשות ניירות ערך האמריקאית), ומשקפים אחזקות נכון ל-{REPORT_DATE} ({QUARTER}). הדוחות מוגשים בתוך 45 יום מסוף כל רבעון, והעמוד מתעדכן מעצמו כשמתפרסם דוח חדש. המידע מיועד לצרכי לימוד בלבד ואינו מהווה המלצת השקעה. <a href="https://www.dataroma.com" target="_blank" rel="noopener noreferrer" style={{color:'var(--color-accent)',textDecoration:'none'}}>Dataroma <ExternalLink size={10}/></a></span>
+<span>הנתונים נמשכים אוטומטית מ-Dataroma (דיווחי 13F לרשות ניירות ערך האמריקאית), ומשקפים אחזקות נכון ל-{REPORT_DATE} ({QUARTER}). הדוחות מוגשים בתוך 45 יום מסוף כל רבעון, והעמוד מתעדכן מעצמו כשמתפרסם דוח חדש. המידע מיועד לצרכי לימוד בלבד ואינו מהווה המלצת השקעה. <a href="https://www.dataroma.com" target="_blank" rel="noopener noreferrer" style={{color:'var(--color-accent)',textDecoration:'none'}}>Dataroma <ExternalLink size={10}/></a></span>
 </div>
 </div>
 )
