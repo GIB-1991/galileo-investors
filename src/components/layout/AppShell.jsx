@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import {Star, Sparkles, LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon, Shield } from 'lucide-react'
+import {Star, Sparkles, LayoutDashboard, BookOpen, Search, PieChart, LogOut, Clock, FileText, Calculator, Sun, Moon, Shield, Menu, X } from 'lucide-react'
 import { signOut } from '../../services/supabase.js'
 import { useTrialTimer } from '../../hooks/useAuth.js'
 import GalileoLogo from '../GalileoLogo.jsx'
@@ -59,11 +59,14 @@ const headerBg = darkMode
 ? 'rgba(8,12,20,0.92)'
 : 'rgba(240,235,220,0.92)'
 
+const [menuOpen, setMenuOpen] = useState(false)
+
 return (
 <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',position:'relative',zIndex:1}}>
 {/* Planets SVG - fixed, always visible */}
 <PlanetsLayer darkMode={darkMode}/>
 
+<style>{`@media (max-width:900px){.gx-nav{display:none!important}.gx-actions{display:none!important}.gx-hamburger{display:flex!important}}.gx-hamburger{display:none}@media (min-width:901px){.gx-drawer{display:none!important}}`}</style>
 <header style={{background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(245,166,35,0.18)',position:'sticky',top:0,zIndex:100}}>
 <div style={{maxWidth:1300,margin:'0 auto',padding:'0 1.5rem',height:72,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
 <Link to="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:12}}>
@@ -74,7 +77,7 @@ return (
 </div>
 </Link>
 
-<nav style={{display:'flex',alignItems:'center',gap:2}}>
+<nav className="gx-nav" style={{display:'flex',alignItems:'center',gap:2}}>
 {NAV.map(item => {
 const Icon = item.icon
 const active = location.pathname === item.path
@@ -86,7 +89,7 @@ return (
 })}
 </nav>
 
-<div style={{display:'flex',alignItems:'center',gap:7}}>
+<div className="gx-actions" style={{display:'flex',alignItems:'center',gap:7}}>
 {SOCIAL.map(s=>(
 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" title={s.label}
 style={{display:'flex',alignItems:'center',justifyContent:'center',width:30,height:30,borderRadius:'50%',transition:'transform 200ms,opacity 200ms',opacity:.82,flexShrink:0}}
@@ -131,8 +134,18 @@ onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
 <LogOut size={15}/>
 </button>
 </div>
+<button className="gx-hamburger" onClick={()=>setMenuOpen(o=>!o)} title="תפריט" aria-label="תפריט" style={{display:'none',background:'none',border:'1px solid rgba(245,166,35,0.3)',borderRadius:9,width:42,height:42,alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#f5a623'}}>{menuOpen?<X size={22}/>:<Menu size={22}/>}</button>
 </div>
 </header>
+{menuOpen && (
+<div className="gx-drawer" style={{position:'sticky',top:72,zIndex:99,background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(245,166,35,0.18)',padding:'8px 1.25rem 16px',maxHeight:'calc(100vh - 72px)',overflowY:'auto'}}>
+{NAV.map(item=>{const Icon=item.icon;const active=location.pathname===item.path;return(<Link key={item.path} to={item.path} onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',fontWeight:active?600:500,color:active?'#f5a623':'var(--color-text-secondary)',background:active?'rgba(245,166,35,0.12)':'transparent'}}><Icon size={18}/>{item.label}</Link>)})}
+{isAdmin && (<Link to="/admin" onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',color:'var(--color-text-secondary)'}}><Shield size={18}/>ניהול</Link>)}
+<div style={{height:1,background:'rgba(245,166,35,0.15)',margin:'8px 0'}}/>
+<button onClick={()=>setDarkMode(d=>!d)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,width:'100%',background:'none',border:'none',cursor:'pointer',fontSize:'1rem',color:'var(--color-text-secondary)'}}>{darkMode?<Sun size={18}/>:<Moon size={18}/>}{darkMode?'מצב בהיר':'מצב כהה'}</button>
+<button onClick={()=>{setMenuOpen(false);handleSignOut()}} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,width:'100%',background:'none',border:'none',cursor:'pointer',fontSize:'1rem',color:'var(--color-text-secondary)'}}><LogOut size={18}/>יציאה</button>
+</div>
+)}
 
 <main style={{flex:1,maxWidth:1300,margin:'0 auto',width:'100%',padding:'2rem 1.5rem',position:'relative',zIndex:1}}>
 {children}
