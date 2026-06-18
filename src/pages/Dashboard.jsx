@@ -174,7 +174,7 @@ export default function Dashboard({ user }) {
             <p style={{margin:0}}>טוען חדשות...</p>
           </div>
         ) : (
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1.4fr',gap:'1rem',padding:'1rem'}}>
+          <div className="gx-news-grid" style={{gap:'1rem',padding:'1rem'}}>
             {/* Side stack: 5 small cards */}
             <div style={{display:'flex',flexDirection:'column',gap:'.7rem'}}>
               {news.slice(1,6).map((item,i)=>(
