@@ -8,8 +8,37 @@ const TICKERS = [
   { ticker: 'ILS=X', name: 'USD/ILS' },
 ]
 
+function usMarketHoliday(now) {
+  const et = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now)
+  const y = parseInt(et.find(p => p.type === 'year').value)
+  const m = parseInt(et.find(p => p.type === 'month').value)
+  const d = parseInt(et.find(p => p.type === 'day').value)
+  const dow = (yy, mm, dd) => new Date(Date.UTC(yy, mm - 1, dd)).getUTCDay()
+  const nthWeekday = (yy, mm, wd, n) => { let c = 0; for (let day = 1; day <= 31; day++) { const t = new Date(Date.UTC(yy, mm - 1, day)); if (t.getUTCMonth() !== mm - 1) break; if (t.getUTCDay() === wd) { c++; if (c === n) return day } } return -1 }
+  const lastWeekday = (yy, mm, wd) => { for (let day = 31; day >= 1; day--) { const t = new Date(Date.UTC(yy, mm - 1, day)); if (t.getUTCMonth() !== mm - 1) continue; if (t.getUTCDay() === wd) return day } return -1 }
+  const fixedObserved = (mm, dd, noBack) => { const w = dow(y, mm, dd); if (w === 6 && !noBack) return { m: mm, d: dd - 1 }; if (w === 0) return { m: mm, d: dd + 1 }; return { m: mm, d: dd } }
+  const easter = (yy) => { const a = yy % 19, b = Math.floor(yy / 100), c = yy % 100, dd2 = Math.floor(b / 4), e = b % 4, ff = Math.floor((b + 8) / 25), g = Math.floor((b - ff + 1) / 3), h = (19 * a + b - dd2 - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, mth = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * mth + 114) / 31), da = ((h + l - 7 * mth + 114) % 31) + 1; return { m: mo, d: da } }
+  const E = easter(y); const gf = new Date(Date.UTC(y, E.m - 1, E.d)); gf.setUTCDate(gf.getUTCDate() - 2)
+  const is = (mm, dd) => m === mm && d === dd
+  const ny = fixedObserved(1, 1, true), jt = fixedObserved(6, 19), id = fixedObserved(7, 4), xm = fixedObserved(12, 25)
+  if (is(ny.m, ny.d)) return 'ראש השנה האזרחי'
+  if (is(1, nthWeekday(y, 1, 1, 3))) return 'יום מרטין לותר קינג'
+  if (is(2, nthWeekday(y, 2, 1, 3))) return 'יום הנשיאים'
+  if (m === gf.getUTCMonth() + 1 && d === gf.getUTCDate()) return 'שישי הטוב (Good Friday)'
+  if (is(5, lastWeekday(y, 5, 1))) return 'יום הזיכרון האמריקאי'
+  if (is(jt.m, jt.d)) return 'יום השחרור (Juneteenth)'
+  if (is(id.m, id.d)) return 'יום העצמאות האמריקאי'
+  if (is(9, nthWeekday(y, 9, 1, 1))) return 'יום העבודה'
+  if (is(11, nthWeekday(y, 11, 4, 4))) return 'חג ההודיה'
+  if (is(xm.m, xm.d)) return 'חג המולד'
+  return null
+}
+
 function getMarketStatus() {
   const now = new Date()
+  const __holiday = usMarketHoliday(now)
+  if (__holiday)
+    return { open: false, label: 'שוק סגור', sub: 'לרגל ' + __holiday, color: '#f05252' }
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Jerusalem',
     hour: 'numeric', minute: 'numeric', weekday: 'short', hour12: false
