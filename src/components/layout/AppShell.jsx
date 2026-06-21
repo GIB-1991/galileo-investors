@@ -5,7 +5,7 @@ import { signOut } from '../../services/supabase.js'
 import { useTrialTimer } from '../../hooks/useAuth.js'
 import GalileoLogo from '../GalileoLogo.jsx'
 const NAV = [
-{path:'/dashboard', label:'לוח בקרה', icon:LayoutDashboard},
+{path:'/dashboard', label:'דף ראשי וחדשות', icon:LayoutDashboard},
 {path:'/screener', label:'סקרינר', icon:Search},
 {path:'/portfolio', label:'תיק השקעות', icon:PieChart},
 {path:'/calculator', label:'מחשבון', icon:Calculator},
