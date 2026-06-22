@@ -54,6 +54,10 @@ export default function App() {
     </RequireAccess>
   )
 
+  const publicShell = (Page, props={}) => (
+    <AppShell user={user}><Page user={user} {...props}/></AppShell>
+  )
+
   return (
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard"/> : <Landing/>}/>
@@ -68,7 +72,7 @@ export default function App() {
           <Route path="/articles/:id" element={<AppShell user={user}><ArticleView/></AppShell>}/>
 
           {/* Premium routes — require active access */}
-          <Route path="/dashboard" element={guarded(Dashboard)}/>
+          <Route path="/dashboard" element={publicShell(Dashboard)}/>
           <Route path="/screener" element={guarded(Screener)}/>
           <Route path="/portfolio" element={guarded(Portfolio)}/>
           <Route path="/calculator" element={guarded(Calculator)}/>
