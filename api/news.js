@@ -97,8 +97,8 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
             body: JSON.stringify({
-              model: 'claude-haiku-4-5-20251001', max_tokens: 1200,
-              messages: [{ role: 'user', content: 'תרגם כל כותרת לעברית. החזר JSON בלבד, ללא markdown, ללא הסברים: [{"t":"כותרת בעברית"}]\n\n' + prompt }]
+              model: 'claude-sonnet-4-6', max_tokens: 1200,
+              messages: [{ role: 'user', content: 'תרגם כל כותרת חדשות פיננסית לעברית טבעית ומקצועית. שמור שמות חברות, טיקרים ומונחים פיננסיים מקובלים. אל תתרגם מילולית — נסח כפי שעיתונאי כלכלה ישראלי היה כותב. החזר JSON בלבד, ללא markdown, ללא הסברים: [{"t":"כותרת בעברית"}]\n\n' + prompt }]
             }),
             signal: AbortSignal.timeout(12000)
           });
