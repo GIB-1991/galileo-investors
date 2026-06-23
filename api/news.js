@@ -6,9 +6,9 @@ export default async function handler(req, res) {
   const FEEDS = [
     'https://finance.yahoo.com/news/rssindex',
     'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC,%5EDJI,%5EIXIC&region=US&lang=en-US',
-    'https://feeds.finance.yahoo.com/rss/2.0/headline?region=US&lang=en-US',
-    'https://rss.cnn.com/rss/money_markets.rss',
-    'https://feeds.reuters.com/reuters/businessNews',
+    'https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=stocks%20earnings%20when:1d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=wall%20street%20when:1d&hl=en-US&gl=US&ceid=US:en',
   ];
 
   function parseRSS(xml) {
