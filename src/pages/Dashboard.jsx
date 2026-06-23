@@ -217,9 +217,10 @@ export default function Dashboard({ user }) {
                   </div>
                   <div style={{display:'flex',flexDirection:'column',justifyContent:'center',textAlign:'right',minWidth:0}}>
                     <div style={{fontSize:'.8rem',fontWeight:700,lineHeight:1.4,color:'var(--color-text)',display:'-webkit-box',WebkitLineClamp:3,WebkitBoxOrient:'vertical',overflow:'hidden'}}>
-                      <span style={{color:'var(--color-accent)',marginLeft:5,fontWeight:800}}>{item.source}{item.tickers&&item.tickers.length?' · '+item.tickers.join(' '):''} |</span>
+                      
                       {item.title}
                     </div>
+                    <div style={{fontSize:'.6rem',color:'var(--color-accent)',fontWeight:700,marginTop:4,opacity:.85}}>{item.source}{item.tickers&&item.tickers.length?' · '+item.tickers.join(' '):''}</div>
                     <div style={{fontSize:'.68rem',color:'var(--color-text-secondary)',marginTop:4}}>{item.time}</div>
                   </div>
                 </a>
@@ -236,9 +237,10 @@ export default function Dashboard({ user }) {
                 <div style={{position:'absolute',inset:0,background:'linear-gradient(to top, rgba(20,60,40,.95) 0%, rgba(20,60,40,.55) 50%, rgba(20,60,40,.15) 100%)'}}/>
                 <div style={{position:'relative',padding:'1.5rem',display:'flex',flexDirection:'column',justifyContent:'flex-end',height:'100%',minHeight:520,textAlign:'right'}}>
                   <h2 style={{fontSize:'1.3rem',fontWeight:800,margin:'0 0 .75rem',lineHeight:1.4,color:'#fff',textShadow:'0 2px 8px rgba(0,0,0,.4)'}}>
-                    <span style={{color:'#ffd166',fontWeight:800}}>{news[0].source}{news[0].tickers&&news[0].tickers.length?' · '+news[0].tickers.join(' '):''} | </span>
+                    
                     {news[0].title}
                   </h2>
+                  <div style={{fontSize:'.7rem',color:'#ffd166',fontWeight:700,marginBottom:6,opacity:.9}}>{news[0].source}{news[0].tickers&&news[0].tickers.length?' · '+news[0].tickers.join(' '):''}</div>
                   <div style={{height:1,background:'rgba(255,255,255,.3)',margin:'.5rem 0 .75rem'}}/>
                   <div style={{display:'flex',justifyContent:'flex-end',marginBottom:'.5rem'}}>
                     <span style={{display:'inline-block',background:'#7a1f1f',color:'#fff',fontSize:'.7rem',fontWeight:700,padding:'.25rem .65rem',borderRadius:4,letterSpacing:'.02em'}}>חדשות ועדכונים מתפרצים</span>
