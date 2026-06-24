@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   const FEEDS = [
-    { url: 'https://finance.yahoo.com/news/rssindex', take: 3 },
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=AAPL,MSFT,NVDA,META,AMZN,TSLA,GOOGL,AMD,INTC,ORCL&region=US&lang=en-US', take: 3 },
     { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC,%5EDJI,%5EIXIC&region=US&lang=en-US', take: 2 },
     { url: 'https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en', take: 3 },
     { url: 'https://news.google.com/rss/search?q=stocks%20earnings%20when:1d&hl=en-US&gl=US&ceid=US:en', take: 2 },
