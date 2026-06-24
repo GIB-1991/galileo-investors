@@ -2,13 +2,12 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'no-store');
 
-  // Multiple RSS sources — try each until one works
   const FEEDS = [
-    'https://finance.yahoo.com/news/rssindex',
-    'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC,%5EDJI,%5EIXIC&region=US&lang=en-US',
-    'https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en',
-    'https://news.google.com/rss/search?q=stocks%20earnings%20when:1d&hl=en-US&gl=US&ceid=US:en',
-    'https://news.google.com/rss/search?q=wall%20street%20when:1d&hl=en-US&gl=US&ceid=US:en',
+    { url: 'https://finance.yahoo.com/news/rssindex', take: 3 },
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC,%5EDJI,%5EIXIC&region=US&lang=en-US', take: 2 },
+    { url: 'https://news.google.com/rss/search?q=stock%20market%20when:1d&hl=en-US&gl=US&ceid=US:en', take: 3 },
+    { url: 'https://news.google.com/rss/search?q=stocks%20earnings%20when:1d&hl=en-US&gl=US&ceid=US:en', take: 2 },
+    { url: 'https://news.google.com/rss/search?q=wall%20street%20when:1d&hl=en-US&gl=US&ceid=US:en', take: 2 },
   ];
 
   function parseRSS(xml) {
@@ -20,7 +19,6 @@ export default async function handler(req, res) {
       const titleMatch = block.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
       const linkMatch = block.match(/<link[^>]*>([\s\S]*?)<\/link>/);
       const pubMatch = block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/);
-      // Image extraction priority: media:content -> media:thumbnail -> enclosure -> img in description/content
       let image = '';
       const mc = block.match(/<media:content[^>]*url=["']([^"']+)["']/i);
       if (mc) image = mc[1];
@@ -49,110 +47,122 @@ export default async function handler(req, res) {
     const d = new Date(dateStr);
     if (isNaN(d)) return '';
     const diff = Math.floor((Date.now() - d) / 60000);
-    if (diff < 1) return 'עכשיו';
-    if (diff < 60) return diff + ' דקות';
-    if (diff < 1440) return Math.floor(diff/60) + ' שעות';
-    return Math.floor(diff/1440) + ' ימים';
+    if (diff < 1) return '\u05e2\u05db\u05e9\u05d9\u05d5';
+    if (diff < 60) return diff + ' \u05d3\u05e7\u05d5\u05ea';
+    if (diff < 1440) return Math.floor(diff/60) + ' \u05e9\u05e2\u05d5\u05ea';
+    return Math.floor(diff/1440) + ' \u05d9\u05de\u05d9\u05dd';
   }
 
-  // Extract tickers mentioned in title ($AAPL style or known names)
+  function sourceLabel(feedUrl) {
+    const h = new URL(feedUrl).hostname.replace('feeds.','').replace('www.','');
+    if (h.includes('yahoo')) return 'Yahoo Finance';
+    if (h.includes('google')) return 'Google News';
+    return h;
+  }
+
   function extractTickers(title) {
     const dollarTickers = [...title.matchAll(/\$([A-Z]{1,5})\b/g)].map(m => m[1]);
-    // Also detect known company names
     const nameMap = {
       'Apple':'AAPL','Microsoft':'MSFT','Google':'GOOGL','Alphabet':'GOOGL',
       'Amazon':'AMZN','Meta':'META','Tesla':'TSLA','Nvidia':'NVDA','Netflix':'NFLX',
       'Berkshire':'BRK.B','Goldman':'GS','JPMorgan':'JPM','Bank of America':'BAC',
       'Intel':'INTC','AMD':'AMD','Salesforce':'CRM','Palantir':'PLTR',
       'Walmart':'WMT','Disney':'DIS','Uber':'UBER','Airbnb':'ABNB',
+      'Micron':'MU','Broadcom':'AVGO','Qualcomm':'QCOM','Oracle':'ORCL',
+      'Citigroup':'C','Citi':'C','Morgan Stanley':'MS','Wells Fargo':'WFC',
+      'PayPal':'PYPL','Shopify':'SHOP','Snowflake':'SNOW','CrowdStrike':'CRWD',
+      'Coinbase':'COIN','Block':'SQ','Spotify':'SPOT','Exxon':'XOM',
+      'Chevron':'CVX','Boeing':'BA','Caterpillar':'CAT','Visa':'V',
+      'Mastercard':'MA','American Express':'AXP','Adobe':'ADBE',
+      'Palo Alto':'PANW','ServiceNow':'NOW','Datadog':'DDOG','Cloudflare':'NET',
     };
     const nameTickers = [];
     for (const [name, ticker] of Object.entries(nameMap)) {
-      if (title.includes(name) && !dollarTickers.includes(ticker)) {
-        nameTickers.push(ticker);
-      }
+      if (title.includes(name) && !dollarTickers.includes(ticker)) nameTickers.push(ticker);
     }
-    const all = [...new Set([...dollarTickers, ...nameTickers])];
-    return all.slice(0, 5);
+    return [...new Set([...dollarTickers, ...nameTickers])].slice(0, 5);
   }
 
-  for (const feedUrl of FEEDS) {
+  const allItems = [];
+  for (const feed of FEEDS) {
     try {
-      const r = await fetch(feedUrl, {
+      const r = await fetch(feed.url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
         signal: AbortSignal.timeout(5000)
       });
       if (!r.ok) continue;
       const xml = await r.text();
-      const items = parseRSS(xml).slice(0, 10);
+      const items = parseRSS(xml).slice(0, feed.take);
       if (!items.length) continue;
-
-      // Try Claude translation
-      const apiKey = process.env.ANTHROPIC_API_KEY;
-      let translated = [];
-      if (apiKey) {
-        try {
-          const prompt = items.map((it, i) => i + '. ' + it.title).join('\n');
-          const cr = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-            body: JSON.stringify({
-              model: 'claude-sonnet-4-6', max_tokens: 1200,
-              messages: [{ role: 'user', content: 'תרגם כל כותרת חדשות פיננסית לעברית טבעית ומקצועית. שמור שמות חברות, טיקרים ומונחים פיננסיים מקובלים. אל תתרגם מילולית — נסח כפי שעיתונאי כלכלה ישראלי היה כותב. החזר JSON בלבד, ללא markdown, ללא הסברים: [{"t":"כותרת בעברית"}]\n\n' + prompt }]
-            }),
-            signal: AbortSignal.timeout(12000)
-          });
-          if (cr.ok) {
-            const cd = await cr.json();
-            const txt = (cd.content && cd.content[0] && cd.content[0].text) || '[]';
-            try { translated = JSON.parse(txt.replace(/```[a-z]*\n?/g,'').replace(/\n?```/g,'').trim()); } catch(e) {}
-          }
-        } catch(e) {}
-      }
-
-      const news = items.map((it, i) => ({
-        id: i + 1,
-        title: (translated[i] && translated[i].t) ? translated[i].t : it.title,
-        titleEn: it.title,
-        url: it.url,
-        time: timeAgo(it.pubDate),
-        tickers: extractTickers(it.title),
-        source: new URL(feedUrl).hostname.replace('feeds.','').replace('www.',''),
-        image: it.image || '',
-      }));
-
-      // Fetch og:image for first items missing image (parallel, with timeout)
-      const needImage = news.slice(0, 5).map((n, idx) => ({ n, idx })).filter(x => !x.n.image);
-      if (needImage.length > 0) {
-        const ogPromises = needImage.map(async ({ n, idx }) => {
-          try {
-            const pr = await fetch(n.url, {
-              headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
-              signal: AbortSignal.timeout(3500)
-            });
-            if (!pr.ok) return;
-            const html = await pr.text();
-            const og = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
-                     || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
-                     || html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
-            if (og && og[1]) news[idx].image = og[1].replace(/&amp;/g, '&');
-          } catch(e) {}
-        });
-        await Promise.all(ogPromises);
-      }
-
-      return res.status(200).json({ news, source: feedUrl });
-    } catch(e) {
-      continue;
-    }
+      for (const it of items) allItems.push({ ...it, feedUrl: feed.url });
+    } catch(e) { continue; }
   }
 
-  // All feeds failed — return helpful fallback
-  return res.status(200).json({ news: [
-    { id:1, title:'שוק המניות האמריקאי עולה על רקע נתוני תעסוקה חיוביים', url:'https://finance.yahoo.com', time:'3 שעות', tickers:[], source:'yahoo', image:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80' },
-    { id:2, title:'הפד שומר על הריבית ללא שינוי ברבעון הראשון של 2026', url:'https://finance.yahoo.com', time:'5 שעות', tickers:[], source:'yahoo', image:'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80' },
-    { id:3, title:'מניות טכנולוגיה בראשות Nvidia ו-Meta מובילות עליות', url:'https://finance.yahoo.com', time:'6 שעות', tickers:['NVDA','META'], source:'yahoo', image:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80' },
-    { id:4, title:'תוצאות רבעוניות של Apple עולות על התחזיות', url:'https://finance.yahoo.com', time:'8 שעות', tickers:['AAPL'], source:'yahoo', image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80' },
-    { id:5, title:'Amazon מכריזה על השקעה של 4 מיליארד דולר בתשתיות AI', url:'https://finance.yahoo.com', time:'10 שעות', tickers:['AMZN'], source:'yahoo', image:'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=80' },
-  ]});
+  if (!allItems.length) {
+    return res.status(200).json({ news: [
+      { id:1, title:'\u05e9\u05d5\u05e7 \u05d4\u05de\u05e0\u05d9\u05d5\u05ea \u05d4\u05d0\u05de\u05e8\u05d9\u05e7\u05d0\u05d9 \u05e2\u05d5\u05dc\u05d4', url:'https://finance.yahoo.com', time:'3 \u05e9\u05e2\u05d5\u05ea', tickers:[], source:'Yahoo Finance', image:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80' },
+      { id:2, title:'\u05d4\u05e4\u05d3 \u05e9\u05d5\u05de\u05e8 \u05e2\u05dc \u05d4\u05e8\u05d9\u05d1\u05d9\u05ea', url:'https://finance.yahoo.com', time:'5 \u05e9\u05e2\u05d5\u05ea', tickers:[], source:'Yahoo Finance', image:'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80' },
+    ]});
+  }
+
+  const seen = new Set();
+  const unique = allItems.filter(it => {
+    const key = it.title.slice(0, 50).toLowerCase().replace(/\s+/g,'');
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 10);
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  let translated = [];
+  if (apiKey) {
+    try {
+      const prompt = unique.map((it, i) => i + '. ' + it.title).join('\n');
+      const cr = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6', max_tokens: 1200,
+          messages: [{ role: 'user', content: '\u05ea\u05e8\u05d2\u05dd \u05db\u05dc \u05db\u05d5\u05ea\u05e8\u05ea \u05d7\u05d3\u05e9\u05d5\u05ea \u05e4\u05d9\u05e0\u05e0\u05e1\u05d9\u05ea \u05dc\u05e2\u05d1\u05e8\u05d9\u05ea \u05d8\u05d1\u05e2\u05d9\u05ea \u05d5\u05de\u05e7\u05e6\u05d5\u05e2\u05d9\u05ea. \u05e9\u05de\u05d5\u05e8 \u05e9\u05de\u05d5\u05ea \u05d7\u05d1\u05e8\u05d5\u05ea, \u05d8\u05d9\u05e7\u05e8\u05d9\u05dd \u05d5\u05de\u05d5\u05e0\u05d7\u05d9\u05dd \u05e4\u05d9\u05e0\u05e0\u05e1\u05d9\u05d9\u05dd \u05de\u05e7\u05d5\u05d1\u05dc\u05d9\u05dd. \u05d0\u05dc \u05ea\u05ea\u05e8\u05d2\u05dd \u05de\u05d9\u05dc\u05d5\u05dc\u05d9\u05ea \u2014 \u05e0\u05e1\u05d7 \u05db\u05e4\u05d9 \u05e9\u05e2\u05d9\u05ea\u05d5\u05e0\u05d0\u05d9 \u05db\u05dc\u05db\u05dc\u05d4 \u05d9\u05e9\u05e8\u05d0\u05dc\u05d9 \u05d4\u05d9\u05d4 \u05db\u05d5\u05ea\u05d1. \u05d4\u05d7\u05d6\u05e8 JSON \u05d1\u05dc\u05d1\u05d3, \u05dc\u05dc\u05d0 markdown, \u05dc\u05dc\u05d0 \u05d4\u05e1\u05d1\u05e8\u05d9\u05dd: [{"t":"\u05db\u05d5\u05ea\u05e8\u05ea \u05d1\u05e2\u05d1\u05e8\u05d9\u05ea"}]\n\n' + prompt }]
+        }),
+        signal: AbortSignal.timeout(12000)
+      });
+      if (cr.ok) {
+        const cd = await cr.json();
+        const txt = (cd.content && cd.content[0] && cd.content[0].text) || '[]';
+        try { translated = JSON.parse(txt.replace(/```[a-z]*\n?/g,'').replace(/\n?```/g,'').trim()); } catch(e) {}
+      }
+    } catch(e) {}
+  }
+
+  const news = unique.map((it, i) => ({
+    id: i + 1,
+    title: (translated[i] && translated[i].t) ? translated[i].t : it.title,
+    titleEn: it.title,
+    url: it.url,
+    time: timeAgo(it.pubDate),
+    tickers: extractTickers(it.title),
+    source: sourceLabel(it.feedUrl),
+    image: it.image || '',
+  }));
+
+  const needImage = news.slice(0, 5).map((n, idx) => ({ n, idx })).filter(x => !x.n.image);
+  if (needImage.length > 0) {
+    await Promise.all(needImage.map(async ({ n, idx }) => {
+      try {
+        const pr = await fetch(n.url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+          signal: AbortSignal.timeout(3500)
+        });
+        if (!pr.ok) return;
+        const html = await pr.text();
+        const og = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+                 || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
+                 || html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+        if (og && og[1]) news[idx].image = og[1].replace(/&amp;/g, '&');
+      } catch(e) {}
+    }));
+  }
+
+  return res.status(200).json({ news });
 }
