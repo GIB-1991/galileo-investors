@@ -14,6 +14,8 @@ import Calculator from './pages/Calculator.jsx'
 import Superinvestors from './pages/Superinvestors.jsx'
 import Admin from './pages/Admin.jsx'
 import Pricing from './pages/Pricing.jsx'
+import Terms from './pages/Terms.jsx'
+import Privacy from './pages/Privacy.jsx'
 import { useAccess } from './hooks/useAccess.js'
 
 const ADMIN_EMAIL = 'gilbitan2000@gmail.com'
@@ -66,6 +68,8 @@ export default function App() {
         <>
           {/* Pricing — accessible without access guard */}
           <Route path="/pricing" element={<AppShell user={user}><Pricing user={user}/></AppShell>}/>
+          <Route path="/terms" element={<AppShell user={user}><Terms/></AppShell>}/>
+          <Route path="/privacy" element={<AppShell user={user}><Privacy/></AppShell>}/>
 
           {/* Articles list is accessible to anyone logged in (basic content) */}
           <Route path="/articles" element={<AppShell user={user}><Articles/></AppShell>}/>
