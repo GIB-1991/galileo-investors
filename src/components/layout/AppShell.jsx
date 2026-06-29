@@ -162,6 +162,10 @@ onMouseLeave={e=>e.currentTarget.style.color='rgba(245,166,35,0.65)'}>
 </a>
 ))}
 </div>
+<div style={{display:'flex',justifyContent:'center',gap:16,marginBottom:8,flexWrap:'wrap'}}>
+<Link to="/terms" style={{fontSize:'.72rem',color:'rgba(150,150,180,0.6)',textDecoration:'none'}}>תקנון ותנאי שימוש</Link>
+<Link to="/privacy" style={{fontSize:'.72rem',color:'rgba(150,150,180,0.6)',textDecoration:'none'}}>מדיניות פרטיות</Link>
+</div>
 <p style={{margin:0,fontSize:'.72rem',color:'rgba(150,150,180,0.5)'}}>אין לראות במידע המוצג באתר המלצה לפעולות בשוק ההון.</p>
 </footer>
 </div>
