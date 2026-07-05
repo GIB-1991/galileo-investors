@@ -210,7 +210,7 @@ export default function Screener() {
             autoComplete="off" spellCheck="false"/>
           {query&&<button onClick={clearAll} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:4,display:'flex',borderRadius:6}} onMouseEnter={e=>e.currentTarget.style.color='var(--color-danger)'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><X size={18}/></button>}
           <button onClick={()=>query.trim()&&loadStock(query.trim().toUpperCase())}
-            style={{background:'linear-gradient(135deg,var(--color-accent),#e8901a)',border:'none',borderRadius:12,padding:'9px 22px',color:'var(--color-bg2)',fontWeight:700,fontSize:'.95rem',cursor:'pointer',fontFamily:'inherit',flexShrink:0}}
+            style={{background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',borderRadius:12,padding:'9px 22px',color:'var(--color-on-accent)',fontWeight:700,fontSize:'.95rem',cursor:'pointer',fontFamily:'inherit',flexShrink:0}}
             onMouseEnter={e=>e.currentTarget.style.opacity='.82'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>חפש</button>
         </div>
         {showSugg&&sugg.length>0&&(
