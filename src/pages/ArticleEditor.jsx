@@ -170,7 +170,7 @@ export default function ArticleEditor() {
   // ---------- UI ----------
   const tbBtn = (active, onClick, children, title) => (
     <button type="button" onClick={onClick} title={title}
-      style={{ padding: '6px 9px', borderRadius: 6, border: '1px solid var(--color-border)', background: active ? '#D4AF37' : 'var(--color-bg2)', color: active ? '#10152E' : 'var(--color-text-primary)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600 }}>{children}</button>
+      style={{ padding: '6px 9px', borderRadius: 6, border: '1px solid var(--color-border)', background: active ? 'var(--color-accent)' : 'var(--color-bg2)', color: active ? 'var(--color-bg2)' : 'var(--color-text-primary)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600 }}>{children}</button>
   )
 
   return (
@@ -181,8 +181,8 @@ export default function ArticleEditor() {
           <ArrowRight size={14} /> חזרה
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          {savedMessage && <span style={{ color: '#3FB981', fontSize: '.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}><Check size={13} /> {savedMessage}</span>}
-          <button onClick={() => setShowPreview(p => !p)} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--color-border)', background: showPreview ? 'rgba(212,175,55,0.1)' : 'transparent', color: showPreview ? '#D4AF37' : 'var(--color-text-primary)', cursor: 'pointer', fontSize: '.85rem', fontWeight: 600 }}>
+          {savedMessage && <span style={{ color: 'var(--color-success)', fontSize: '.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}><Check size={13} /> {savedMessage}</span>}
+          <button onClick={() => setShowPreview(p => !p)} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--color-border)', background: showPreview ? 'rgba(212,175,55,0.1)' : 'transparent', color: showPreview ? 'var(--color-accent)' : 'var(--color-text-primary)', cursor: 'pointer', fontSize: '.85rem', fontWeight: 600 }}>
             <Eye size={14} /> {showPreview ? 'עריכה' : 'תצוגה מקדימה'}
           </button>
           <button onClick={() => save({})} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-bg2)', color: 'var(--color-text-primary)', cursor: saving ? 'wait' : 'pointer', fontSize: '.85rem', fontWeight: 600, opacity: saving ? 0.6 : 1 }}>
@@ -193,7 +193,7 @@ export default function ArticleEditor() {
               הסר מפרסום
             </button>
           ) : (
-            <button onClick={() => save({ publish: true })} disabled={saving} style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: '#D4AF37', color: '#10152E', cursor: saving ? 'wait' : 'pointer', fontSize: '.85rem', fontWeight: 700 }}>
+            <button onClick={() => save({ publish: true })} disabled={saving} style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: 'var(--color-accent)', color: 'var(--color-bg2)', cursor: saving ? 'wait' : 'pointer', fontSize: '.85rem', fontWeight: 700 }}>
               פרסם
             </button>
           )}
@@ -202,7 +202,7 @@ export default function ArticleEditor() {
 
       {/* Status pill */}
       <div style={{ marginBottom: '1.2rem' }}>
-        <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 12, fontSize: '.72rem', fontWeight: 700, background: form.published ? 'rgba(63,185,129,.12)' : 'rgba(212,175,55,.12)', color: form.published ? '#3FB981' : '#D4AF37', border: '1px solid ' + (form.published ? 'rgba(63,185,129,.3)' : 'rgba(212,175,55,.3)') }}>
+        <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 12, fontSize: '.72rem', fontWeight: 700, background: form.published ? 'rgba(63,185,129,.12)' : 'rgba(212,175,55,.12)', color: form.published ? 'var(--color-success)' : 'var(--color-accent)', border: '1px solid ' + (form.published ? 'rgba(63,185,129,.3)' : 'rgba(212,175,55,.3)') }}>
           {form.published ? '● מפורסם' : '○ טיוטה'}
         </span>
       </div>
@@ -274,7 +274,7 @@ export default function ArticleEditor() {
             {tbBtn(false, () => exec('insertUnorderedList'), <List size={14} />, 'רשימה')}
             <input type="file" ref={fileInputRef} accept="image/*" style={{ display: 'none' }} onChange={e => { onChooseImage(e.target.files?.[0]); e.target.value = '' }} />
             {tbBtn(false, () => fileInputRef.current?.click(), <ImageIcon size={14} />, 'הוסף תמונה')}
-            {imageBusy && <span style={{ marginInlineStart: 'auto', fontSize: '.75rem', color: '#D4AF37', alignSelf: 'center' }}>מעלה תמונה...</span>}
+            {imageBusy && <span style={{ marginInlineStart: 'auto', fontSize: '.75rem', color: 'var(--color-accent)', alignSelf: 'center' }}>מעלה תמונה...</span>}
           </div>
 
           {/* Content editor */}
