@@ -39,7 +39,7 @@ export default function ArticleView() {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem', flexWrap: 'wrap' }}>
         {article.category && (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600, color: '#f5a623', background: 'rgba(245,166,35,0.1)', padding: '4px 11px', borderRadius: 14 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600, color: '#D4AF37', background: 'rgba(212,175,55,0.1)', padding: '4px 11px', borderRadius: 14 }}>
             <Tag size={11} />{article.category}
           </span>
         )}
