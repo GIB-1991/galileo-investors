@@ -138,7 +138,7 @@ export default function Calculator() {
                 const isCurrent = d.rate === rate
                 const diff = d.final - baseline
                 return (
-                  <div key={d.rate} style={{flex:1,padding:'12px',borderRadius:12,background:isCurrent?'rgba(79,142,247,0.12)':'var(--color-bg2)',border:'1px solid '+(isCurrent?'rgba(79,142,247,0.35)':'var(--color-border)'),textAlign:'center'}}>
+                  <div key={d.rate} style={{flex:1,padding:'12px',borderRadius:12,background:isCurrent?'rgba(91,141,232,0.12)':'var(--color-bg2)',border:'1px solid '+(isCurrent?'rgba(91,141,232,0.35)':'var(--color-border)'),textAlign:'center'}}>
                     <div style={{fontSize:'1rem',fontWeight:800,color:'var(--color-text-primary)',marginBottom:6}}>{d.rate}%{isCurrent?' (נוכחי)':''}</div>
                     <div style={{fontSize:'1.15rem',fontWeight:800,fontFamily:"'IBM Plex Mono',monospace"}}>₪{Math.round(d.final).toLocaleString('en-US')}</div>
                     {!isCurrent && <div style={{fontSize:'.75rem',color:diff>0?'var(--color-success)':'var(--color-danger)',marginTop:3}}>{diff>0?'+':''}{fmt(diff)}</div>}
@@ -159,8 +159,8 @@ export default function Calculator() {
                 <YAxis tickFormatter={v => '₪'+Math.round(v).toLocaleString('en-US')} tick={{fontSize:10,fill:'var(--color-text-muted)'}} tickLine={false} axisLine={false} width={58}/>
                 <Tooltip content={<CT/>}/>
                 <Legend wrapperStyle={{fontSize:'.78rem',paddingTop:8}} formatter={v => v==='deposits'?'סך הפקדות':'ריבית'}/>
-                <Bar dataKey="deposits" name="deposits" stackId="a" fill="#4f8ef7" radius={[0,0,0,0]}/>
-                <Bar dataKey="interest" name="interest" stackId="a" fill="#2dd87a" radius={[6,6,0,0]}/>
+                <Bar dataKey="deposits" name="deposits" stackId="a" fill="#5B8DE8" radius={[0,0,0,0]}/>
+                <Bar dataKey="interest" name="interest" stackId="a" fill="#3FB981" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
