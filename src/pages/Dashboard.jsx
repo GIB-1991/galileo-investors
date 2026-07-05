@@ -38,7 +38,7 @@ function getMarketStatus() {
   const now = new Date()
   const __holiday = usMarketHoliday(now)
   if (__holiday)
-    return { open: false, label: 'שוק סגור', sub: 'לרגל ' + __holiday, color: '#E0666B' }
+    return { open: false, label: 'שוק סגור', sub: 'לרגל ' + __holiday, color: 'var(--color-danger)' }
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Jerusalem',
     hour: 'numeric', minute: 'numeric', weekday: 'short', hour12: false
@@ -48,14 +48,14 @@ function getMarketStatus() {
   const minute = parseInt(parts.find(p => p.type === 'minute').value)
   const total = hour * 60 + minute
   if (weekday === 'Sat' || weekday === 'Sun')
-    return { open: false, label: 'שוק סגור', sub: 'סוף שבוע', color: '#E0666B' }
+    return { open: false, label: 'שוק סגור', sub: 'סוף שבוע', color: 'var(--color-danger)' }
   if (total >= 660 && total < 990)
     return { open: true, label: 'פרה-מרקט', sub: '11:00-16:30', color: '#92400e', badgeBg: '#fef3c7' }
   if (total >= 990 && total < 1380)
-    return { open: true, label: 'שוק פתוח', sub: '16:30-23:00', color: '#3FB981' }
+    return { open: true, label: 'שוק פתוח', sub: '16:30-23:00', color: 'var(--color-success)' }
   if (total >= 1380 || total < 180)
-    return { open: true, label: 'אפטר-מרקט', sub: '23:00-03:00', color: '#5B8DE8' }
-  return { open: false, label: 'שוק סגור', sub: 'מחוץ לשעות מסחר', color: '#E0666B' }
+    return { open: true, label: 'אפטר-מרקט', sub: '23:00-03:00', color: 'var(--color-info)' }
+  return { open: false, label: 'שוק סגור', sub: 'מחוץ לשעות מסחר', color: 'var(--color-danger)' }
 }
 
 
