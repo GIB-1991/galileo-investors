@@ -23,7 +23,7 @@ const ADMIN_EMAIL = 'gilbitan2000@gmail.com'
 // Wraps a route — requires the user to have access (admin / active trial / paid). Otherwise redirects to /pricing.
 function RequireAccess({ user, children }) {
   const access = useAccess(user)
-  if (access.loading) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{color:'#f5a623',fontSize:'1.2rem'}}>...</div></div>
+  if (access.loading) return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{color:'#D4AF37',fontSize:'1.2rem'}}>...</div></div>
   if (!access.hasAccess) return <Navigate to="/pricing" replace/>
   return children
 }
@@ -44,8 +44,8 @@ export default function App() {
   }, [])
 
   if (loading) return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#080c14'}}>
-      <div style={{color:'#f5a623',fontSize:'1.5rem',fontWeight:800}}>G</div>
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#0B1026'}}>
+      <div style={{color:'#D4AF37',fontSize:'1.5rem',fontWeight:800}}>G</div>
     </div>
   )
 
