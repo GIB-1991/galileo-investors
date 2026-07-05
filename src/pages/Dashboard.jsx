@@ -38,7 +38,7 @@ function getMarketStatus() {
   const now = new Date()
   const __holiday = usMarketHoliday(now)
   if (__holiday)
-    return { open: false, label: 'שוק סגור', sub: 'לרגל ' + __holiday, color: '#f05252' }
+    return { open: false, label: 'שוק סגור', sub: 'לרגל ' + __holiday, color: '#E0666B' }
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Jerusalem',
     hour: 'numeric', minute: 'numeric', weekday: 'short', hour12: false
@@ -48,14 +48,14 @@ function getMarketStatus() {
   const minute = parseInt(parts.find(p => p.type === 'minute').value)
   const total = hour * 60 + minute
   if (weekday === 'Sat' || weekday === 'Sun')
-    return { open: false, label: 'שוק סגור', sub: 'סוף שבוע', color: '#f05252' }
+    return { open: false, label: 'שוק סגור', sub: 'סוף שבוע', color: '#E0666B' }
   if (total >= 660 && total < 990)
     return { open: true, label: 'פרה-מרקט', sub: '11:00-16:30', color: '#92400e', badgeBg: '#fef3c7' }
   if (total >= 990 && total < 1380)
-    return { open: true, label: 'שוק פתוח', sub: '16:30-23:00', color: '#2dd87a' }
+    return { open: true, label: 'שוק פתוח', sub: '16:30-23:00', color: '#3FB981' }
   if (total >= 1380 || total < 180)
-    return { open: true, label: 'אפטר-מרקט', sub: '23:00-03:00', color: '#4f8ef7' }
-  return { open: false, label: 'שוק סגור', sub: 'מחוץ לשעות מסחר', color: '#f05252' }
+    return { open: true, label: 'אפטר-מרקט', sub: '23:00-03:00', color: '#5B8DE8' }
+  return { open: false, label: 'שוק סגור', sub: 'מחוץ לשעות מסחר', color: '#E0666B' }
 }
 
 
@@ -159,7 +159,7 @@ export default function Dashboard({ user }) {
           <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
           <p style={{color:'var(--color-text-secondary)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
         </div>
-        <div title={'פרה-מרקט: 11:00-16:30 | שוק פתוח: 16:30-23:00 | אפטר-מרקט: 23:00-03:00'} style={{cursor:'help',display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.08)',border:'1px solid '+(status.open?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.2)'),borderRadius:20,padding:'6px 16px'}}>
+        <div title={'פרה-מרקט: 11:00-16:30 | שוק פתוח: 16:30-23:00 | אפטר-מרקט: 23:00-03:00'} style={{cursor:'help',display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(63,185,129,0.1)':'rgba(224,102,107,0.08)',border:'1px solid '+(status.open?'rgba(63,185,129,0.25)':'rgba(224,102,107,0.2)'),borderRadius:20,padding:'6px 16px'}}>
           {status.open ? <Activity size={12} style={{color:status.color}}/> : <Moon size={12} style={{color:status.color}}/>}
           <span style={{fontSize:'.82rem',fontWeight:700,color:status.color}}>{status.label}</span>
           <span style={{fontSize:'.72rem',color:'var(--color-text-secondary)',marginRight:4}}>{status.sub}</span>
