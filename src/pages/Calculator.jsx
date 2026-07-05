@@ -159,8 +159,8 @@ export default function Calculator() {
                 <YAxis tickFormatter={v => '₪'+Math.round(v).toLocaleString('en-US')} tick={{fontSize:10,fill:'var(--color-text-muted)'}} tickLine={false} axisLine={false} width={58}/>
                 <Tooltip content={<CT/>}/>
                 <Legend wrapperStyle={{fontSize:'.78rem',paddingTop:8}} formatter={v => v==='deposits'?'סך הפקדות':'ריבית'}/>
-                <Bar dataKey="deposits" name="deposits" stackId="a" fill="#5B8DE8" radius={[0,0,0,0]}/>
-                <Bar dataKey="interest" name="interest" stackId="a" fill="#3FB981" radius={[6,6,0,0]}/>
+                <Bar dataKey="deposits" name="deposits" stackId="a" fill="var(--color-info)" radius={[0,0,0,0]}/>
+                <Bar dataKey="interest" name="interest" stackId="a" fill="var(--color-success)" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
