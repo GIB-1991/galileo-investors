@@ -170,7 +170,7 @@ export default function ArticleEditor() {
   // ---------- UI ----------
   const tbBtn = (active, onClick, children, title) => (
     <button type="button" onClick={onClick} title={title}
-      style={{ padding: '6px 9px', borderRadius: 6, border: '1px solid var(--color-border)', background: active ? 'var(--color-accent)' : 'var(--color-bg2)', color: active ? 'var(--color-bg2)' : 'var(--color-text-primary)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600 }}>{children}</button>
+      style={{ padding: '6px 9px', borderRadius: 6, border: '1px solid var(--color-border)', background: active ? 'var(--color-accent)' : 'var(--color-bg2)', color: active ? 'var(--color-on-accent)' : 'var(--color-text-primary)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600 }}>{children}</button>
   )
 
   return (
@@ -193,7 +193,7 @@ export default function ArticleEditor() {
               הסר מפרסום
             </button>
           ) : (
-            <button onClick={() => save({ publish: true })} disabled={saving} style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: 'var(--color-accent)', color: 'var(--color-bg2)', cursor: saving ? 'wait' : 'pointer', fontSize: '.85rem', fontWeight: 700 }}>
+            <button onClick={() => save({ publish: true })} disabled={saving} style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: 'var(--color-accent)', color: 'var(--color-on-accent)', cursor: saving ? 'wait' : 'pointer', fontSize: '.85rem', fontWeight: 700 }}>
               פרסם
             </button>
           )}
