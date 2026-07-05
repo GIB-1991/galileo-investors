@@ -42,22 +42,22 @@ const { daysLeft, plan, isAdmin } = useTrialTimer(user)
 const handleSignOut = async () => { await signOut(); navigate('/') }
 
 const [darkMode, setDarkMode] = useState(() => {
-const _t=localStorage.getItem('galileo-theme'); if(!_t){localStorage.setItem('galileo-theme','dark')} return _t!=='light'
+const _t=localStorage.getItem('galileo-theme-v2'); if(!_t){localStorage.setItem('galileo-theme-v2','light')} return _t==='dark'
 })
 
 useEffect(() => {
 if (darkMode) {
 document.body.classList.remove('light-mode')
-localStorage.setItem('galileo-theme', 'dark')
+localStorage.setItem('galileo-theme-v2', 'dark')
 } else {
 document.body.classList.add('light-mode')
-localStorage.setItem('galileo-theme', 'light')
+localStorage.setItem('galileo-theme-v2', 'light')
 }
 }, [darkMode])
 
 const headerBg = darkMode
 ? 'rgba(11,16,38,0.92)'
-: 'rgba(240,235,220,0.92)'
+: 'rgba(245,240,234,0.92)'
 
 const [menuOpen, setMenuOpen] = useState(false)
 
@@ -67,12 +67,12 @@ return (
 <PlanetsLayer darkMode={darkMode}/>
 
 <style>{`@media (max-width:900px){.gx-nav{display:none!important}.gx-actions{display:none!important}.gx-hamburger{display:flex!important}}.gx-hamburger{display:none}@media (min-width:901px){.gx-drawer{display:none!important}}`}</style>
-<header style={{background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:0,zIndex:100}}>
+<header style={{background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid var(--color-border)',position:'sticky',top:0,zIndex:100}}>
 <div style={{maxWidth:1300,margin:'0 auto',padding:'0 1.5rem',height:72,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
 <Link to="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:12}}>
 <GalileoLogo size={64}/>
 <div>
-<div style={{fontWeight:800,fontSize:'1.05rem',color:'#D4AF37',lineHeight:1.2}}>גלילאו</div>
+<div style={{fontWeight:800,fontSize:'1.05rem',color:'var(--color-accent)',lineHeight:1.2}}>גלילאו</div>
 <div style={{fontSize:'.7rem',color:'rgba(212,175,55,0.65)',letterSpacing:'.14em',fontWeight:500}}>תצפיות שוק</div>
 </div>
 </Link>
@@ -82,7 +82,7 @@ return (
 const Icon = item.icon
 const active = location.pathname === item.path
 return (
-<Link key={item.path} to={item.path} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:9,textDecoration:'none',fontSize:'.83rem',fontWeight:active?600:500,color:active?'#D4AF37':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent',border:active?'1px solid rgba(212,175,55,0.28)':'1px solid transparent',transition:'all 180ms'}}>
+<Link key={item.path} to={item.path} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:9,textDecoration:'none',fontSize:'.83rem',fontWeight:active?600:500,color:active?'var(--color-accent)':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent',border:active?'1px solid rgba(212,175,55,0.28)':'1px solid transparent',transition:'all 180ms'}}>
 <Icon size={14}/>{item.label}
 </Link>
 )
@@ -105,7 +105,7 @@ onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.sty
 <button
 onClick={()=>setDarkMode(d=>!d)}
 title={darkMode ? 'מצב בהיר' : 'מצב כהה'}
-style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px',borderRadius:20,border:'1px solid rgba(212,175,55,0.3)',background:darkMode?'rgba(212,175,55,0.1)':'rgba(212,175,55,0.15)',cursor:'pointer',color:'#D4AF37',fontSize:'.75rem',fontWeight:600,transition:'all 200ms',fontFamily:'inherit'}}
+style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px',borderRadius:20,border:'1px solid rgba(212,175,55,0.3)',background:darkMode?'rgba(212,175,55,0.1)':'rgba(212,175,55,0.15)',cursor:'pointer',color:'var(--color-accent)',fontSize:'.75rem',fontWeight:600,transition:'all 200ms',fontFamily:'inherit'}}
 onMouseEnter={e=>e.currentTarget.style.background='rgba(212,175,55,0.25)'}
 onMouseLeave={e=>e.currentTarget.style.background=darkMode?'rgba(212,175,55,0.1)':'rgba(212,175,55,0.15)'}>
 {darkMode ? <Sun size={13}/> : <Moon size={13}/>}
@@ -113,7 +113,7 @@ onMouseLeave={e=>e.currentTarget.style.background=darkMode?'rgba(212,175,55,0.1)
 </button>
 {user?.email === 'gilbitan2000@gmail.com' && (
 <a href="/admin"
-style={{display:'flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:'1px solid rgba(212,175,55,0.4)',background:'rgba(212,175,55,0.15)',color:'#D4AF37',textDecoration:'none',fontSize:'.75rem',fontWeight:700,flexShrink:0}}
+style={{display:'flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:'1px solid rgba(212,175,55,0.4)',background:'rgba(212,175,55,0.15)',color:'var(--color-accent)',textDecoration:'none',fontSize:'.75rem',fontWeight:700,flexShrink:0}}
 onMouseEnter={e=>e.currentTarget.style.background='rgba(212,175,55,0.3)'}
 onMouseLeave={e=>e.currentTarget.style.background='rgba(212,175,55,0.15)'}>
 <Shield size={12}/> ניהול
@@ -121,7 +121,7 @@ onMouseLeave={e=>e.currentTarget.style.background='rgba(212,175,55,0.15)'}>
 )}
 
 {daysLeft <= 7 && (
-<Link to="/pricing" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:5,background: isAdmin?'rgba(142,124,195,0.12)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.12)':daysLeft<=2?'rgba(224,102,107,0.12)':'rgba(212,175,55,0.1)',border:'1px solid '+(isAdmin?'rgba(142,124,195,0.35)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.35)':daysLeft<=2?'rgba(224,102,107,0.35)':'rgba(212,175,55,0.3)'),borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:isAdmin?'#8E7CC3':plan==='monthly'||plan==='yearly'?'#3FB981':daysLeft<=2?'#E0666B':'#D4AF37'}}>
+<Link to="/pricing" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:5,background: isAdmin?'rgba(142,124,195,0.12)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.12)':daysLeft<=2?'rgba(224,102,107,0.12)':'rgba(212,175,55,0.1)',border:'1px solid '+(isAdmin?'rgba(142,124,195,0.35)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.35)':daysLeft<=2?'rgba(224,102,107,0.35)':'rgba(212,175,55,0.3)'),borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:isAdmin?'#8E7CC3':plan==='monthly'||plan==='yearly'?'var(--color-success)':daysLeft<=2?'var(--color-danger)':'var(--color-accent)'}}>
 <Clock size={11}/>{isAdmin?'ניהול':plan==='monthly'?'מנוי חודשי':plan==='yearly'?'מנוי שנתי':daysLeft>0?(daysLeft+' ימי ניסיון'):'הניסיון הסתיים'}
 </Link>
 )}
@@ -129,17 +129,17 @@ onMouseLeave={e=>e.currentTarget.style.background='rgba(212,175,55,0.15)'}>
 {user?.email?.split('@')[0]}
 </span>
 <button onClick={handleSignOut} title="יציאה" style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-secondary)',display:'flex',alignItems:'center',padding:6,borderRadius:7,transition:'all 180ms'}}
-onMouseEnter={e=>e.currentTarget.style.color='#E0666B'}
+onMouseEnter={e=>e.currentTarget.style.color='var(--color-danger)'}
 onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
 <LogOut size={15}/>
 </button>
 </div>
-<button className="gx-hamburger" onClick={()=>setMenuOpen(o=>!o)} title="תפריט" aria-label="תפריט" style={{display:'none',background:'none',border:'1px solid rgba(212,175,55,0.3)',borderRadius:9,width:42,height:42,alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#D4AF37'}}>{menuOpen?<X size={22}/>:<Menu size={22}/>}</button>
+<button className="gx-hamburger" onClick={()=>setMenuOpen(o=>!o)} title="תפריט" aria-label="תפריט" style={{display:'none',background:'none',border:'1px solid rgba(212,175,55,0.3)',borderRadius:9,width:42,height:42,alignItems:'center',justifyContent:'center',cursor:'pointer',color:'var(--color-accent)'}}>{menuOpen?<X size={22}/>:<Menu size={22}/>}</button>
 </div>
 </header>
 {menuOpen && (
-<div className="gx-drawer" style={{position:'sticky',top:72,zIndex:99,background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'8px 1.25rem 16px',maxHeight:'calc(100vh - 72px)',overflowY:'auto'}}>
-{NAV.map(item=>{const Icon=item.icon;const active=location.pathname===item.path;return(<Link key={item.path} to={item.path} onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',fontWeight:active?600:500,color:active?'#D4AF37':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent'}}><Icon size={18}/>{item.label}</Link>)})}
+<div className="gx-drawer" style={{position:'sticky',top:72,zIndex:99,background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid var(--color-border)',padding:'8px 1.25rem 16px',maxHeight:'calc(100vh - 72px)',overflowY:'auto'}}>
+{NAV.map(item=>{const Icon=item.icon;const active=location.pathname===item.path;return(<Link key={item.path} to={item.path} onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',fontWeight:active?600:500,color:active?'var(--color-accent)':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent'}}><Icon size={18}/>{item.label}</Link>)})}
 {isAdmin && (<Link to="/admin" onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',color:'var(--color-text-secondary)'}}><Shield size={18}/>ניהול</Link>)}
 <div style={{height:1,background:'rgba(212,175,55,0.15)',margin:'8px 0'}}/>
 <button onClick={()=>setDarkMode(d=>!d)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,width:'100%',background:'none',border:'none',cursor:'pointer',fontSize:'1rem',color:'var(--color-text-secondary)'}}>{darkMode?<Sun size={18}/>:<Moon size={18}/>}{darkMode?'מצב בהיר':'מצב כהה'}</button>
@@ -156,7 +156,7 @@ onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
 {SOCIAL.map(s=>(
 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
 style={{display:'flex',alignItems:'center',gap:6,fontSize:'.78rem',color:'rgba(212,175,55,0.65)',textDecoration:'none',transition:'color 200ms'}}
-onMouseEnter={e=>e.currentTarget.style.color='#D4AF37'}
+onMouseEnter={e=>e.currentTarget.style.color='var(--color-accent)'}
 onMouseLeave={e=>e.currentTarget.style.color='rgba(212,175,55,0.65)'}>
 {s.icon}<span>{s.label}</span>
 </a>
@@ -189,9 +189,9 @@ return (
 </radialGradient>
 <linearGradient id="sat_ring_a" x1="0%" y1="0%" x2="100%" y2="0%">
 <stop offset="0%" stopColor="#c8a050" stopOpacity="0"/>
-<stop offset="18%" stopColor="#E6C96B" stopOpacity="0.8"/>
+<stop offset="18%" stopColor="var(--color-accent)" stopOpacity="0.8"/>
 <stop offset="50%" stopColor="#f8d878" stopOpacity="0.95"/>
-<stop offset="82%" stopColor="#E6C96B" stopOpacity="0.8"/>
+<stop offset="82%" stopColor="var(--color-accent)" stopOpacity="0.8"/>
 <stop offset="100%" stopColor="#c8a050" stopOpacity="0"/>
 </linearGradient>
 <linearGradient id="sat_ring_b" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -299,24 +299,24 @@ return (
 
 {/* ===== Constellation — top right ===== */}
 <g opacity="0.5">
-<circle cx="88%" cy="8%" r="2.5" fill="#E9EDF7"/>
-<circle cx="91%" cy="12%" r="2" fill="#E9EDF7"/>
-<circle cx="87%" cy="16%" r="2.5" fill="#E9EDF7"/>
-<circle cx="93%" cy="15%" r="1.6" fill="#E9EDF7"/>
-<circle cx="85%" cy="20%" r="2" fill="#E9EDF7"/>
-<circle cx="90%" cy="21%" r="1.4" fill="#E9EDF7"/>
-<line x1="88%" y1="8%" x2="91%" y2="12%" stroke="#E9EDF7" strokeWidth="0.6" opacity="0.4"/>
-<line x1="91%" y1="12%" x2="87%" y2="16%" stroke="#E9EDF7" strokeWidth="0.6" opacity="0.4"/>
-<line x1="87%" y1="16%" x2="93%" y2="15%" stroke="#E9EDF7" strokeWidth="0.6" opacity="0.35"/>
-<line x1="87%" y1="16%" x2="85%" y2="20%" stroke="#E9EDF7" strokeWidth="0.6" opacity="0.35"/>
-<line x1="85%" y1="20%" x2="90%" y2="21%" stroke="#E9EDF7" strokeWidth="0.6" opacity="0.3"/>
+<circle cx="88%" cy="8%" r="2.5" fill="var(--color-text-primary)"/>
+<circle cx="91%" cy="12%" r="2" fill="var(--color-text-primary)"/>
+<circle cx="87%" cy="16%" r="2.5" fill="var(--color-text-primary)"/>
+<circle cx="93%" cy="15%" r="1.6" fill="var(--color-text-primary)"/>
+<circle cx="85%" cy="20%" r="2" fill="var(--color-text-primary)"/>
+<circle cx="90%" cy="21%" r="1.4" fill="var(--color-text-primary)"/>
+<line x1="88%" y1="8%" x2="91%" y2="12%" stroke="var(--color-text-primary)" strokeWidth="0.6" opacity="0.4"/>
+<line x1="91%" y1="12%" x2="87%" y2="16%" stroke="var(--color-text-primary)" strokeWidth="0.6" opacity="0.4"/>
+<line x1="87%" y1="16%" x2="93%" y2="15%" stroke="var(--color-text-primary)" strokeWidth="0.6" opacity="0.35"/>
+<line x1="87%" y1="16%" x2="85%" y2="20%" stroke="var(--color-text-primary)" strokeWidth="0.6" opacity="0.35"/>
+<line x1="85%" y1="20%" x2="90%" y2="21%" stroke="var(--color-text-primary)" strokeWidth="0.6" opacity="0.3"/>
 </g>
 
 {/* ===== Shooting stars ===== */}
 <line x1="72%" y1="6%" x2="80%" y2="12%" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round">
 <animate attributeName="opacity" values="0;0;0.8;0.4;0" dur="5s" begin="2s" repeatCount="indefinite"/>
 </line>
-<line x1="28%" y1="4%" x2="37%" y2="10%" stroke="#D4AF37" strokeWidth="1.4" strokeLinecap="round">
+<line x1="28%" y1="4%" x2="37%" y2="10%" stroke="var(--color-accent)" strokeWidth="1.4" strokeLinecap="round">
 <animate attributeName="opacity" values="0;0;0.65;0.3;0" dur="7s" begin="5.5s" repeatCount="indefinite"/>
 </line>
 <line x1="55%" y1="90%" x2="63%" y2="95%" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round">
