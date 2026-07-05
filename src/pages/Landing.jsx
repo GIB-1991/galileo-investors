@@ -6,11 +6,11 @@ const ROW1 = ['SPY','QQQ','AAPL','MSFT','NVDA','GOOG','AMZN','META','TSLA','BRK-
 const ROW2 = ['XOM','JNJ','PG','MA','HD','COST','MCD','CSCO','PEP','KO','UNH','CVX','TMO','ABT','CRM']
 
 const FEATURES=[
-  {icon:BookOpen,title:'אקדמיה',desc:'מושגים פיננסיים בעברית עם דוגמאות חזותיות',color:'#D4AF37',path:'/academy'},
-  {icon:BarChart2,title:'סקרינר מניות',desc:'חיפוש וניתוח מניות עם נתונים מקצועיים',color:'#5B8DE8',path:'/screener'},
-  {icon:TrendingUp,title:'בניית תיק',desc:'בנה תיק עם ויזואליזציה לפי מגזרים',color:'#3FB981',path:'/portfolio'},
+  {icon:BookOpen,title:'אקדמיה',desc:'מושגים פיננסיים בעברית עם דוגמאות חזותיות',color:'var(--color-accent)',path:'/academy'},
+  {icon:BarChart2,title:'סקרינר מניות',desc:'חיפוש וניתוח מניות עם נתונים מקצועיים',color:'var(--color-info)',path:'/screener'},
+  {icon:TrendingUp,title:'בניית תיק',desc:'בנה תיק עם ויזואליזציה לפי מגזרים',color:'var(--color-success)',path:'/portfolio'},
   {icon:Shield,title:'מנוע התזה',desc:'ניתוח אוטומטי עם התראות על סיכונים',color:'#8E7CC3',path:'/portfolio'},
-  {icon:Star,title:'משקיעים גדולים',desc:'עקוב אחרי פורטפוליו של המשקיעים המובילים',color:'#B8942E',path:'/superinvestors'},
+  {icon:Star,title:'משקיעים גדולים',desc:'עקוב אחרי פורטפוליו של המשקיעים המובילים',color:'var(--color-accent2)',path:'/superinvestors'},
 ]
 
 const STATIC_NEWS=[
@@ -29,9 +29,9 @@ const STATIC_NEWS=[
 function StarField(){
   const stars=Array.from({length:70},(_,i)=>({id:i,x:Math.random()*100,y:Math.random()*100,r:Math.random()*1.4+0.3,dur:Math.random()*4+3,delay:Math.random()*5,op:Math.random()*0.5+0.1}))
   const planets=[
-    {x:8,y:18,r:3.5,color:'#D4AF37',dur:9},{x:82,y:30,r:2.2,color:'#5B8DE8',dur:12},
-    {x:55,y:72,r:1.8,color:'#8E7CC3',dur:15},{x:20,y:65,r:2.8,color:'#3FB981',dur:10},
-    {x:70,y:12,r:1.5,color:'#B8942E',dur:13},{x:42,y:85,r:2,color:'#4FA8C4',dur:11},
+    {x:8,y:18,r:3.5,color:'var(--color-accent)',dur:9},{x:82,y:30,r:2.2,color:'var(--color-info)',dur:12},
+    {x:55,y:72,r:1.8,color:'#8E7CC3',dur:15},{x:20,y:65,r:2.8,color:'var(--color-success)',dur:10},
+    {x:70,y:12,r:1.5,color:'var(--color-accent2)',dur:13},{x:42,y:85,r:2,color:'#4FA8C4',dur:11},
   ]
   return(
     <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0,overflow:'hidden'}}>
@@ -72,7 +72,7 @@ function TickerRow({tickers,direction='normal',prices}){
         {items.map((t,i)=>{
           const d=prices[t]; const up=d?d.change>=0:null
           return(
-            <span key={i} style={{display:'inline-flex',alignItems:'center',gap:'0.5rem',fontSize:'0.77rem',fontWeight:600,whiteSpace:'nowrap',padding:'0.28rem 0.8rem',borderRadius:'100px',background:up===null?'rgba(255,255,255,0.05)':up?'rgba(22,163,74,0.12)':'rgba(220,38,38,0.12)',border:`1px solid ${up===null?'rgba(255,255,255,0.08)':up?'rgba(22,163,74,0.22)':'rgba(220,38,38,0.22)'}`,color:up===null?'rgba(255,255,255,0.5)':up?'#3FB981':'#E0666B',transition:'all .2s'}}>
+            <span key={i} style={{display:'inline-flex',alignItems:'center',gap:'0.5rem',fontSize:'0.77rem',fontWeight:600,whiteSpace:'nowrap',padding:'0.28rem 0.8rem',borderRadius:'100px',background:up===null?'rgba(255,255,255,0.05)':up?'rgba(22,163,74,0.12)':'rgba(220,38,38,0.12)',border:`1px solid ${up===null?'var(--color-border)':up?'rgba(22,163,74,0.22)':'rgba(220,38,38,0.22)'}`,color:up===null?'rgba(255,255,255,0.5)':up?'var(--color-success)':'var(--color-danger)',transition:'all .2s'}}>
               <span style={{color:'rgba(255,255,255,0.75)',fontWeight:700,letterSpacing:'0.04em'}}>{t}</span>
               {d&&<><span>{d.price}</span><span style={{fontSize:'0.7rem',opacity:0.85}}>{up?'▲':'▼'}{Math.abs(d.change).toFixed(2)}%</span></>}
               {!d&&<span style={{opacity:0.3}}>—</span>}
@@ -117,7 +117,7 @@ export default function Landing(){
         .g-sec{transition:all .2s ease}
         .feat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.14)!important;box-shadow:0 8px 32px rgba(0,0,0,0.5)!important}
         .feat{transition:all .25s ease}
-        .news-sm:hover{background:rgba(255,255,255,0.05)!important;border-color:rgba(255,255,255,0.1)!important;transform:translateX(-3px)}
+        .news-sm:hover{background:rgba(255,255,255,0.05)!important;border-color:var(--color-border)!important;transform:translateX(-3px)}
         .news-sm{transition:all .2s ease}
       `}</style>
 
@@ -129,12 +129,12 @@ export default function Landing(){
       <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(8,11,20,0.92)',backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{maxWidth:1280,margin:'0 auto',height:62,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 2rem'}}>
           <div style={{display:'flex',alignItems:'center',gap:10}}>
-            <div style={{width:34,height:34,background:'linear-gradient(135deg,#D4AF37,#A8842B)',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 10px rgba(212,175,55,0.3)'}}>
+            <div style={{width:34,height:34,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 10px rgba(212,175,55,0.3)'}}>
               <span style={{color:'#0B1026',fontSize:17,fontWeight:800}}>G</span>
             </div>
             <div>
               <div style={{fontWeight:700,fontSize:'0.92rem',color:'#fff',lineHeight:1.2}}>משקיעים עם גלילאו</div>
-              <div style={{fontSize:'0.58rem',color:'#D4AF37',letterSpacing:'0.14em',fontWeight:600,textTransform:'uppercase',opacity:0.75}}>MARKET INTELLIGENCE</div>
+              <div style={{fontSize:'0.58rem',color:'var(--color-accent)',letterSpacing:'0.14em',fontWeight:600,textTransform:'uppercase',opacity:0.75}}>MARKET INTELLIGENCE</div>
             </div>
           </div>
           <nav style={{display:'flex',alignItems:'center',gap:4}}>
@@ -145,8 +145,8 @@ export default function Landing(){
             ))}
           </nav>
           <div style={{display:'flex',gap:'0.6rem'}}>
-            <button className="g-sec" onClick={()=>navigate('/auth')} style={{padding:'0.45rem 1.1rem',borderRadius:7,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.8)',cursor:'pointer',fontSize:'0.82rem',fontWeight:500}}>כניסה</button>
-            <button className="g-btn" onClick={()=>navigate('/auth')} style={{padding:'0.45rem 1.1rem',borderRadius:7,background:'linear-gradient(135deg,#D4AF37,#A8842B)',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.82rem',fontWeight:700,boxShadow:'0 2px 12px rgba(212,175,55,0.3)'}}>הצטרף חינם</button>
+            <button className="g-sec" onClick={()=>navigate('/auth')} style={{padding:'0.45rem 1.1rem',borderRadius:7,background:'rgba(255,255,255,0.05)',border:'1px solid var(--color-border)',color:'rgba(255,255,255,0.8)',cursor:'pointer',fontSize:'0.82rem',fontWeight:500}}>כניסה</button>
+            <button className="g-btn" onClick={()=>navigate('/auth')} style={{padding:'0.45rem 1.1rem',borderRadius:7,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.82rem',fontWeight:700,boxShadow:'0 2px 12px rgba(212,175,55,0.3)'}}>הצטרף חינם</button>
           </div>
         </div>
       </header>
@@ -158,17 +158,17 @@ export default function Landing(){
 
       {/* === HERO === */}
       <section style={{maxWidth:1280,margin:'0 auto',padding:'4.5rem 2rem 3.5rem',textAlign:'center',position:'relative',zIndex:1}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:7,padding:'0.3rem 0.9rem',borderRadius:100,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.25)',color:'#D4AF37',fontSize:'0.75rem',fontWeight:600,marginBottom:'1.75rem',animation:'fadeUp 0.5s ease both'}}>
+        <div style={{display:'inline-flex',alignItems:'center',gap:7,padding:'0.3rem 0.9rem',borderRadius:100,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.25)',color:'var(--color-accent)',fontSize:'0.75rem',fontWeight:600,marginBottom:'1.75rem',animation:'fadeUp 0.5s ease both'}}>
           <Zap size={11}/> פלטפורמת ההשקעות המובילה לישראלים
         </div>
         <h1 style={{fontSize:'clamp(2rem,4.5vw,3.6rem)',fontWeight:800,lineHeight:1.15,margin:'0 0 1.25rem',animation:'fadeUp 0.5s ease 0.1s both',letterSpacing:'-0.025em'}}>
-          השקע <span style={{background:'linear-gradient(135deg,#D4AF37,#B8942E)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>חכם יותר</span><br/>עם נתוני שוק אמיתיים
+          השקע <span style={{background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>חכם יותר</span><br/>עם נתוני שוק אמיתיים
         </h1>
         <p style={{fontSize:'1.05rem',color:'rgba(255,255,255,0.52)',maxWidth:520,margin:'0 auto 2.25rem',lineHeight:1.7,animation:'fadeUp 0.5s ease 0.2s both'}}>
           גישה למדדים בזמן אמת, ניתוח מניות מעמיק, מעקב תיק השקעות ואקדמיה פיננסית בעברית — הכל במקום אחד.
         </p>
         <div style={{display:'flex',gap:'0.85rem',justifyContent:'center',flexWrap:'wrap',animation:'fadeUp 0.5s ease 0.25s both'}}>
-          <button className="g-btn" onClick={()=>navigate('/auth')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.75rem 1.9rem',borderRadius:10,background:'linear-gradient(135deg,#D4AF37,#A8842B)',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.92rem',fontWeight:700,boxShadow:'0 4px 18px rgba(212,175,55,0.3)'}}>
+          <button className="g-btn" onClick={()=>navigate('/auth')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.75rem 1.9rem',borderRadius:10,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.92rem',fontWeight:700,boxShadow:'0 4px 18px rgba(212,175,55,0.3)'}}>
             התחל בחינם <ArrowLeft size={15}/>
           </button>
           <button className="g-sec" onClick={()=>navigate('/dashboard')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.75rem 1.9rem',borderRadius:10,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.11)',color:'rgba(255,255,255,0.82)',cursor:'pointer',fontSize:'0.92rem',fontWeight:600}}>
@@ -209,10 +209,10 @@ export default function Landing(){
       {/* === NEWS FEED === */}
       <section style={{maxWidth:1280,margin:'0 auto',padding:'1rem 2rem 5rem',position:'relative',zIndex:1}}>
         <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:'1.5rem'}}>
-          <Newspaper size={17} color='#D4AF37'/>
+          <Newspaper size={17} color='var(--color-accent)'/>
           <h2 style={{fontSize:'1.25rem',fontWeight:700,margin:0}}>חדשות שוק</h2>
           <div style={{marginRight:'auto',display:'flex',alignItems:'center',gap:6}}>
-            <div style={{width:7,height:7,borderRadius:'50%',background:'#3FB981',animation:'pulse 2s infinite'}}/>
+            <div style={{width:7,height:7,borderRadius:'50%',background:'var(--color-success)',animation:'pulse 2s infinite'}}/>
             <span style={{fontSize:'0.72rem',color:'rgba(255,255,255,0.35)'}}>מתעדכן בזמן אמת</span>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function Landing(){
             <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(8,11,20,0.97) 0%,rgba(8,11,20,0.6) 55%,rgba(8,11,20,0.1) 100%)'}}/>
             <div style={{position:'relative',padding:'1.5rem',height:'100%',display:'flex',flexDirection:'column',justifyContent:'flex-end'}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.6rem'}}>
-                <span style={{fontSize:'0.67rem',fontWeight:700,padding:'0.18rem 0.55rem',borderRadius:100,background:'rgba(212,175,55,0.18)',color:'#D4AF37',border:'1px solid rgba(212,175,55,0.3)'}}>{STATIC_NEWS[0].tag}</span>
+                <span style={{fontSize:'0.67rem',fontWeight:700,padding:'0.18rem 0.55rem',borderRadius:100,background:'rgba(212,175,55,0.18)',color:'var(--color-accent)',border:'1px solid rgba(212,175,55,0.3)'}}>{STATIC_NEWS[0].tag}</span>
                 <span style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)'}}>{STATIC_NEWS[0].time}</span>
               </div>
               <div style={{fontSize:'1.05rem',fontWeight:700,lineHeight:1.45,marginBottom:'0.5rem',color:'#fff'}}>{STATIC_NEWS[0].title}</div>
@@ -241,7 +241,7 @@ export default function Landing(){
             {STATIC_NEWS.slice(1).map((item,i)=>(
               <div key={i} className="news-sm" onClick={()=>navigate('/articles')} style={{padding:'0.85rem 1rem',borderRadius:12,background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',cursor:'pointer',flex:1}}>
                 <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:'0.35rem'}}>
-                  <span style={{fontSize:'0.64rem',fontWeight:700,padding:'0.15rem 0.5rem',borderRadius:100,background:'rgba(212,175,55,0.1)',color:'#D4AF37',border:'1px solid rgba(212,175,55,0.18)'}}>{item.tag}</span>
+                  <span style={{fontSize:'0.64rem',fontWeight:700,padding:'0.15rem 0.5rem',borderRadius:100,background:'rgba(212,175,55,0.1)',color:'var(--color-accent)',border:'1px solid rgba(212,175,55,0.18)'}}>{item.tag}</span>
                   <span style={{fontSize:'0.66rem',color:'rgba(255,255,255,0.3)',marginRight:'auto'}}>{item.time}</span>
                 </div>
                 <div style={{fontSize:'0.84rem',fontWeight:500,color:'rgba(255,255,255,0.82)',lineHeight:1.45}}>{item.title}</div>
@@ -252,7 +252,7 @@ export default function Landing(){
         </div>
 
         <div style={{textAlign:'center',marginTop:'1.25rem'}}>
-          <button className="g-sec" onClick={()=>navigate('/articles')} style={{padding:'0.55rem 1.4rem',borderRadius:8,background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.55)',cursor:'pointer',fontSize:'0.82rem'}}>
+          <button className="g-sec" onClick={()=>navigate('/articles')} style={{padding:'0.55rem 1.4rem',borderRadius:8,background:'rgba(255,255,255,0.04)',border:'1px solid var(--color-border)',color:'rgba(255,255,255,0.55)',cursor:'pointer',fontSize:'0.82rem'}}>
             כל החדשות ←
           </button>
         </div>
@@ -263,7 +263,7 @@ export default function Landing(){
         <div style={{maxWidth:560,margin:'0 auto',padding:'2.75rem',borderRadius:22,background:'linear-gradient(135deg,rgba(212,175,55,0.07),rgba(91,141,232,0.07))',border:'1px solid rgba(212,175,55,0.14)'}}>
           <h2 style={{fontSize:'1.55rem',fontWeight:700,marginBottom:'0.85rem'}}>מוכן להתחיל?</h2>
           <p style={{color:'rgba(255,255,255,0.48)',marginBottom:'1.75rem',lineHeight:1.6,fontSize:'0.9rem'}}>הצטרף למשקיעים שכבר משתמשים בגלילאו לקבלת החלטות מושכלות</p>
-          <button className="g-btn" onClick={()=>navigate('/auth')} style={{padding:'0.8rem 2.2rem',borderRadius:10,background:'linear-gradient(135deg,#D4AF37,#A8842B)',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.95rem',fontWeight:700,boxShadow:'0 4px 18px rgba(212,175,55,0.3)'}}>
+          <button className="g-btn" onClick={()=>navigate('/auth')} style={{padding:'0.8rem 2.2rem',borderRadius:10,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.95rem',fontWeight:700,boxShadow:'0 4px 18px rgba(212,175,55,0.3)'}}>
             התחל בחינם ←
           </button>
         </div>
@@ -285,10 +285,10 @@ export default function Landing(){
               הצטרף בחינם וקבל גישה מיידית לכל הכלים של גלילאו.
             </p>
             <div style={{display:'flex',gap:'0.7rem',justifyContent:'center'}}>
-              <button onClick={()=>navigate('/auth')} style={{padding:'0.62rem 1.65rem',borderRadius:9,background:'linear-gradient(135deg,#D4AF37,#A8842B)',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.88rem',fontWeight:700,boxShadow:'0 4px 16px rgba(212,175,55,0.32)',transition:'transform .15s'}}>
+              <button onClick={()=>navigate('/auth')} style={{padding:'0.62rem 1.65rem',borderRadius:9,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.88rem',fontWeight:700,boxShadow:'0 4px 16px rgba(212,175,55,0.32)',transition:'transform .15s'}}>
                 הצטרף חינם ←
               </button>
-              <button onClick={()=>setModal(null)} style={{padding:'0.62rem 1.1rem',borderRadius:9,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.65)',cursor:'pointer',fontSize:'0.88rem'}}>
+              <button onClick={()=>setModal(null)} style={{padding:'0.62rem 1.1rem',borderRadius:9,background:'rgba(255,255,255,0.05)',border:'1px solid var(--color-border)',color:'rgba(255,255,255,0.65)',cursor:'pointer',fontSize:'0.88rem'}}>
                 סגור
               </button>
             </div>
