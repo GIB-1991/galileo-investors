@@ -30,12 +30,12 @@ export default function GalileoLogo({ size = 70 }) {
         </linearGradient>
       </defs>
       {/* Stars */}
-      <circle cx="20" cy="18" r="1.5" fill="#f5a623" opacity="0.8"/>
+      <circle cx="20" cy="18" r="1.5" fill="#D4AF37" opacity="0.8"/>
       <circle cx="38" cy="8" r="1" fill="#fff" opacity="0.6"/>
       <circle cx="12" cy="40" r="1.2" fill="#fff" opacity="0.45"/>
-      <circle cx="125" cy="15" r="1.3" fill="#f5a623" opacity="0.6"/>
+      <circle cx="125" cy="15" r="1.3" fill="#D4AF37" opacity="0.6"/>
       <circle cx="148" cy="30" r="1" fill="#fff" opacity="0.5"/>
-      <path d="M30 14 L31.5 19 L36 14 L31.5 9 Z" fill="#f5a623" opacity="0.6" transform="scale(0.45) translate(38,14)"/>
+      <path d="M30 14 L31.5 19 L36 14 L31.5 9 Z" fill="#D4AF37" opacity="0.6" transform="scale(0.45) translate(38,14)"/>
 
       {/* Tripod */}
       <g transform="translate(15,120)">
@@ -50,8 +50,8 @@ export default function GalileoLogo({ size = 70 }) {
         <ellipse cx="55" cy="-2" rx="12" ry="7" fill="url(#gl_b)"/>
         <rect x="45" y="-9" width="20" height="10" rx="3" fill="url(#gl_r)"/>
         <path d="M38,-7 Q55,-16 72,-7" stroke="url(#gl_r)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-        <circle cx="37" cy="-3" r="4" fill="url(#gl_r)"/><circle cx="37" cy="-3" r="2.5" fill="#e8c060"/>
-        <circle cx="73" cy="-3" r="4" fill="url(#gl_r)"/><circle cx="73" cy="-3" r="2.5" fill="#e8c060"/>
+        <circle cx="37" cy="-3" r="4" fill="url(#gl_r)"/><circle cx="37" cy="-3" r="2.5" fill="#E6C96B"/>
+        <circle cx="73" cy="-3" r="4" fill="url(#gl_r)"/><circle cx="73" cy="-3" r="2.5" fill="#E6C96B"/>
 
         {/* Main tube assembly, angled */}
         <g transform="translate(55,-10) rotate(-20)">
@@ -90,8 +90,8 @@ export default function GalileoLogo({ size = 70 }) {
           {/* Compass */}
           <circle cx="54" cy="-17" r="7" fill="#c89020"/>
           <circle cx="54" cy="-17" r="5.5" fill="#0a0804"/>
-          <polygon points="54,-22 52,-17 56,-17" fill="#e05252"/>
-          <polygon points="54,-12 52,-17 56,-17" fill="#f5a623"/>
+          <polygon points="54,-22 52,-17 56,-17" fill="#E0666B"/>
+          <polygon points="54,-12 52,-17 56,-17" fill="#D4AF37"/>
           <circle cx="54" cy="-17" r="1.2" fill="#c89020"/>
         </g>
       </g>
