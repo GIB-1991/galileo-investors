@@ -10,7 +10,7 @@ const PLANS = [
     price: '0',
     period: '7 ימים',
     icon: Sparkles,
-    color: '#2dd87a',
+    color: '#3FB981',
     features: [
       'גישה מלאה לכל הפיצ\'רים',
       'בניית תיק השקעות',
@@ -28,7 +28,7 @@ const PLANS = [
     price: '19',
     period: 'לחודש',
     icon: Calendar,
-    color: '#f5a623',
+    color: '#D4AF37',
     features: [
       'כל הפיצ\'רים של מסלול הניסיון',
       'ללא הגבלת זמן',
@@ -46,7 +46,7 @@ const PLANS = [
     price: '120',
     period: 'לשנה',
     icon: Crown,
-    color: '#a855f7',
+    color: '#8E7CC3',
     features: [
       'כל הפיצ\'רים של המסלול החודשי',
       'חיסכון של 47% בהשוואה לחודשי',
@@ -79,15 +79,15 @@ export default function Pricing({ user }) {
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '1rem 0' }}>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 .8rem', background: 'linear-gradient(135deg,#f5a623,#ff8a4c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>בחר את המסלול שלך</h1>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 .8rem', background: 'linear-gradient(135deg,#D4AF37,#ff8a4c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>בחר את המסלול שלך</h1>
         <p style={{ fontSize: '1.05rem', color: 'var(--color-text-secondary)', margin: 0 }}>גישה מלאה לפלטפורמת ההשקעות המובילה לישראלים</p>
         {user && access.plan === 'trial' && !access.expired && (
-          <div style={{ display: 'inline-block', marginTop: '1rem', padding: '8px 16px', background: 'rgba(45,216,122,.12)', border: '1px solid rgba(45,216,122,.3)', borderRadius: 20, fontSize: '.85rem', color: '#2dd87a', fontWeight: 600 }}>
+          <div style={{ display: 'inline-block', marginTop: '1rem', padding: '8px 16px', background: 'rgba(63,185,129,.12)', border: '1px solid rgba(63,185,129,.3)', borderRadius: 20, fontSize: '.85rem', color: '#3FB981', fontWeight: 600 }}>
             הניסיון שלך פעיל · {access.daysLeft} ימים נותרו
           </div>
         )}
         {user && access.expired && (
-          <div style={{ display: 'inline-block', marginTop: '1rem', padding: '8px 16px', background: 'rgba(240,82,82,.1)', border: '1px solid rgba(240,82,82,.3)', borderRadius: 20, fontSize: '.85rem', color: '#f05252', fontWeight: 600 }}>
+          <div style={{ display: 'inline-block', marginTop: '1rem', padding: '8px 16px', background: 'rgba(224,102,107,.1)', border: '1px solid rgba(224,102,107,.3)', borderRadius: 20, fontSize: '.85rem', color: '#E0666B', fontWeight: 600 }}>
             תקופת הניסיון הסתיימה · בחר מסלול להמשך
           </div>
         )}
@@ -107,7 +107,7 @@ export default function Pricing({ user }) {
               transition: 'transform .15s, box-shadow .15s'
             }}>
               {plan.popular && (
-                <div style={{ position: 'absolute', top: -12, insetInlineStart: '50%', transform: 'translateX(50%)', background: plan.color, color: '#0d0f14', padding: '4px 14px', borderRadius: 20, fontSize: '.72rem', fontWeight: 700 }}>
+                <div style={{ position: 'absolute', top: -12, insetInlineStart: '50%', transform: 'translateX(50%)', background: plan.color, color: '#10152E', padding: '4px 14px', borderRadius: 20, fontSize: '.72rem', fontWeight: 700 }}>
                   {plan.saveLabel}
                 </div>
               )}
@@ -139,7 +139,7 @@ export default function Pricing({ user }) {
                 borderRadius: 10,
                 border: plan.popular ? 'none' : '1px solid var(--color-border)',
                 background: plan.popular ? plan.color : 'var(--color-bg2)',
-                color: plan.popular ? '#0d0f14' : 'var(--color-text-primary)',
+                color: plan.popular ? '#10152E' : 'var(--color-text-primary)',
                 cursor: 'pointer',
                 fontWeight: 700,
                 fontSize: '.95rem'
