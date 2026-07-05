@@ -39,7 +39,7 @@ export default function Academy() {
       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:'1.5rem'}}>
         {categories.map(cat => (
           <button key={cat} onClick={() => setActiveCategory(cat)}
-            style={{padding:'5px 14px',borderRadius:20,border:'1px solid '+(activeCategory===cat?'rgba(212,175,55,0.5)':'var(--color-border)'),background:activeCategory===cat?'rgba(212,175,55,0.12)':'transparent',color:activeCategory===cat?'#D4AF37':'var(--color-text-secondary)',cursor:'pointer',fontFamily:'inherit',fontSize:'.8rem',fontWeight:activeCategory===cat?700:400,transition:'all 180ms'}}>
+            style={{padding:'5px 14px',borderRadius:20,border:'1px solid '+(activeCategory===cat?'rgba(212,175,55,0.5)':'var(--color-border)'),background:activeCategory===cat?'rgba(212,175,55,0.12)':'transparent',color:activeCategory===cat?'var(--color-accent)':'var(--color-text-secondary)',cursor:'pointer',fontFamily:'inherit',fontSize:'.8rem',fontWeight:activeCategory===cat?700:400,transition:'all 180ms'}}>
             {cat}
           </button>
         ))}
@@ -55,8 +55,8 @@ export default function Academy() {
               <button onClick={() => setOpen(open===item.id ? null : item.id)}
                 style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'1rem 1.25rem',background:'none',border:'none',cursor:'pointer',color:'inherit',fontFamily:'inherit',textAlign:'right'}}>
                 <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  {open===item.id ? <ChevronUp size={16} style={{color:'#D4AF37',flexShrink:0}}/> : <ChevronDown size={16} style={{color:'var(--color-text-muted)',flexShrink:0}}/>}
-                  {item.category && <span style={{fontSize:'.7rem',fontWeight:600,color:'#D4AF37',background:'rgba(212,175,55,0.1)',padding:'2px 8px',borderRadius:8}}>{item.category}</span>}
+                  {open===item.id ? <ChevronUp size={16} style={{color:'var(--color-accent)',flexShrink:0}}/> : <ChevronDown size={16} style={{color:'var(--color-text-muted)',flexShrink:0}}/>}
+                  {item.category && <span style={{fontSize:'.7rem',fontWeight:600,color:'var(--color-accent)',background:'rgba(212,175,55,0.1)',padding:'2px 8px',borderRadius:8}}>{item.category}</span>}
                 </div>
                 <span style={{fontWeight:700,fontSize:'.95rem'}}>{item.term}</span>
               </button>
@@ -65,7 +65,7 @@ export default function Academy() {
                   <p style={{margin:'1rem 0 0',fontSize:'.88rem',lineHeight:1.7,color:'var(--color-text-secondary)'}}>{item.definition}</p>
                   {item.example && (
                     <div style={{marginTop:'.75rem',background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.15)',borderRadius:8,padding:'.75rem 1rem'}}>
-                      <p style={{margin:0,fontSize:'.83rem',color:'var(--color-text-muted)',lineHeight:1.6}}><strong style={{color:'#D4AF37'}}>דוגמה: </strong>{item.example}</p>
+                      <p style={{margin:0,fontSize:'.83rem',color:'var(--color-text-muted)',lineHeight:1.6}}><strong style={{color:'var(--color-accent)'}}>דוגמה: </strong>{item.example}</p>
                     </div>
                   )}
                 </div>
