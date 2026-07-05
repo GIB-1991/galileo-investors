@@ -6,7 +6,7 @@ import { analyzePortfolio, checkStockAlerts } from '../utils/thesisEngine.js'
 import { supabase } from '../services/supabase.js'
 import { loadHoldingsFromDB, saveHoldingToDB, updateHoldingInDB, deleteHoldingFromDB, loadHistoryFromDB, saveTradeHistoryToDB } from '../services/portfolioDb.js'
 
-const COLORS = ['#D4AF37','#5B8DE8','#3FB981','#8E7CC3','#E0666B','#4FA8C4','#fbbf24','#34d399','#818cf8','#fb7185']
+const COLORS = ['var(--color-accent)','var(--color-info)','var(--color-success)','#8E7CC3','var(--color-danger)','#4FA8C4','#fbbf24','#34d399','#818cf8','#fb7185']
 
 export default function Portfolio() {
   const [holdings, setHoldings] = useState([])
@@ -185,7 +185,7 @@ export default function Portfolio() {
   const tips = enriched.length>0 ? analyzePortfolio(enriched.map(h=>({ticker:h.ticker,shares:h.shares,buyPrice:h.buyPrice,currentPrice:h.cur,marketCap:0,beta:1,shortFloat:0,sharesFloat:1e9}))) : []
   const pieData = enriched.map((h,i)=>({name:h.ticker,fullName:(h.name||h.ticker).substring(0,18),value:parseFloat(h.pct.toFixed(1)),color:COLORS[i%COLORS.length]})).filter(d=>d.value>0)
   // Sector pie data
-  const sectorColors=['#D4AF37','#5B8DE8','#3FB981','#8E7CC3','#E0666B','#14b8a6','#B8942E','#8b5cf6','#4FA8C4','#ec4899']
+  const sectorColors=['var(--color-accent)','var(--color-info)','var(--color-success)','#8E7CC3','var(--color-danger)','#14b8a6','var(--color-accent2)','#8b5cf6','#4FA8C4','#ec4899']
   const sectorPieData=useMemo(()=>{
       const totalV=holdings.reduce((s,h)=>s+(prices[h.ticker]||h.buyPrice||0)*h.shares,0)
       if(!totalV) return []
@@ -223,8 +223,8 @@ export default function Portfolio() {
       <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
         <div><h1 style={{fontSize:'1.5rem',fontWeight:800,margin:'0 0 4px'}}>תיק השקעות</h1><p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.875rem'}}>מעקב, ניתוח ומסחר · שמור בענן ☁️</p></div>
         <div style={{display:'flex',gap:8}}>
-          {['portfolio','history'].map(t=>(<button key={t} onClick={()=>setTab(t)} style={{padding:'7px 16px',borderRadius:9,border:'1px solid',cursor:'pointer',fontFamily:'Heebo,sans-serif',fontWeight:600,fontSize:'.85rem',background:tab===t?'var(--color-accent)':'transparent',color:tab===t?'#10152E':'var(--color-text-secondary)',borderColor:tab===t?'var(--color-accent)':'var(--color-border2)'}}>{t==='portfolio'?'תיק':'היסטוריה'}</button>))}
-          {tab==='portfolio'&&<button onClick={()=>setShowAdd(true)} style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#D4AF37 0%,#e8941a 100%)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'0.55rem 1.1rem',fontSize:'0.9rem',fontWeight:700,cursor:'pointer',boxShadow:'0 2px 8px rgba(212,175,55,0.35)',transition:'transform .15s,box-shadow .15s',direction:'rtl'}} onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.05)';e.currentTarget.style.boxShadow='0 4px 14px rgba(212,175,55,0.5)'}} onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.style.boxShadow='0 2px 8px rgba(212,175,55,0.35)'}}><Plus size={16}/> הוסף מניה</button>}
+          {['portfolio','history'].map(t=>(<button key={t} onClick={()=>setTab(t)} style={{padding:'7px 16px',borderRadius:9,border:'1px solid',cursor:'pointer',fontFamily:'Heebo,sans-serif',fontWeight:600,fontSize:'.85rem',background:tab===t?'var(--color-accent)':'transparent',color:tab===t?'var(--color-bg2)':'var(--color-text-secondary)',borderColor:tab===t?'var(--color-accent)':'var(--color-border2)'}}>{t==='portfolio'?'תיק':'היסטוריה'}</button>))}
+          {tab==='portfolio'&&<button onClick={()=>setShowAdd(true)} style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,var(--color-accent) 0%,#e8941a 100%)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'0.55rem 1.1rem',fontSize:'0.9rem',fontWeight:700,cursor:'pointer',boxShadow:'0 2px 8px rgba(212,175,55,0.35)',transition:'transform .15s,box-shadow .15s',direction:'rtl'}} onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.05)';e.currentTarget.style.boxShadow='0 4px 14px rgba(212,175,55,0.5)'}} onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.style.boxShadow='0 2px 8px rgba(212,175,55,0.35)'}}><Plus size={16}/> הוסף מניה</button>}
           <button onClick={()=>refreshPrices()} title="רענן מחירים" style={{background:'none',border:'1px solid var(--color-border)',borderRadius:9,cursor:'pointer',color:'var(--color-text-muted)',padding:'7px 10px',display:'flex',alignItems:'center'}}><RefreshCw size={14}/></button>
         </div>
       </div>      {tab==='portfolio' && (<div>
