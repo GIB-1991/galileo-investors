@@ -8,15 +8,15 @@ const FB_REPORT_DATE='31 Dec 2025'
 const FB_FILING_DATE='Feb 2026'
 
 const FB_INV=[
-{id:'BRK',name:'Warren Buffett',fund:'Berkshire Hathaway',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fd%2Fd4%2FWarren_Buffett_at_the_2015_SelectUSA_Investment_Summit_%2528cropped%2529.jpg%2F330px-Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_%2528cropped%2529.jpg',aum:298000,style:'Value',n:44,color:'#f5a623',
+{id:'BRK',name:'Warren Buffett',fund:'Berkshire Hathaway',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fd%2Fd4%2FWarren_Buffett_at_the_2015_SelectUSA_Investment_Summit_%2528cropped%2529.jpg%2F330px-Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_%2528cropped%2529.jpg',aum:298000,style:'Value',n:44,color:'#D4AF37',
 top5:[{t:'AAPL',n:'Apple',p:26.8,c:-1.3},{t:'BAC',n:'Bank of America',p:12.1,c:1.4},{t:'AXP',n:'Amer. Express',p:10.8,c:2.1},{t:'KO',n:'Coca-Cola',p:9.3,c:0.4},{t:'CVX',n:'Chevron',p:6.1,c:-0.9}]},
-{id:'PS',name:'Bill Ackman',fund:'Pershing Square',img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Valeant_Pharmaceuticals%27_Business_Model_%28headshot%29.jpg/250px-Valeant_Pharmaceuticals%27_Business_Model_%28headshot%29.jpg',aum:11400,style:'Activist',n:11,color:'#4f8ef7',
+{id:'PS',name:'Bill Ackman',fund:'Pershing Square',img:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Valeant_Pharmaceuticals%27_Business_Model_%28headshot%29.jpg/250px-Valeant_Pharmaceuticals%27_Business_Model_%28headshot%29.jpg',aum:11400,style:'Activist',n:11,color:'#5B8DE8',
 top5:[{t:'HLT',n:'Hilton',p:17.1,c:2.8},{t:'CMG',n:'Chipotle',p:14.9,c:-0.7},{t:'GOOGL',n:'Alphabet',p:15.2,c:3.4},{t:'BN',n:'Brookfield',p:13.8,c:1.1},{t:'CP',n:'Canadian Pacific',p:11.9,c:0.5}]},
-{id:'AM',name:'David Tepper',fund:'Appaloosa Management',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F3%2F3d%2FDavid_Tepper_01.jpg%2F330px-David_Tepper_01.jpg',aum:7890,style:'Value',n:47,color:'#a855f7',
+{id:'AM',name:'David Tepper',fund:'Appaloosa Management',img:'/api/imgproxy?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F3%2F3d%2FDavid_Tepper_01.jpg%2F330px-David_Tepper_01.jpg',aum:7890,style:'Value',n:47,color:'#8E7CC3',
 top5:[{t:'META',n:'Meta',p:19.7,c:4.8},{t:'AMZN',n:'Amazon',p:16.2,c:3.1},{t:'NVDA',n:'Nvidia',p:15.8,c:7.2},{t:'GOOGL',n:'Alphabet',p:10.1,c:2.9},{t:'BABA',n:'Alibaba',p:9.3,c:-1.7}]},
-{id:'SC',name:'Michael Burry',fund:'Scion Asset Management',img:'https://hihmkuaxnizvufwrtmgm.supabase.co/storage/v1/object/public/investors/rJvBIAyOK_0_175_3000_1688_0_x-large.jpg',aum:114,style:'Contrarian',n:9,color:'#f05252',
+{id:'SC',name:'Michael Burry',fund:'Scion Asset Management',img:'https://hihmkuaxnizvufwrtmgm.supabase.co/storage/v1/object/public/investors/rJvBIAyOK_0_175_3000_1688_0_x-large.jpg',aum:114,style:'Contrarian',n:9,color:'#E0666B',
 top5:[{t:'BABA',n:'Alibaba',p:23.1,c:-2.4},{t:'JD',n:'JD.com',p:17.4,c:-1.3},{t:'HCA',n:'HCA Healthcare',p:14.8,c:1.9},{t:'BIDU',n:'Baidu',p:11.2,c:-3.7},{t:'CPRI',n:'Capri',p:8.6,c:-0.9}]},
-{id:'BG',name:'Seth Klarman',fund:'Baupost Group',img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Seth_Klarman_at_147th_Preakness_Stakes.jpg/250px-Seth_Klarman_at_147th_Preakness_Stakes.jpg',aum:27500,style:'Deep Value',n:36,color:'#06b6d4',
+{id:'BG',name:'Seth Klarman',fund:'Baupost Group',img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Seth_Klarman_at_147th_Preakness_Stakes.jpg/250px-Seth_Klarman_at_147th_Preakness_Stakes.jpg',aum:27500,style:'Deep Value',n:36,color:'#4FA8C4',
 top5:[{t:'EXPE',n:'Expedia',p:20.1,c:2.3},{t:'BEKE',n:'KE Holdings',p:13.9,c:1.1},{t:'VSAT',n:'Viasat',p:10.4,c:-2.1},{t:'VNT',n:'Vontier',p:8.7,c:0.9},{t:'ATEX',n:'Anterix',p:6.8,c:1.4}]},
 ]
 
@@ -29,9 +29,9 @@ const FB_TOP10=[
 ]
 
 const FB_SECTORS=[
-{name:'טכנולוגיה',value:41,color:'#4f8ef7'},{name:'פיננסים',value:17,color:'#f5a623'},
-{name:'בריאות',value:11,color:'#2dd87a'},{name:'צריכה',value:9,color:'#a855f7'},
-{name:'תעשייה',value:8,color:'#f05252'},{name:'אנרגיה',value:6,color:'#06b6d4'},
+{name:'טכנולוגיה',value:41,color:'#5B8DE8'},{name:'פיננסים',value:17,color:'#D4AF37'},
+{name:'בריאות',value:11,color:'#3FB981'},{name:'צריכה',value:9,color:'#8E7CC3'},
+{name:'תעשייה',value:8,color:'#E0666B'},{name:'אנרגיה',value:6,color:'#4FA8C4'},
 ]
 
 function fm(n){if(n>=1e12)return '$'+(n/1e12).toFixed(1)+'T';if(n>=1e9)return '$'+(n/1e9).toFixed(1)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(1)+'M';return '$'+Math.round(n).toLocaleString();}
@@ -102,12 +102,12 @@ style={{display:'flex',alignItems:'center',gap:6,fontSize:'.75rem',color:'var(--
 </div>
 
 <div style={{display:'flex',gap:'1.2rem',justifyContent:'center',flexWrap:'wrap',marginBottom:'2rem',padding:'1.5rem',background:'var(--color-bg2)',borderRadius:16,border:'1px solid var(--color-border)'}}>
-<Circle label='סה"כ AUM מנוהל' value={fm(totalAUM*1e6)} color='#f5a623'/>
-<Circle label='Superinvestors במעקב' value={String(INV.length)} sub='מנהלים' color='#4f8ef7'/>
-<Circle label='אחזקות מניות' value={String(holdingsCount)} sub={QUARTER} color='#2dd87a'/>
-<Circle label='קניות ברבעון' value={String(buys)} sub={'vs '+sells+' מכירות'} color='#a855f7'/>
-<Circle label='ביצוע ממוצע 5Y' value='+24%' sub='vs S&P +13%' color='#f05252'/>
-<Circle label='סקטור מוביל' value={leadSector} sub={leadPct+'% מהאחזקות'} color='#06b6d4'/>
+<Circle label='סה"כ AUM מנוהל' value={fm(totalAUM*1e6)} color='#D4AF37'/>
+<Circle label='Superinvestors במעקב' value={String(INV.length)} sub='מנהלים' color='#5B8DE8'/>
+<Circle label='אחזקות מניות' value={String(holdingsCount)} sub={QUARTER} color='#3FB981'/>
+<Circle label='קניות ברבעון' value={String(buys)} sub={'vs '+sells+' מכירות'} color='#8E7CC3'/>
+<Circle label='ביצוע ממוצע 5Y' value='+24%' sub='vs S&P +13%' color='#E0666B'/>
+<Circle label='סקטור מוביל' value={leadSector} sub={leadPct+'% מהאחזקות'} color='#4FA8C4'/>
 </div>
 
 <div className="card" style={{marginBottom:'1.5rem',padding:'1.5rem'}}>
@@ -208,13 +208,13 @@ style={{width:26,height:26,borderRadius:5,objectFit:'contain',background:'white'
 <div style={{display:'flex',gap:'1rem',alignItems:'center',flexWrap:'wrap'}}>
 <ResponsiveContainer width={160} height={160}>
 <PieChart><Pie data={SECTORS} cx="50%" cy="50%" outerRadius={70} innerRadius={38} dataKey="value">
-{SECTORS.map((s,i)=><Cell key={i} fill={s.color||'#4f8ef7'}/>)}
+{SECTORS.map((s,i)=><Cell key={i} fill={s.color||'#5B8DE8'}/>)}
 </Pie><Tooltip formatter={v=>v+'%'}/></PieChart>
 </ResponsiveContainer>
 <div style={{flex:1,minWidth:100}}>
 {SECTORS.map(s=>(
 <div key={s.name} style={{display:'flex',alignItems:'center',gap:7,marginBottom:5}}>
-<div style={{width:9,height:9,borderRadius:2,background:s.color||'#4f8ef7',flexShrink:0}}/>
+<div style={{width:9,height:9,borderRadius:2,background:s.color||'#5B8DE8',flexShrink:0}}/>
 <span style={{flex:1,fontSize:'.73rem',color:'var(--color-text-secondary)'}}>{s.name}</span>
 <span style={{fontWeight:700,fontSize:'.73rem',fontFamily:"'IBM Plex Mono',monospace"}}>{s.value}%</span>
 </div>
@@ -231,8 +231,8 @@ style={{width:26,height:26,borderRadius:5,objectFit:'contain',background:'white'
 <YAxis tick={{fontSize:10,fill:'var(--color-text-muted)'}}/>
 <Tooltip/>
 <Legend wrapperStyle={{fontSize:11}}/>
-<Bar dataKey="קניות" fill="#2dd87a" radius={[3,3,0,0]}/>
-<Bar dataKey="מכירות" fill="#f05252" radius={[3,3,0,0]}/>
+<Bar dataKey="קניות" fill="#3FB981" radius={[3,3,0,0]}/>
+<Bar dataKey="מכירות" fill="#E0666B" radius={[3,3,0,0]}/>
 </BarChart>
 </ResponsiveContainer>
 </div>
