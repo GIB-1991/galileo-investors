@@ -107,7 +107,7 @@ export default function Pricing({ user }) {
               transition: 'transform .15s, box-shadow .15s'
             }}>
               {plan.popular && (
-                <div style={{ position: 'absolute', top: -12, insetInlineStart: '50%', transform: 'translateX(50%)', background: plan.color, color: 'var(--color-bg2)', padding: '4px 14px', borderRadius: 20, fontSize: '.72rem', fontWeight: 700 }}>
+                <div style={{ position: 'absolute', top: -12, insetInlineStart: '50%', transform: 'translateX(50%)', background: plan.color, color: 'var(--color-on-accent)', padding: '4px 14px', borderRadius: 20, fontSize: '.72rem', fontWeight: 700 }}>
                   {plan.saveLabel}
                 </div>
               )}
@@ -139,7 +139,7 @@ export default function Pricing({ user }) {
                 borderRadius: 10,
                 border: plan.popular ? 'none' : '1px solid var(--color-border)',
                 background: plan.popular ? plan.color : 'var(--color-bg2)',
-                color: plan.popular ? 'var(--color-bg2)' : 'var(--color-text-primary)',
+                color: plan.popular ? 'var(--color-on-accent)' : 'var(--color-text-primary)',
                 cursor: 'pointer',
                 fontWeight: 700,
                 fontSize: '.95rem'
