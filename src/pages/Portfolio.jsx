@@ -6,7 +6,7 @@ import { analyzePortfolio, checkStockAlerts } from '../utils/thesisEngine.js'
 import { supabase } from '../services/supabase.js'
 import { loadHoldingsFromDB, saveHoldingToDB, updateHoldingInDB, deleteHoldingFromDB, loadHistoryFromDB, saveTradeHistoryToDB } from '../services/portfolioDb.js'
 
-const COLORS = ['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#06b6d4','#fbbf24','#34d399','#818cf8','#fb7185']
+const COLORS = ['#D4AF37','#5B8DE8','#3FB981','#8E7CC3','#E0666B','#4FA8C4','#fbbf24','#34d399','#818cf8','#fb7185']
 
 export default function Portfolio() {
   const [holdings, setHoldings] = useState([])
@@ -185,7 +185,7 @@ export default function Portfolio() {
   const tips = enriched.length>0 ? analyzePortfolio(enriched.map(h=>({ticker:h.ticker,shares:h.shares,buyPrice:h.buyPrice,currentPrice:h.cur,marketCap:0,beta:1,shortFloat:0,sharesFloat:1e9}))) : []
   const pieData = enriched.map((h,i)=>({name:h.ticker,fullName:(h.name||h.ticker).substring(0,18),value:parseFloat(h.pct.toFixed(1)),color:COLORS[i%COLORS.length]})).filter(d=>d.value>0)
   // Sector pie data
-  const sectorColors=['#f5a623','#4f8ef7','#2dd87a','#a855f7','#f05252','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ec4899']
+  const sectorColors=['#D4AF37','#5B8DE8','#3FB981','#8E7CC3','#E0666B','#14b8a6','#B8942E','#8b5cf6','#4FA8C4','#ec4899']
   const sectorPieData=useMemo(()=>{
       const totalV=holdings.reduce((s,h)=>s+(prices[h.ticker]||h.buyPrice||0)*h.shares,0)
       if(!totalV) return []
@@ -223,8 +223,8 @@ export default function Portfolio() {
       <div style={{marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
         <div><h1 style={{fontSize:'1.5rem',fontWeight:800,margin:'0 0 4px'}}>תיק השקעות</h1><p style={{color:'var(--color-text-muted)',margin:0,fontSize:'.875rem'}}>מעקב, ניתוח ומסחר · שמור בענן ☁️</p></div>
         <div style={{display:'flex',gap:8}}>
-          {['portfolio','history'].map(t=>(<button key={t} onClick={()=>setTab(t)} style={{padding:'7px 16px',borderRadius:9,border:'1px solid',cursor:'pointer',fontFamily:'Heebo,sans-serif',fontWeight:600,fontSize:'.85rem',background:tab===t?'var(--color-accent)':'transparent',color:tab===t?'#0d0f14':'var(--color-text-secondary)',borderColor:tab===t?'var(--color-accent)':'var(--color-border2)'}}>{t==='portfolio'?'תיק':'היסטוריה'}</button>))}
-          {tab==='portfolio'&&<button onClick={()=>setShowAdd(true)} style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#f5a623 0%,#e8941a 100%)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'0.55rem 1.1rem',fontSize:'0.9rem',fontWeight:700,cursor:'pointer',boxShadow:'0 2px 8px rgba(245,166,35,0.35)',transition:'transform .15s,box-shadow .15s',direction:'rtl'}} onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.05)';e.currentTarget.style.boxShadow='0 4px 14px rgba(245,166,35,0.5)'}} onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.style.boxShadow='0 2px 8px rgba(245,166,35,0.35)'}}><Plus size={16}/> הוסף מניה</button>}
+          {['portfolio','history'].map(t=>(<button key={t} onClick={()=>setTab(t)} style={{padding:'7px 16px',borderRadius:9,border:'1px solid',cursor:'pointer',fontFamily:'Heebo,sans-serif',fontWeight:600,fontSize:'.85rem',background:tab===t?'var(--color-accent)':'transparent',color:tab===t?'#10152E':'var(--color-text-secondary)',borderColor:tab===t?'var(--color-accent)':'var(--color-border2)'}}>{t==='portfolio'?'תיק':'היסטוריה'}</button>))}
+          {tab==='portfolio'&&<button onClick={()=>setShowAdd(true)} style={{display:'flex',alignItems:'center',gap:8,background:'linear-gradient(135deg,#D4AF37 0%,#e8941a 100%)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'0.55rem 1.1rem',fontSize:'0.9rem',fontWeight:700,cursor:'pointer',boxShadow:'0 2px 8px rgba(212,175,55,0.35)',transition:'transform .15s,box-shadow .15s',direction:'rtl'}} onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.05)';e.currentTarget.style.boxShadow='0 4px 14px rgba(212,175,55,0.5)'}} onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.style.boxShadow='0 2px 8px rgba(212,175,55,0.35)'}}><Plus size={16}/> הוסף מניה</button>}
           <button onClick={()=>refreshPrices()} title="רענן מחירים" style={{background:'none',border:'1px solid var(--color-border)',borderRadius:9,cursor:'pointer',color:'var(--color-text-muted)',padding:'7px 10px',display:'flex',alignItems:'center'}}><RefreshCw size={14}/></button>
         </div>
       </div>      {tab==='portfolio' && (<div>
@@ -254,7 +254,7 @@ export default function Portfolio() {
             </div>))}</div>
           </div>
         </div>)})()}
-        {tips.length>0&&(<div style={{marginBottom:'1.5rem',display:'flex',flexDirection:'column',gap:'.5rem'}}>{tips.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'.875rem 1rem',borderRadius:10,border:'1px solid',background:a.type==='danger'?'rgba(240,82,82,0.08)':a.type==='warning'?'rgba(245,166,35,0.08)':'rgba(45,216,122,0.08)',borderColor:a.type==='danger'?'rgba(240,82,82,0.25)':a.type==='warning'?'rgba(245,166,35,0.25)':'rgba(45,216,122,0.25)'}}><AlertTriangle size={14} style={{color:a.type==='danger'?'var(--color-danger)':a.type==='warning'?'var(--color-warning)':'var(--color-success)',flexShrink:0,marginTop:2}}/><span style={{fontSize:'.9rem',color:'#ffffff',fontWeight:'700',lineHeight:1.4}}>{a.message}</span></div>))}</div>)}
+        {tips.length>0&&(<div style={{marginBottom:'1.5rem',display:'flex',flexDirection:'column',gap:'.5rem'}}>{tips.map((a,i)=>(<div key={i} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'.875rem 1rem',borderRadius:10,border:'1px solid',background:a.type==='danger'?'rgba(224,102,107,0.08)':a.type==='warning'?'rgba(212,175,55,0.08)':'rgba(63,185,129,0.08)',borderColor:a.type==='danger'?'rgba(224,102,107,0.25)':a.type==='warning'?'rgba(212,175,55,0.25)':'rgba(63,185,129,0.25)'}}><AlertTriangle size={14} style={{color:a.type==='danger'?'var(--color-danger)':a.type==='warning'?'var(--color-warning)':'var(--color-success)',flexShrink:0,marginTop:2}}/><span style={{fontSize:'.9rem',color:'#ffffff',fontWeight:'700',lineHeight:1.4}}>{a.message}</span></div>))}</div>)}
         {enriched.length>0 ? (
           <div className="card" style={{padding:0,overflowX:'auto'}}>
             <table style={{width:'100%',borderCollapse:'collapse',fontSize:'.875rem'}}>
@@ -270,7 +270,7 @@ export default function Portfolio() {
                   <td style={{padding:'.8rem .875rem',direction:'ltr',fontFamily:"'IBM Plex Mono',monospace",color:row.pnl>=0?'var(--color-success)':'var(--color-danger)',fontWeight:600}}>{fm(row.pnl)}</td>
                   <td style={{padding:'.8rem .875rem'}}><span style={{color:row.pnlPct>=0?'var(--color-success)':'var(--color-danger)',fontWeight:600,direction:'ltr',display:'flex',alignItems:'center',gap:3}}>{row.pnlPct>=0?<TrendingUp size={11}/>:<TrendingDown size={11}/>}{Math.abs(row.pnlPct).toFixed(1)}%</span></td>
                   <td style={{padding:'.8rem .875rem'}}><div style={{display:'flex',gap:5}}>
-                    <button onClick={()=>openSell(row)} style={{padding:'3px 10px',borderRadius:6,background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.3)',cursor:'pointer',color:'var(--color-accent)',fontSize:'.75rem',fontWeight:700,fontFamily:'Heebo,sans-serif'}}>מכור</button>
+                    <button onClick={()=>openSell(row)} style={{padding:'3px 10px',borderRadius:6,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',cursor:'pointer',color:'var(--color-accent)',fontSize:'.75rem',fontWeight:700,fontFamily:'Heebo,sans-serif'}}>מכור</button>
                     <button onClick={()=>removeHolding(row.id)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:3}} onMouseEnter={e=>e.currentTarget.style.color='var(--color-danger)'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><Trash2 size={13}/></button>
                   </div></td>
                 </tr>
@@ -289,7 +289,7 @@ export default function Portfolio() {
             <tbody>{history.map(item=>{
               const isSell=item.type==='sell', val=item.price*item.shares, pnl=isSell?(item.price-(item.buyPrice||0))*item.shares:null
               return (<tr key={item.id} style={{borderBottom:'1px solid var(--color-border)'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.02)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                <td style={{padding:'.8rem .875rem'}}><span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:20,fontSize:'.72rem',fontWeight:700,background:isSell?'rgba(240,82,82,0.12)':'rgba(45,216,122,0.12)',color:isSell?'var(--color-danger)':'var(--color-success)'}}>{isSell?<ArrowUpCircle size={11}/>:<ArrowDownCircle size={11}/>}{isSell?'מכירה':'קנייה'}</span></td>
+                <td style={{padding:'.8rem .875rem'}}><span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:20,fontSize:'.72rem',fontWeight:700,background:isSell?'rgba(224,102,107,0.12)':'rgba(63,185,129,0.12)',color:isSell?'var(--color-danger)':'var(--color-success)'}}>{isSell?<ArrowUpCircle size={11}/>:<ArrowDownCircle size={11}/>}{isSell?'מכירה':'קנייה'}</span></td>
                 <td style={{padding:'.8rem .875rem'}}><span className="ticker-badge">{item.ticker}</span></td>
                 <td style={{padding:'.8rem .875rem',color:'var(--color-text-secondary)',fontSize:'.8rem',direction:'ltr',maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.name||item.ticker}</td>
                 <td style={{padding:'.8rem .875rem',direction:'ltr',fontFamily:"'IBM Plex Mono',monospace"}}>{item.shares}</td>
@@ -313,5 +313,5 @@ export default function Portfolio() {
 
 function SellPnL({ sp, bp, ss }) {
   const p = (sp - bp) * ss
-  return (<div style={{background:p>=0?'rgba(45,216,122,0.1)':'rgba(240,82,82,0.1)',borderRadius:9,padding:'.75rem',textAlign:'center',border:'1px solid',borderColor:p>=0?'rgba(45,216,122,0.25)':'rgba(240,82,82,0.25)',fontSize:'.85rem'}}>רווח/הפסד: <strong style={{color:p>=0?'var(--color-success)':'var(--color-danger)',direction:'ltr',display:'inline-block'}}>{p>=0?'+':'-'}{'$'+Math.abs(p).toFixed(2)}</strong></div>)
+  return (<div style={{background:p>=0?'rgba(63,185,129,0.1)':'rgba(224,102,107,0.1)',borderRadius:9,padding:'.75rem',textAlign:'center',border:'1px solid',borderColor:p>=0?'rgba(63,185,129,0.25)':'rgba(224,102,107,0.25)',fontSize:'.85rem'}}>רווח/הפסד: <strong style={{color:p>=0?'var(--color-success)':'var(--color-danger)',direction:'ltr',display:'inline-block'}}>{p>=0?'+':'-'}{'$'+Math.abs(p).toFixed(2)}</strong></div>)
 }
