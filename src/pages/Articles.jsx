@@ -31,7 +31,7 @@ export default function Articles() {
       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:'1.5rem'}}>
         {categories.map(cat => (
           <button key={cat} onClick={() => setActiveCategory(cat)}
-            style={{padding:'5px 14px',borderRadius:20,border:'1px solid '+(activeCategory===cat?'rgba(212,175,55,0.5)':'var(--color-border)'),background:activeCategory===cat?'rgba(212,175,55,0.1)':'var(--color-surface)',color:activeCategory===cat?'#D4AF37':'var(--color-text-primary)',cursor:'pointer',fontSize:'.82rem',fontWeight:600}}>
+            style={{padding:'5px 14px',borderRadius:20,border:'1px solid '+(activeCategory===cat?'rgba(212,175,55,0.5)':'var(--color-border)'),background:activeCategory===cat?'rgba(212,175,55,0.1)':'var(--color-surface)',color:activeCategory===cat?'var(--color-accent)':'var(--color-text-primary)',cursor:'pointer',fontSize:'.82rem',fontWeight:600}}>
             {cat}
           </button>
         ))}
@@ -55,7 +55,7 @@ export default function Articles() {
                 )}
                 <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
                   {article.category && (
-                    <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.72rem',fontWeight:600,color:'#D4AF37',background:'rgba(212,175,55,0.1)',padding:'3px 9px',borderRadius:12}}>
+                    <span style={{display:'flex',alignItems:'center',gap:4,fontSize:'.72rem',fontWeight:600,color:'var(--color-accent)',background:'rgba(212,175,55,0.1)',padding:'3px 9px',borderRadius:12}}>
                       <Tag size={10}/>{article.category}
                     </span>
                   )}
@@ -67,7 +67,7 @@ export default function Articles() {
                 </div>
                 <h3 style={{margin:'0 0 8px',fontSize:'1rem',fontWeight:700,lineHeight:1.45,color:'var(--color-text-primary)'}}>{article.title}</h3>
                 {article.summary && <p style={{margin:'0 0 12px',fontSize:'.85rem',color:'var(--color-text-secondary)',lineHeight:1.55}}>{article.summary}</p>}
-                <div style={{display:'flex',alignItems:'center',gap:4,fontSize:'.8rem',color:'#D4AF37',fontWeight:600}}>
+                <div style={{display:'flex',alignItems:'center',gap:4,fontSize:'.8rem',color:'var(--color-accent)',fontWeight:600}}>
                   {hasContent ? <><FileText size={13}/> קרא מאמר</> : <><ExternalLink size={13}/> למאמר</>}
                 </div>
               </>
