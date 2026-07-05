@@ -121,7 +121,7 @@ export default function Auth(){
         <div style={{width:'100%',maxWidth:420}}>
           <div style={{textAlign:'center',marginBottom:'2.5rem'}}>
             <div style={{width:52,height:52,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',borderRadius:14,display:'inline-flex',alignItems:'center',justifyContent:'center',marginBottom:14,boxShadow:'0 0 24px rgba(212,175,55,0.35)'}}>
-              <span style={{color:'var(--color-bg2)',fontSize:26,fontWeight:800}}>G</span>
+              <span style={{color:'var(--color-on-accent)',fontSize:26,fontWeight:800}}>G</span>
             </div>
             <h1 style={{fontSize:'1.4rem',fontWeight:800,margin:'0 0 6px',color:'var(--color-text-primary)'}}>משקיעים עם גלילאו</h1>
             <p style={{fontSize:'0.875rem',color:'var(--color-text-secondary)',margin:0}}>
