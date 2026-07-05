@@ -106,6 +106,7 @@ body::after {
 body.light-mode {
   background-color: #F5F0EA;
   background-image: none;
+  color: var(--color-text-primary);
   min-height: 100vh;
 }
 body.light-mode::before, body.light-mode::after { opacity: 0; }
