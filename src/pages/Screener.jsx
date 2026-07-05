@@ -24,12 +24,12 @@ const ETF_LIST = ['SPY','QQQ','IVV','VTI','VOO','DIA','GLD','SLV','TLT','IEF','L
 function getCapInfo(mc, qt, sym) {
   // safe ETF check
                   const isETF = qt==='ETF' || qt==='MUTUALFUND' || ETF_LIST.indexOf(String(sym||""))>=0
-  if (isETF) return { label:'קרן סל / ETF', tooltip:"קרנות סל גדולות המורכבות ממניות רבות (S&P 500, נאסדק ועוד) — ניתן להחזיק ללא הגבלת חשיפה", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): עד 100%", color:'#60a5fa', bg:'rgba(96,165,250,.15)', border:'rgba(96,165,250,.35)' }
+  if (isETF) return { label:'קרן סל / ETF', tooltip:"קרנות סל גדולות המורכבות ממניות רבות (S&P 500, נאסדק ועוד) — ניתן להחזיק ללא הגבלת חשיפה", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): עד 100%", color:'#5B8DE8', bg:'rgba(96,165,250,.15)', border:'rgba(96,165,250,.35)' }
   if (!mc) return null
-  if (mc >= 1e12) return { label:'מגה קאפ', tooltip:"מגה קאפ: שווי שוק מעל טריליון דולר ($1T+). לדוגמה: Apple, Microsoft, Nvidia, Alphabet", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 20%", color:'#2dd87a', bg:'rgba(45,216,122,.13)', border:'rgba(45,216,122,.35)' }
-  if (mc >= 5e10) return { label:'לארג׳ קאפ', tooltip:"לארג קאפ: שווי שוק עד 500 מיליארד דולר. חברות גדולות ויציבות כגון JPMorgan, Visa, Mastercard", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 10%", color:'#f5a623', bg:'rgba(245,166,35,.13)', border:'rgba(245,166,35,.35)' }
-  if (mc >= 1e10) return { label:'סמול קאפ', tooltip:"סמול קאפ: שווי שוק עד 100 מיליארד דולר. מניות צמיחה עם פוטנציאל גבוה וסיכון מוגבר", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 5%", color:'#fb923c', bg:'rgba(251,146,60,.13)', border:'rgba(251,146,60,.35)' }
-  return { label:'מיקרו קאפ', tooltip:"מיקרו קאפ: שווי שוק של עשרות מיליארדי דולר ומטה. מניות ספקולטיביות עם סיכון גבוה — נדרשת זהירות מיוחדת", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 3-4%", color:'#e05252', bg:'rgba(224,82,82,.13)', border:'rgba(224,82,82,.35)' }
+  if (mc >= 1e12) return { label:'מגה קאפ', tooltip:"מגה קאפ: שווי שוק מעל טריליון דולר ($1T+). לדוגמה: Apple, Microsoft, Nvidia, Alphabet", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 20%", color:'#3FB981', bg:'rgba(63,185,129,.13)', border:'rgba(63,185,129,.35)' }
+  if (mc >= 5e10) return { label:'לארג׳ קאפ', tooltip:"לארג קאפ: שווי שוק עד 500 מיליארד דולר. חברות גדולות ויציבות כגון JPMorgan, Visa, Mastercard", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 10%", color:'#D4AF37', bg:'rgba(212,175,55,.13)', border:'rgba(212,175,55,.35)' }
+  if (mc >= 1e10) return { label:'סמול קאפ', tooltip:"סמול קאפ: שווי שוק עד 100 מיליארד דולר. מניות צמיחה עם פוטנציאל גבוה וסיכון מוגבר", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 5%", color:'#B8942E', bg:'rgba(251,146,60,.13)', border:'rgba(251,146,60,.35)' }
+  return { label:'מיקרו קאפ', tooltip:"מיקרו קאפ: שווי שוק של עשרות מיליארדי דולר ומטה. מניות ספקולטיביות עם סיכון גבוה — נדרשת זהירות מיוחדת", pct:"אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 3-4%", color:'#E0666B', bg:'rgba(224,102,107,.13)', border:'rgba(224,102,107,.35)' }
 }
 
 function fmtN(n, pre='$') {
@@ -156,28 +156,28 @@ export default function Screener() {
   const dayChangePct = stock?.regularMarketChangePercent ?? (stock?.regularMarketPrice && dayChange ? (dayChange/(stock.regularMarketPrice-dayChange))*100 : 0)
   const isUp     = dayChange >= 0
   const rngUp    = (rangeReturn ?? 0) >= 0
-  const chartColor = rngUp ? '#2dd87a' : '#e05252'
+  const chartColor = rngUp ? '#3FB981' : '#E0666B'
   const nowUTC=new Date(),dayUTC=nowUTC.getUTCDay(),hUTC=nowUTC.getUTCHours()*60+nowUTC.getUTCMinutes()
   const marketOpen=dayUTC>=1&&dayUTC<=5&&hUTC>=810&&hUTC<1200
   const displayReturn=marketOpen?dayChangePct:rangeReturn
   const displayLabel=marketOpen?'יומי':(PERIODS.find(p=>p.range===period)?.label||period)
   const mc=stock?.marketCap,qt=stock?.quoteType,sym=stock?.symbol||''
   const isETF=qt==='ETF'||qt==='MUTUALFUND'||(sym && ETF_LIST.indexOf(String(sym||""))>=0)
-  let capLabel=null,capColor='#f5a623',capBg='rgba(245,166,35,.12)',capBorder='rgba(245,166,35,.3)',capIcon='',capMax=null
-  if(isETF){capLabel='קרן סל / ETF';capColor='#60a5fa';capBg='rgba(96,165,250,.12)';capBorder='rgba(96,165,250,.3)';capIcon='📊';capMax="ניתן להחזיק עד 100%"}
-  else if(mc>=1e12){capLabel='מגה קאפ';capColor='#2dd87a';capBg='rgba(45,216,122,.12)';capBorder='rgba(45,216,122,.3)';capIcon='🟢';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 20%"}
-  else if(mc>=5e10){capLabel='לארג׳ קאפ';capColor='#f5a623';capBg='rgba(245,166,35,.12)';capBorder='rgba(245,166,35,.3)';capIcon='🟡';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 10%"}
-  else if(mc>=1e10){capLabel='סמול קאפ';capColor='#fb923c';capBg='rgba(251,146,60,.12)';capBorder='rgba(251,146,60,.3)';capIcon='🟠';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 5%"}
-  else if(mc){capLabel='מיקרו קאפ';capColor='#e05252';capBg='rgba(224,82,82,.12)';capBorder='rgba(224,82,82,.3)';capIcon='🔴';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 3-4%"}
+  let capLabel=null,capColor='#D4AF37',capBg='rgba(212,175,55,.12)',capBorder='rgba(212,175,55,.3)',capIcon='',capMax=null
+  if(isETF){capLabel='קרן סל / ETF';capColor='#5B8DE8';capBg='rgba(96,165,250,.12)';capBorder='rgba(96,165,250,.3)';capIcon='📊';capMax="ניתן להחזיק עד 100%"}
+  else if(mc>=1e12){capLabel='מגה קאפ';capColor='#3FB981';capBg='rgba(63,185,129,.12)';capBorder='rgba(63,185,129,.3)';capIcon='🟢';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 20%"}
+  else if(mc>=5e10){capLabel='לארג׳ קאפ';capColor='#D4AF37';capBg='rgba(212,175,55,.12)';capBorder='rgba(212,175,55,.3)';capIcon='🟡';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 10%"}
+  else if(mc>=1e10){capLabel='סמול קאפ';capColor='#B8942E';capBg='rgba(251,146,60,.12)';capBorder='rgba(251,146,60,.3)';capIcon='🟠';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 5%"}
+  else if(mc){capLabel='מיקרו קאפ';capColor='#E0666B';capBg='rgba(224,102,107,.12)';capBorder='rgba(224,102,107,.3)';capIcon='🔴';capMax="אחוז החשיפה המקס' (לפי תזת המסחר של גלילאו): 3-4%"}
   const startPx  = chart[0]?.price || 0
   const capInfo  = stock ? getCapInfo(stock.marketCap, stock.quoteType, stock.symbol) : null
 
   const Tip = ({active,payload,label})=>{
     if (!active||!payload?.length) return null
     return (
-      <div style={{background:'rgba(8,12,22,.95)',border:'1px solid rgba(245,166,35,.3)',borderRadius:8,padding:'8px 12px'}}>
-        <p style={{margin:0,fontSize:'.72rem',color:'rgba(245,166,35,.6)'}}>{label}</p>
-        <p style={{margin:'2px 0 0',fontSize:'1rem',fontWeight:700,color:chartColor,fontFamily:'monospace'}}>${payload[0].value?.toFixed(2)}</p>
+      <div style={{background:'rgba(8,12,22,.95)',border:'1px solid rgba(212,175,55,.3)',borderRadius:8,padding:'8px 12px'}}>
+        <p style={{margin:0,fontSize:'.72rem',color:'rgba(212,175,55,.6)'}}>{label}</p>
+        <p style={{margin:'2px 0 0',fontSize:'1rem',fontWeight:700,color:chartColor,fontFamily:'IBM Plex Mono',monospace}}>${payload[0].value?.toFixed(2)}</p>
       </div>
     )
   }
@@ -185,7 +185,7 @@ export default function Screener() {
   const Row = ({label,val,color:c})=> val&&val!=='N/A' ? (
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--color-border)'}}>
       <span style={{fontSize:'.8rem',color:'var(--color-text-secondary)'}}>{label}</span>
-      <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:'monospace',color:c||'var(--color-text)'}}>{val}</span>
+      <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:'IBM Plex Mono',monospace,color:c||'var(--color-text)'}}>{val}</span>
     </div>
   ) : null
 
@@ -199,8 +199,8 @@ export default function Screener() {
 
       {/* ── 1. Search bar ── */}
       <div ref={wrapRef} style={{position:'relative',marginBottom:'1.5rem'}}>
-        <div style={{display:'flex',alignItems:'center',gap:12,background:'var(--color-surface)',border:'2px solid '+(showSugg&&sugg.length?'rgba(245,166,35,.55)':'rgba(245,166,35,.2)'),borderRadius:18,padding:'12px 20px',boxShadow:'0 6px 30px rgba(0,0,0,.18)',transition:'border-color 200ms'}}>
-          <Search size={22} style={{color:'#f5a623',flexShrink:0}}/>
+        <div style={{display:'flex',alignItems:'center',gap:12,background:'var(--color-surface)',border:'2px solid '+(showSugg&&sugg.length?'rgba(212,175,55,.55)':'rgba(212,175,55,.2)'),borderRadius:18,padding:'12px 20px',boxShadow:'0 6px 30px rgba(0,0,0,.18)',transition:'border-color 200ms'}}>
+          <Search size={22} style={{color:'#D4AF37',flexShrink:0}}/>
           <input ref={inputRef} value={query}
             onChange={e=>{setQuery(e.target.value);setShowSugg(true)}}
             onKeyDown={e=>{if(e.key==='Enter'&&query.trim()) loadStock(query.trim().toUpperCase()); if(e.key==='Escape') setShowSugg(false)}}
@@ -208,23 +208,23 @@ export default function Screener() {
             placeholder="חפש מניה — AAPL, Tesla, Nvidia..."
             style={{flex:1,background:'none',border:'none',outline:'none',fontSize:'1.2rem',fontWeight:500,color:'var(--color-text-primary)',fontFamily:'inherit',direction:'ltr',textAlign:'left',minWidth:0}}
             autoComplete="off" spellCheck="false"/>
-          {query&&<button onClick={clearAll} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:4,display:'flex',borderRadius:6}} onMouseEnter={e=>e.currentTarget.style.color='#e05252'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><X size={18}/></button>}
+          {query&&<button onClick={clearAll} style={{background:'none',border:'none',cursor:'pointer',color:'var(--color-text-muted)',padding:4,display:'flex',borderRadius:6}} onMouseEnter={e=>e.currentTarget.style.color='#E0666B'} onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-muted)'}><X size={18}/></button>}
           <button onClick={()=>query.trim()&&loadStock(query.trim().toUpperCase())}
-            style={{background:'linear-gradient(135deg,#f5a623,#e8901a)',border:'none',borderRadius:12,padding:'9px 22px',color:'#0d0f14',fontWeight:700,fontSize:'.95rem',cursor:'pointer',fontFamily:'inherit',flexShrink:0}}
+            style={{background:'linear-gradient(135deg,#D4AF37,#e8901a)',border:'none',borderRadius:12,padding:'9px 22px',color:'#10152E',fontWeight:700,fontSize:'.95rem',cursor:'pointer',fontFamily:'inherit',flexShrink:0}}
             onMouseEnter={e=>e.currentTarget.style.opacity='.82'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>חפש</button>
         </div>
         {showSugg&&sugg.length>0&&(
-          <div style={{position:'absolute',top:'calc(100% + 6px)',left:0,right:0,background:'var(--color-surface)',border:'1px solid rgba(245,166,35,.22)',borderRadius:14,zIndex:200,boxShadow:'0 12px 40px rgba(0,0,0,.25)',overflow:'hidden'}}>
+          <div style={{position:'absolute',top:'calc(100% + 6px)',left:0,right:0,background:'var(--color-surface)',border:'1px solid rgba(212,175,55,.22)',borderRadius:14,zIndex:200,boxShadow:'0 12px 40px rgba(0,0,0,.25)',overflow:'hidden'}}>
             {sugg.map((s,i)=>(
               <div key={i} onMouseDown={e=>{e.preventDefault();setQuery(s.symbol);loadStock(s.symbol)}}
                 style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 18px',cursor:'pointer',borderBottom:i<sugg.length-1?'1px solid var(--color-border)':'none',transition:'background 120ms'}}
-                onMouseEnter={e=>e.currentTarget.style.background='rgba(245,166,35,.07)'}
+                onMouseEnter={e=>e.currentTarget.style.background='rgba(212,175,55,.07)'}
                 onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
                 <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  <span style={{fontWeight:700,fontSize:'.98rem',color:'#f5a623',fontFamily:'monospace',minWidth:56}}>{s.symbol}</span>
+                  <span style={{fontWeight:700,fontSize:'.98rem',color:'#D4AF37',fontFamily:'IBM Plex Mono',monospace,minWidth:56}}>{s.symbol}</span>
                   <span style={{fontSize:'.86rem',color:'var(--color-text-secondary)'}}>{s.shortname||s.longname||''}</span>
                 </div>
-                <span style={{fontSize:'.72rem',color:'rgba(245,166,35,.55)',background:'rgba(245,166,35,.08)',padding:'2px 8px',borderRadius:6,flexShrink:0}}>{s.exchDisp||''}</span>
+                <span style={{fontSize:'.72rem',color:'rgba(212,175,55,.55)',background:'rgba(212,175,55,.08)',padding:'2px 8px',borderRadius:6,flexShrink:0}}>{s.exchDisp||''}</span>
               </div>
             ))}
           </div>
@@ -239,9 +239,9 @@ export default function Screener() {
             {QUICK.map(q=>(
               <button key={q.t} onClick={()=>{setQuery(q.t);loadStock(q.t)}}
                 style={{padding:'8px 16px',borderRadius:20,border:'1px solid var(--color-border)',background:'var(--color-surface)',cursor:'pointer',fontFamily:'inherit',fontSize:'.84rem',display:'flex',alignItems:'center',gap:7,transition:'all 180ms',color:'var(--color-text-secondary)'}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(245,166,35,.45)';e.currentTarget.style.color='#f5a623'}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(212,175,55,.45)';e.currentTarget.style.color='#D4AF37'}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--color-border)';e.currentTarget.style.color='var(--color-text-secondary)'}}>
-                <span style={{fontWeight:700,fontFamily:'monospace',fontSize:'.82rem'}}>{q.t}</span>
+                <span style={{fontWeight:700,fontFamily:'IBM Plex Mono',monospace,fontSize:'.82rem'}}>{q.t}</span>
                 <span style={{opacity:.65}}>{q.n}</span>
               </button>
             ))}
@@ -255,14 +255,14 @@ export default function Screener() {
 
       {loading&&(
         <div style={{textAlign:'center',padding:'5rem 0'}}>
-          <div style={{width:44,height:44,border:'3px solid rgba(245,166,35,.2)',borderTop:'3px solid #f5a623',borderRadius:'50%',animation:'spin .75s linear infinite',margin:'0 auto 16px'}}/>
+          <div style={{width:44,height:44,border:'3px solid rgba(212,175,55,.2)',borderTop:'3px solid #D4AF37',borderRadius:'50%',animation:'spin .75s linear infinite',margin:'0 auto 16px'}}/>
           <p style={{color:'var(--color-text-muted)',margin:0}}>טוען נתונים...</p>
           <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
         </div>
       )}
 
       {err&&!loading&&(
-        <div style={{textAlign:'center',padding:'2.5rem',background:'rgba(224,82,82,.07)',border:'1px solid rgba(224,82,82,.2)',borderRadius:14,color:'#e05252'}}>
+        <div style={{textAlign:'center',padding:'2.5rem',background:'rgba(224,102,107,.07)',border:'1px solid rgba(224,102,107,.2)',borderRadius:14,color:'#E0666B'}}>
           <p style={{margin:0}}>{err}</p>
         </div>
       )}
@@ -279,12 +279,12 @@ export default function Screener() {
 
               {/* LEFT: price + daily change */}
               <div>
-                <div style={{fontSize:'2.6rem',fontWeight:800,lineHeight:1,fontFamily:'monospace'}}>${price.toFixed(2)}</div>
+                <div style={{fontSize:'2.6rem',fontWeight:800,lineHeight:1,fontFamily:'IBM Plex Mono',monospace}}>${price.toFixed(2)}</div>
                 {/* ── 8. Daily live return ── */}
                 <div style={{marginTop:6,display:'flex',alignItems:'center',gap:6}}>
                   <span style={{
                     fontSize:'1.05rem',fontWeight:700,
-                    color: dayChange===0&&dayPct===0 ? 'var(--color-text-muted)' : (isUp?'#2dd87a':'#e05252')
+                    color: dayChange===0&&dayPct===0 ? 'var(--color-text-muted)' : (isUp?'#3FB981':'#E0666B')
                   }}>
                     {dayChange===0&&dayPct===0 ? 'המסחר טרם נפתח' : ((isUp?'+':'')+dayChange.toFixed(2)+' ('+((isUp?'+':'')+( dayPct*100).toFixed(2))+'%)')}
                   </span>
@@ -295,8 +295,8 @@ export default function Screener() {
               <div style={{textAlign:'right'}}>
                 {/* ── 2. Ticker + exchange ── */}
                 <div style={{display:'flex',alignItems:'center',gap:10,justifyContent:'flex-end',marginBottom:4}}>
-                  {stock.exchangeName&&<span style={{fontSize:'.72rem',background:'rgba(245,166,35,.1)',color:'rgba(245,166,35,.7)',padding:'3px 9px',borderRadius:7,border:'1px solid rgba(245,166,35,.2)',fontWeight:600}}>{stock.fullExchangeName||stock.exchangeName}</span>}
-                  <h2 style={{margin:0,fontSize:'2rem',fontWeight:800,fontFamily:'monospace',color:'#f5a623',lineHeight:1}}>{stock.symbol}</h2>
+                  {stock.exchangeName&&<span style={{fontSize:'.72rem',background:'rgba(212,175,55,.1)',color:'rgba(212,175,55,.7)',padding:'3px 9px',borderRadius:7,border:'1px solid rgba(212,175,55,.2)',fontWeight:600}}>{stock.fullExchangeName||stock.exchangeName}</span>}
+                  <h2 style={{margin:0,fontSize:'2rem',fontWeight:800,fontFamily:'IBM Plex Mono',monospace,color:'#D4AF37',lineHeight:1}}>{stock.symbol}</h2>
                 </div>
                 {/* ── 3. Company name ── */}
                 <p style={{margin:0,fontSize:'1.05rem',color:'var(--color-text-secondary)',fontWeight:500}}>{stock.longName||stock.shortName||''}</p>
@@ -319,7 +319,7 @@ export default function Screener() {
               <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
                 {PERIODS.map(p=>(
                   <button key={p.range} onClick={()=>setPeriod(p.range)}
-                    style={{padding:'5px 14px',borderRadius:10,border:'1px solid '+(period===p.range?'rgba(245,166,35,.5)':'var(--color-border)'),background:period===p.range?'rgba(245,166,35,.13)':'transparent',color:period===p.range?'#f5a623':'var(--color-text-muted)',cursor:'pointer',fontFamily:'inherit',fontSize:'.82rem',fontWeight:period===p.range?700:400,transition:'all 150ms'}}>
+                    style={{padding:'5px 14px',borderRadius:10,border:'1px solid '+(period===p.range?'rgba(212,175,55,.5)':'var(--color-border)'),background:period===p.range?'rgba(212,175,55,.13)':'transparent',color:period===p.range?'#D4AF37':'var(--color-text-muted)',cursor:'pointer',fontFamily:'inherit',fontSize:'.82rem',fontWeight:period===p.range?700:400,transition:'all 150ms'}}>
                     {p.label}
                   </button>
                 ))}
@@ -328,7 +328,7 @@ export default function Screener() {
               {rangeReturn!==null&&(
                 <div style={{display:'flex',alignItems:'center',gap:6}}>
                   <span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{PERIODS.find(p=>p.range===period)?.label||period}:</span>
-                  <span style={{fontSize:'1rem',fontWeight:800,fontFamily:'monospace',color:rngUp?'#2dd87a':'#e05252',background:rngUp?'rgba(45,216,122,.12)':'rgba(224,82,82,.12)',border:'1px solid '+(rngUp?'rgba(45,216,122,.3)':'rgba(224,82,82,.3)'),padding:'3px 14px',borderRadius:20}}>
+                  <span style={{fontSize:'1rem',fontWeight:800,fontFamily:'IBM Plex Mono',monospace,color:rngUp?'#3FB981':'#E0666B',background:rngUp?'rgba(63,185,129,.12)':'rgba(224,102,107,.12)',border:'1px solid '+(rngUp?'rgba(63,185,129,.3)':'rgba(224,102,107,.3)'),padding:'3px 14px',borderRadius:20}}>
                     {(rngUp?'+':'')+( rangeReturn*100).toFixed(2)+'%'}
                   </span>
                 </div>
@@ -337,13 +337,13 @@ export default function Screener() {
 
             {/* ── 6. Chart ── */}
             
-              {stock?.regularMarketVolume&&<div style={{textAlign:'left',fontSize:'.72rem',color:'rgba(245,166,35,.75)',margin:'4px 0 0 8px'}}>
-                {'ווליום יומי: '}<span style={{color:'rgba(245,166,35,1)',fontWeight:700}}>{fmtN(stock.regularMarketVolume)}</span>
+              {stock?.regularMarketVolume&&<div style={{textAlign:'left',fontSize:'.72rem',color:'rgba(212,175,55,.75)',margin:'4px 0 0 8px'}}>
+                {'ווליום יומי: '}<span style={{color:'rgba(212,175,55,1)',fontWeight:700}}>{fmtN(stock.regularMarketVolume)}</span>
               </div>}
               <div style={{height:230,position:'relative',borderRadius:12,overflow:'hidden'}}>
               {chartLoad&&(
                 <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.12)',zIndex:2}}>
-                  <div style={{width:26,height:26,border:'2px solid rgba(245,166,35,.25)',borderTop:'2px solid #f5a623',borderRadius:'50%',animation:'spin .7s linear infinite'}}/>
+                  <div style={{width:26,height:26,border:'2px solid rgba(212,175,55,.25)',borderTop:'2px solid #D4AF37',borderRadius:'50%',animation:'spin .7s linear infinite'}}/>
                 </div>
               )}
               {chart.length>1?(
@@ -357,7 +357,7 @@ export default function Screener() {
                     </defs>
                     <XAxis dataKey="date" tick={{fontSize:10,fill:'var(--color-text-muted)'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/>
                     <YAxis domain={['auto','auto']} tick={{fontSize:10,fill:'var(--color-text-muted)'}} axisLine={false} tickLine={false} tickFormatter={v=>'$'+v.toFixed(0)} width={58}/>
-                    <Tooltip content={<Tip/>} cursor={{stroke:'rgba(245,166,35,.3)',strokeWidth:1}}/>
+                    <Tooltip content={<Tip/>} cursor={{stroke:'rgba(212,175,55,.3)',strokeWidth:1}}/>
                     {startPx>0&&<ReferenceLine y={startPx} stroke="rgba(255,255,255,.1)" strokeDasharray="4 4"/>}
                     <Area type="monotone" dataKey="price" stroke={chartColor} strokeWidth={2.2} fill="url(#cg)" dot={false} activeDot={{r:4,fill:chartColor,strokeWidth:0}}/>
                   </AreaChart>
@@ -375,7 +375,7 @@ export default function Screener() {
 
             {/* ── Card 1: Price data ── */}
             <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <p style={{margin:'0 0 .9rem',fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>נתוני מחיר</p>
+              <p style={{margin:'0 0 .9rem',fontWeight:700,fontSize:'.82rem',color:'#D4AF37',letterSpacing:'.05em'}}>נתוני מחיר</p>
               <Row label="פתיחה"           val={fmtN(stock.regularMarketOpen)}/>
               <Row label="שיא יומי"        val={fmtN(stock.regularMarketDayHigh)}/>
               <Row label="שפל יומי"        val={fmtN(stock.regularMarketDayLow)}/>
@@ -390,10 +390,10 @@ export default function Screener() {
                 return(
                   <div style={{marginTop:10}}>
                     <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'var(--color-text-muted)',marginBottom:5}}>
-                      <span>{fmtN(lo)}</span><span style={{color:'rgba(245,166,35,.7)',fontWeight:600}}>52W Range</span><span>{fmtN(hi)}</span>
+                      <span>{fmtN(lo)}</span><span style={{color:'rgba(212,175,55,.7)',fontWeight:600}}>52W Range</span><span>{fmtN(hi)}</span>
                     </div>
                     <div style={{height:6,background:'rgba(255,255,255,.08)',borderRadius:3,position:'relative'}}>
-                      <div style={{position:'absolute',top:0,left:0,width:pct+'%',height:'100%',background:'linear-gradient(90deg,#e05252,#f5a623,#2dd87a)',borderRadius:3}}/>
+                      <div style={{position:'absolute',top:0,left:0,width:pct+'%',height:'100%',background:'linear-gradient(90deg,#E0666B,#D4AF37,#3FB981)',borderRadius:3}}/>
                       <div style={{position:'absolute',top:'50%',left:pct+'%',transform:'translate(-50%,-50%)',width:10,height:10,borderRadius:'50%',background:'#fff',boxShadow:'0 0 5px rgba(0,0,0,.4)'}}/>
                     </div>
                   </div>
@@ -403,7 +403,7 @@ export default function Screener() {
 
             {/* ── Card 2: Fundamentals ── */}
             <div style={{background:'var(--color-surface)',border:'1px solid var(--color-border)',borderRadius:16,padding:'1.25rem'}}>
-              <p style={{margin:'0 0 .9rem',fontWeight:700,fontSize:'.82rem',color:'#f5a623',letterSpacing:'.05em'}}>פונדמנטלס</p>
+              <p style={{margin:'0 0 .9rem',fontWeight:700,fontSize:'.82rem',color:'#D4AF37',letterSpacing:'.05em'}}>פונדמנטלס</p>
               <Row label="שווי שוק"         val={fmtN(stock.marketCap,'')}/>
               <Row label="P/E Ratio"         val={stock.trailingPE?parseFloat(stock.trailingPE).toFixed(1):'N/A'}/>
               <Row label="P/E Forward"       val={stock.forwardPE?parseFloat(stock.forwardPE).toFixed(1):'N/A'}/>
@@ -414,13 +414,13 @@ export default function Screener() {
               <Row label="נפח ממוצע"        val={fmtVol(stock.averageVolume)}/>
               <Row label="נפח מסחר היום"   val={fmtVol(stock.regularMarketVolume)} color={(() => {
                 const v = parseFloat(stock.regularMarketVolume), a = parseFloat(stock.averageVolume)
-                return (!v||!a) ? 'var(--color-text-primary)' : v > a*1.5 ? '#2dd87a' : v < a*0.5 ? '#e05252' : 'var(--color-text-primary)'
+                return (!v||!a) ? 'var(--color-text-primary)' : v > a*1.5 ? '#3FB981' : v < a*0.5 ? '#E0666B' : 'var(--color-text-primary)'
               })()}/>
               <Row label="דיבידנד"          val={stock.dividendYield && parseFloat(stock.dividendYield) > 0 ? (parseFloat(stock.dividendYield) < 1 ? (parseFloat(stock.dividendYield)*100).toFixed(2) : parseFloat(stock.dividendYield).toFixed(2))+'%' : 'לא'}/>
               <Row label="שורט %"          val={stock.shortPercentFloat != null ? stock.shortPercentFloat+'%' : 'לא'}/>
               {stock.avgVolume30d&&<Row label="ווליום ממוצע 30י׳" val={fmtN(stock.avgVolume30d)}/>}
               
-              <Row label="יעד אנליסטים"    val={fmtN(stock.targetMeanPrice)} color="#f5a623"/>
+              <Row label="יעד אנליסטים"    val={fmtN(stock.targetMeanPrice)} color="#D4AF37"/>
             </div>
 
           </div>
