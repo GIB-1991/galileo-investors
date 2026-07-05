@@ -107,16 +107,16 @@ export default function Admin({ user }) {
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>ניהול</h1>
 
-      {msg && <div style={{ padding: '10px 14px', marginBottom: '1rem', background: 'rgba(45,216,122,.1)', border: '1px solid rgba(45,216,122,.3)', borderRadius: 8, color: '#2dd87a', fontSize: '.9rem' }}>{msg}</div>}
+      {msg && <div style={{ padding: '10px 14px', marginBottom: '1rem', background: 'rgba(63,185,129,.1)', border: '1px solid rgba(63,185,129,.3)', borderRadius: 8, color: '#3FB981', fontSize: '.9rem' }}>{msg}</div>}
 
       <div style={{ display: 'flex', gap: 8, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)' }}>
-        <button onClick={() => setTab('articles')} style={{ padding: '10px 18px', background: 'transparent', border: 'none', borderBottom: tab==='articles' ? '2px solid #f5a623' : '2px solid transparent', color: tab==='articles' ? '#f5a623' : 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '.9rem' }}>
+        <button onClick={() => setTab('articles')} style={{ padding: '10px 18px', background: 'transparent', border: 'none', borderBottom: tab==='articles' ? '2px solid #D4AF37' : '2px solid transparent', color: tab==='articles' ? '#D4AF37' : 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '.9rem' }}>
           <FileText size={14} style={{marginLeft:6}}/> מאמרים ({articles.length})
         </button>
-        <button onClick={() => setTab('academy')} style={{ padding: '10px 18px', background: 'transparent', border: 'none', borderBottom: tab==='academy' ? '2px solid #f5a623' : '2px solid transparent', color: tab==='academy' ? '#f5a623' : 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '.9rem' }}>
+        <button onClick={() => setTab('academy')} style={{ padding: '10px 18px', background: 'transparent', border: 'none', borderBottom: tab==='academy' ? '2px solid #D4AF37' : '2px solid transparent', color: tab==='academy' ? '#D4AF37' : 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '.9rem' }}>
           <BookOpen size={14} style={{marginLeft:6}}/> אקדמיה ({academy.length})
         </button>
-        <button onClick={() => setTab('users')} style={{ padding: '10px 18px', background: 'transparent', border: 'none', borderBottom: tab==='users' ? '2px solid #f5a623' : '2px solid transparent', color: tab==='users' ? '#f5a623' : 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '.9rem' }}>
+        <button onClick={() => setTab('users')} style={{ padding: '10px 18px', background: 'transparent', border: 'none', borderBottom: tab==='users' ? '2px solid #D4AF37' : '2px solid transparent', color: tab==='users' ? '#D4AF37' : 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600, fontSize: '.9rem' }}>
           <Users size={14} style={{marginLeft:6}}/> משתמשים ({users.length})
         </button>
       </div>
@@ -124,7 +124,7 @@ export default function Admin({ user }) {
       {tab === 'articles' && (
         <div>
           <button onClick={() => setEditingArticle({ title:'', summary:'', content:'', image_url:'', url:'', category:'כללי', published:false })}
-            style={{ display:'flex', alignItems:'center', gap:6, padding:'10px 18px', borderRadius:9, border:'none', background:'#f5a623', color:'#0d0f14', cursor:'pointer', fontWeight:700, fontSize:'.9rem', marginBottom:'1rem' }}>
+            style={{ display:'flex', alignItems:'center', gap:6, padding:'10px 18px', borderRadius:9, border:'none', background:'#D4AF37', color:'#10152E', cursor:'pointer', fontWeight:700, fontSize:'.9rem', marginBottom:'1rem' }}>
             <Plus size={14}/> מאמר חדש
           </button>
 
@@ -132,7 +132,7 @@ export default function Admin({ user }) {
             {articles.map(a => (
               <div key={a.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', background:'var(--color-surface)', border:'1px solid var(--color-border)', borderRadius:10 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, minWidth:0 }}>
-                  <span style={{ fontSize:'.7rem', padding:'3px 8px', borderRadius:4, fontWeight:700, background: a.published ? 'rgba(45,216,122,.15)' : 'rgba(245,166,35,.15)', color: a.published ? '#2dd87a' : '#f5a623' }}>
+                  <span style={{ fontSize:'.7rem', padding:'3px 8px', borderRadius:4, fontWeight:700, background: a.published ? 'rgba(63,185,129,.15)' : 'rgba(212,175,55,.15)', color: a.published ? '#3FB981' : '#D4AF37' }}>
                     {a.published ? 'מפורסם' : 'טיוטה'}
                   </span>
                   <span style={{ fontWeight:600, fontSize:'.92rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{a.title || '(ללא כותרת)'}</span>
@@ -140,7 +140,7 @@ export default function Admin({ user }) {
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
                   <button onClick={() => setEditingArticle(a)} style={{ padding:'6px 10px', borderRadius:7, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer' }}><Edit2 size={13}/></button>
-                  <button onClick={() => deleteArticle(a.id)} style={{ padding:'6px 10px', borderRadius:7, border:'1px solid rgba(240,82,82,.3)', background:'transparent', color:'#f05252', cursor:'pointer' }}><Trash2 size={13}/></button>
+                  <button onClick={() => deleteArticle(a.id)} style={{ padding:'6px 10px', borderRadius:7, border:'1px solid rgba(224,102,107,.3)', background:'transparent', color:'#E0666B', cursor:'pointer' }}><Trash2 size={13}/></button>
                 </div>
               </div>
             ))}
@@ -152,7 +152,7 @@ export default function Admin({ user }) {
       {tab === 'academy' && (
         <div>
           <button onClick={() => setEditingAcademy({ title:'', description:'', url:'', category:'בסיסי', sort_order:0 })}
-            style={{ display:'flex', alignItems:'center', gap:6, padding:'10px 18px', borderRadius:9, border:'none', background:'#f5a623', color:'#0d0f14', cursor:'pointer', fontWeight:700, fontSize:'.9rem', marginBottom:'1rem' }}>
+            style={{ display:'flex', alignItems:'center', gap:6, padding:'10px 18px', borderRadius:9, border:'none', background:'#D4AF37', color:'#10152E', cursor:'pointer', fontWeight:700, fontSize:'.9rem', marginBottom:'1rem' }}>
             <Plus size={14}/> פריט חדש
           </button>
           {editingAcademy && <AcademyForm data={editingAcademy} onSave={saveAcademy} onCancel={() => setEditingAcademy(null)}/>}
@@ -162,7 +162,7 @@ export default function Admin({ user }) {
                 <span style={{ fontWeight:600 }}>{a.title}</span>
                 <div style={{ display:'flex', gap:6 }}>
                   <button onClick={() => setEditingAcademy(a)} style={{ padding:'6px 10px', borderRadius:7, border:'1px solid var(--color-border)', background:'transparent', cursor:'pointer' }}><Edit2 size={13}/></button>
-                  <button onClick={() => deleteAcademy(a.id)} style={{ padding:'6px 10px', borderRadius:7, border:'1px solid rgba(240,82,82,.3)', background:'transparent', color:'#f05252', cursor:'pointer' }}><Trash2 size={13}/></button>
+                  <button onClick={() => deleteAcademy(a.id)} style={{ padding:'6px 10px', borderRadius:7, border:'1px solid rgba(224,102,107,.3)', background:'transparent', color:'#E0666B', cursor:'pointer' }}><Trash2 size={13}/></button>
                 </div>
               </div>
             ))}
@@ -313,7 +313,7 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
         {showPreview && (
           <div style={{ flex:'1 1 50%', overflow:'auto', padding:'2rem 2.5rem', background:'var(--color-bg)' }}>
             <div style={{ maxWidth:680, margin:'0 auto' }}>
-              <div style={{ fontSize:'.7rem', fontWeight:700, color:'#f5a623', textTransform:'uppercase', letterSpacing:'.05em', marginBottom:8 }}>תצוגה מקדימה</div>
+              <div style={{ fontSize:'.7rem', fontWeight:700, color:'#D4AF37', textTransform:'uppercase', letterSpacing:'.05em', marginBottom:8 }}>תצוגה מקדימה</div>
               {form.image_url && <div style={{ borderRadius:12, overflow:'hidden', marginBottom:'1.5rem', background:'var(--color-bg2)' }}><img src={form.image_url} alt="" style={{ width:'100%', display:'block' }} onError={e => e.target.parentElement.style.display='none'}/></div>}
               <h1 style={{ fontSize:'1.8rem', fontWeight:800, lineHeight:1.3, margin:'0 0 1rem' }}>{form.title || <span style={{color:'var(--color-text-muted)',fontWeight:400}}>(הכותרת תופיע כאן)</span>}</h1>
               {form.summary && <p style={{ fontSize:'1.02rem', color:'var(--color-text-secondary)', lineHeight:1.55, margin:'0 0 1.5rem', fontWeight:500 }}>{form.summary}</p>}
@@ -330,18 +330,18 @@ function ArticleEditor({ article, onSave, onClose, msg }) {
             <ArrowLeft size={14}/> סגור
           </button>
           <span style={{ fontSize:'.85rem', color:'var(--color-text-muted)' }}>
-            {form.id ? 'עריכת מאמר' : 'מאמר חדש'} · {form.published ? <span style={{color:'#2dd87a',fontWeight:600}}>מפורסם</span> : <span style={{color:'#f5a623',fontWeight:600}}>טיוטה</span>}
+            {form.id ? 'עריכת מאמר' : 'מאמר חדש'} · {form.published ? <span style={{color:'#3FB981',fontWeight:600}}>מפורסם</span> : <span style={{color:'#D4AF37',fontWeight:600}}>טיוטה</span>}
           </span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          {msg && <span style={{ fontSize:'.8rem', color:'#2dd87a', fontWeight:600 }}>{msg}</span>}
+          {msg && <span style={{ fontSize:'.8rem', color:'#3FB981', fontWeight:600 }}>{msg}</span>}
           <button onClick={() => setShowPreview(!showPreview)} style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 12px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontSize:'.82rem' }}>
             {showPreview ? <EyeOff size={13}/> : <Eye size={13}/>} {showPreview ? 'הסתר תצוגה' : 'הצג תצוגה'}
           </button>
           <button onClick={() => handleSave(false)} style={{ padding:'7px 14px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontWeight:600, fontSize:'.85rem' }}>
             שמור טיוטה
           </button>
-          <button onClick={() => handleSave(true)} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 18px', borderRadius:8, border:'none', background:'#f5a623', color:'#0d0f14', cursor:'pointer', fontWeight:700, fontSize:'.88rem' }}>
+          <button onClick={() => handleSave(true)} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 18px', borderRadius:8, border:'none', background:'#D4AF37', color:'#10152E', cursor:'pointer', fontWeight:700, fontSize:'.88rem' }}>
             <Send size={13}/> {form.published ? 'עדכן פרסום' : 'פרסם'}
           </button>
         </div>
@@ -356,8 +356,8 @@ function AcademyForm({ data, onSave, onCancel }) {
   const [form, setForm] = useState({...data})
   const set = (k, v) => setForm(f => ({...f, [k]: v}))
   return (
-    <div style={{ background:'var(--color-surface)', border:'1px solid rgba(245,166,35,0.2)', borderRadius:12, padding:'1.5rem', marginBottom:'1rem' }}>
-      <h3 style={{ margin:'0 0 1rem', color:'#f5a623', fontWeight:700 }}>{form.id ? 'עריכת פריט' : 'פריט חדש'}</h3>
+    <div style={{ background:'var(--color-surface)', border:'1px solid rgba(212,175,55,0.2)', borderRadius:12, padding:'1.5rem', marginBottom:'1rem' }}>
+      <h3 style={{ margin:'0 0 1rem', color:'#D4AF37', fontWeight:700 }}>{form.id ? 'עריכת פריט' : 'פריט חדש'}</h3>
       <div style={{ marginBottom:10 }}>
         <input value={form.title||''} onChange={e=>set('title',e.target.value)} placeholder="כותרת"
           style={{ width:'100%', padding:10, borderRadius:8, border:'1px solid var(--color-border2)', background:'var(--color-bg2)', color:'var(--color-text-primary)', fontSize:'.9rem' }}/>
@@ -379,7 +379,7 @@ function AcademyForm({ data, onSave, onCancel }) {
           style={{ width:80, padding:10, borderRadius:8, border:'1px solid var(--color-border2)', background:'var(--color-bg2)', color:'var(--color-text-primary)', fontSize:'.9rem' }}/>
       </div>
       <div style={{ display:'flex', gap:10 }}>
-        <button onClick={()=>onSave(form)} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 16px', borderRadius:8, border:'none', background:'#f5a623', color:'#0d0f14', cursor:'pointer', fontWeight:700, fontSize:'.85rem' }}><Save size={13}/> שמור</button>
+        <button onClick={()=>onSave(form)} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 16px', borderRadius:8, border:'none', background:'#D4AF37', color:'#10152E', cursor:'pointer', fontWeight:700, fontSize:'.85rem' }}><Save size={13}/> שמור</button>
         <button onClick={onCancel} style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 14px', borderRadius:8, border:'1px solid var(--color-border)', background:'transparent', color:'var(--color-text-primary)', cursor:'pointer', fontSize:'.85rem' }}><X size={13}/> ביטול</button>
       </div>
     </div>
