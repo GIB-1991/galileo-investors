@@ -4,23 +4,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* === COSMIC SPACE BACKGROUND === */
-html, body {
+html {
   color: var(--color-text-primary);
   min-height: 100%;
   background-color: #0B1026;
   background-image:
-    /* Saturn glow - top left */
-    radial-gradient(ellipse 300px 400px at 7% 20%, rgba(200,160,60,0.12) 0%, transparent 70%),
-    /* Jupiter glow - bottom right */
-    radial-gradient(ellipse 280px 350px at 93% 78%, rgba(180,140,80,0.10) 0%, transparent 70%),
-    /* Mars glow - right mid */
-    radial-gradient(ellipse 150px 200px at 97% 45%, rgba(180,70,40,0.08) 0%, transparent 70%),
-    /* Milky Way center band - warm amber */
-    radial-gradient(ellipse 60% 90% at 18% 40%, rgba(212,175,55,0.055) 0%, transparent 65%),
-    /* Milky Way blue arm */
-    radial-gradient(ellipse 55% 80% at 82% 65%, rgba(80,110,200,0.05) 0%, transparent 65%),
-    /* Top center warm glow */
-    radial-gradient(ellipse 45% 55% at 50% 12%, rgba(160,90,40,0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 1400px 700px at 50% -12%, rgba(91,141,232,0.055) 0%, transparent 62%),
+    radial-gradient(ellipse 1000px 560px at 88% 112%, rgba(212,175,55,0.035) 0%, transparent 60%);
 }
 
 /* Stars via CSS - using box-shadow on pseudo-elements */
@@ -89,9 +79,9 @@ body::after {
 /* Make app shell background transparent so stars show through */
 :root {
   --color-bg: #0B1026;
-  --color-bg2: rgba(13,17,40,0.6);
-  --color-surface: rgba(26,31,53,0.85);
-  --color-surface2: rgba(35,42,74,0.9);
+  --color-bg2: #0E1330;
+  --color-surface: #141A33;
+  --color-surface2: #1B2240;
   --color-border: rgba(255,255,255,0.08);
   --color-border2: rgba(212,175,55,0.35);
   --color-text-primary: #EDF0FA;
@@ -104,7 +94,7 @@ body::after {
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.35);
   --shadow-md: 0 6px 24px rgba(0,0,0,0.45);
   --shadow-lg: 0 12px 48px rgba(0,0,0,0.55);
-  --shadow-accent: 0 4px 24px rgba(212,175,55,0.12);
+  --shadow-accent: 0 4px 24px rgba(0,0,0,0.35);
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
@@ -141,7 +131,6 @@ body.light-mode {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  backdrop-filter: blur(16px);
   box-shadow: var(--shadow-sm);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
