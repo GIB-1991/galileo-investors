@@ -42,16 +42,16 @@ const { daysLeft, plan, isAdmin } = useTrialTimer(user)
 const handleSignOut = async () => { await signOut(); navigate('/') }
 
 const [darkMode, setDarkMode] = useState(() => {
-const _t=localStorage.getItem('galileo-theme-v2'); if(!_t){localStorage.setItem('galileo-theme-v2','light')} return _t==='dark'
+const _t=localStorage.getItem('galileo-theme-v3'); if(!_t){localStorage.setItem('galileo-theme-v3','light')} return _t==='dark'
 })
 
 useEffect(() => {
 if (darkMode) {
 document.body.classList.remove('light-mode')
-localStorage.setItem('galileo-theme-v2', 'dark')
+localStorage.setItem('galileo-theme-v3', 'dark')
 } else {
 document.body.classList.add('light-mode')
-localStorage.setItem('galileo-theme-v2', 'light')
+localStorage.setItem('galileo-theme-v3', 'light')
 }
 }, [darkMode])
 
