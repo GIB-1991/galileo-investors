@@ -177,7 +177,7 @@ export default function Screener() {
     return (
       <div style={{background:'rgba(8,12,22,.95)',border:'1px solid rgba(212,175,55,.3)',borderRadius:8,padding:'8px 12px'}}>
         <p style={{margin:0,fontSize:'.72rem',color:'rgba(212,175,55,.6)'}}>{label}</p>
-        <p style={{margin:'2px 0 0',fontSize:'1rem',fontWeight:700,color:chartColor,fontFamily:'IBM Plex Mono',monospace}}>${payload[0].value?.toFixed(2)}</p>
+        <p style={{margin:'2px 0 0',fontSize:'1rem',fontWeight:700,color:chartColor,fontFamily:"'IBM Plex Mono', monospace"}}>${payload[0].value?.toFixed(2)}</p>
       </div>
     )
   }
@@ -185,7 +185,7 @@ export default function Screener() {
   const Row = ({label,val,color:c})=> val&&val!=='N/A' ? (
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--color-border)'}}>
       <span style={{fontSize:'.8rem',color:'var(--color-text-secondary)'}}>{label}</span>
-      <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:'IBM Plex Mono',monospace,color:c||'var(--color-text)'}}>{val}</span>
+      <span style={{fontSize:'.875rem',fontWeight:600,fontFamily:"'IBM Plex Mono', monospace",color:c||'var(--color-text)'}}>{val}</span>
     </div>
   ) : null
 
@@ -221,7 +221,7 @@ export default function Screener() {
                 onMouseEnter={e=>e.currentTarget.style.background='rgba(212,175,55,.07)'}
                 onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
                 <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  <span style={{fontWeight:700,fontSize:'.98rem',color:'#D4AF37',fontFamily:'IBM Plex Mono',monospace,minWidth:56}}>{s.symbol}</span>
+                  <span style={{fontWeight:700,fontSize:'.98rem',color:'#D4AF37',fontFamily:"'IBM Plex Mono', monospace",minWidth:56}}>{s.symbol}</span>
                   <span style={{fontSize:'.86rem',color:'var(--color-text-secondary)'}}>{s.shortname||s.longname||''}</span>
                 </div>
                 <span style={{fontSize:'.72rem',color:'rgba(212,175,55,.55)',background:'rgba(212,175,55,.08)',padding:'2px 8px',borderRadius:6,flexShrink:0}}>{s.exchDisp||''}</span>
@@ -241,7 +241,7 @@ export default function Screener() {
                 style={{padding:'8px 16px',borderRadius:20,border:'1px solid var(--color-border)',background:'var(--color-surface)',cursor:'pointer',fontFamily:'inherit',fontSize:'.84rem',display:'flex',alignItems:'center',gap:7,transition:'all 180ms',color:'var(--color-text-secondary)'}}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(212,175,55,.45)';e.currentTarget.style.color='#D4AF37'}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--color-border)';e.currentTarget.style.color='var(--color-text-secondary)'}}>
-                <span style={{fontWeight:700,fontFamily:'IBM Plex Mono',monospace,fontSize:'.82rem'}}>{q.t}</span>
+                <span style={{fontWeight:700,fontFamily:"'IBM Plex Mono', monospace",fontSize:'.82rem'}}>{q.t}</span>
                 <span style={{opacity:.65}}>{q.n}</span>
               </button>
             ))}
@@ -279,7 +279,7 @@ export default function Screener() {
 
               {/* LEFT: price + daily change */}
               <div>
-                <div style={{fontSize:'2.6rem',fontWeight:800,lineHeight:1,fontFamily:'IBM Plex Mono',monospace}}>${price.toFixed(2)}</div>
+                <div style={{fontSize:'2.6rem',fontWeight:800,lineHeight:1,fontFamily:"'IBM Plex Mono', monospace"}}>${price.toFixed(2)}</div>
                 {/* ── 8. Daily live return ── */}
                 <div style={{marginTop:6,display:'flex',alignItems:'center',gap:6}}>
                   <span style={{
@@ -296,7 +296,7 @@ export default function Screener() {
                 {/* ── 2. Ticker + exchange ── */}
                 <div style={{display:'flex',alignItems:'center',gap:10,justifyContent:'flex-end',marginBottom:4}}>
                   {stock.exchangeName&&<span style={{fontSize:'.72rem',background:'rgba(212,175,55,.1)',color:'rgba(212,175,55,.7)',padding:'3px 9px',borderRadius:7,border:'1px solid rgba(212,175,55,.2)',fontWeight:600}}>{stock.fullExchangeName||stock.exchangeName}</span>}
-                  <h2 style={{margin:0,fontSize:'2rem',fontWeight:800,fontFamily:'IBM Plex Mono',monospace,color:'#D4AF37',lineHeight:1}}>{stock.symbol}</h2>
+                  <h2 style={{margin:0,fontSize:'2rem',fontWeight:800,fontFamily:"'IBM Plex Mono', monospace",color:'#D4AF37',lineHeight:1}}>{stock.symbol}</h2>
                 </div>
                 {/* ── 3. Company name ── */}
                 <p style={{margin:0,fontSize:'1.05rem',color:'var(--color-text-secondary)',fontWeight:500}}>{stock.longName||stock.shortName||''}</p>
@@ -328,7 +328,7 @@ export default function Screener() {
               {rangeReturn!==null&&(
                 <div style={{display:'flex',alignItems:'center',gap:6}}>
                   <span style={{fontSize:'.78rem',color:'var(--color-text-muted)'}}>{PERIODS.find(p=>p.range===period)?.label||period}:</span>
-                  <span style={{fontSize:'1rem',fontWeight:800,fontFamily:'IBM Plex Mono',monospace,color:rngUp?'#3FB981':'#E0666B',background:rngUp?'rgba(63,185,129,.12)':'rgba(224,102,107,.12)',border:'1px solid '+(rngUp?'rgba(63,185,129,.3)':'rgba(224,102,107,.3)'),padding:'3px 14px',borderRadius:20}}>
+                  <span style={{fontSize:'1rem',fontWeight:800,fontFamily:"'IBM Plex Mono', monospace",color:rngUp?'#3FB981':'#E0666B',background:rngUp?'rgba(63,185,129,.12)':'rgba(224,102,107,.12)',border:'1px solid '+(rngUp?'rgba(63,185,129,.3)':'rgba(224,102,107,.3)'),padding:'3px 14px',borderRadius:20}}>
                     {(rngUp?'+':'')+( rangeReturn*100).toFixed(2)+'%'}
                   </span>
                 </div>
