@@ -67,7 +67,7 @@ return (
 <PlanetsLayer darkMode={darkMode}/>
 
 <style>{`@media (max-width:900px){.gx-nav{display:none!important}.gx-actions{display:none!important}.gx-hamburger{display:flex!important}}.gx-hamburger{display:none}@media (min-width:901px){.gx-drawer{display:none!important}}`}</style>
-<header style={{background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(212,175,55,0.18)',position:'sticky',top:0,zIndex:100}}>
+<header style={{background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.08)',position:'sticky',top:0,zIndex:100}}>
 <div style={{maxWidth:1300,margin:'0 auto',padding:'0 1.5rem',height:72,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
 <Link to="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:12}}>
 <GalileoLogo size={64}/>
@@ -138,7 +138,7 @@ onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
 </div>
 </header>
 {menuOpen && (
-<div className="gx-drawer" style={{position:'sticky',top:72,zIndex:99,background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(212,175,55,0.18)',padding:'8px 1.25rem 16px',maxHeight:'calc(100vh - 72px)',overflowY:'auto'}}>
+<div className="gx-drawer" style={{position:'sticky',top:72,zIndex:99,background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'8px 1.25rem 16px',maxHeight:'calc(100vh - 72px)',overflowY:'auto'}}>
 {NAV.map(item=>{const Icon=item.icon;const active=location.pathname===item.path;return(<Link key={item.path} to={item.path} onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',fontWeight:active?600:500,color:active?'#D4AF37':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent'}}><Icon size={18}/>{item.label}</Link>)})}
 {isAdmin && (<Link to="/admin" onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',color:'var(--color-text-secondary)'}}><Shield size={18}/>ניהול</Link>)}
 <div style={{height:1,background:'rgba(212,175,55,0.15)',margin:'8px 0'}}/>
