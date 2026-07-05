@@ -156,7 +156,7 @@ export default function Dashboard({ user }) {
     <div dir='rtl'>
       <div style={{marginBottom:'2rem',display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:12,direction:'rtl'}}>
         <div>
-          <h1 style={{fontSize:'1.6rem',fontWeight:800,margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name + ' 👋'}</h1>
+          <h1 style={{fontSize:'1.45rem',fontWeight:700,letterSpacing:'-0.01em',margin:'0 0 4px',textAlign:'right'}}>{'שלום, ' + name}</h1>
           <p style={{color:'var(--color-text-secondary)',margin:0,fontSize:'.85rem',textAlign:'right'}}>{today}</p>
         </div>
         <div title={'פרה-מרקט: 11:00-16:30 | שוק פתוח: 16:30-23:00 | אפטר-מרקט: 23:00-03:00'} style={{cursor:'help',display:'flex',alignItems:'center',gap:6,background:status.open?'rgba(63,185,129,0.1)':'rgba(224,102,107,0.08)',border:'1px solid '+(status.open?'rgba(63,185,129,0.25)':'rgba(224,102,107,0.2)'),borderRadius:20,padding:'6px 16px'}}>
