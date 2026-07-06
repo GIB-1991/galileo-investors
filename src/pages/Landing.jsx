@@ -105,196 +105,92 @@ export default function Landing(){
   },[])
 
   return(
-    <div style={{minHeight:'100vh',direction:'rtl',fontFamily:'Heebo,sans-serif',background:'#0B1026',color:'#fff',overflow:'hidden'}}>
-      <style>{`
-        @keyframes tickerFwd{0%{transform:translateX(0)}100%{transform:translateX(-33.333%)}}
-        @keyframes tickerRev{0%{transform:translateX(-33.333%)}100%{transform:translateX(0)}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .g-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,175,55,0.45)!important}
-        .g-btn{transition:all .2s ease}
-        .g-sec:hover{background:rgba(255,255,255,0.07)!important}
-        .g-sec{transition:all .2s ease}
-        .feat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.14)!important;box-shadow:0 8px 32px rgba(0,0,0,0.5)!important}
-        .feat{transition:all .25s ease}
-        .news-sm:hover{background:rgba(255,255,255,0.05)!important;border-color:var(--color-border)!important;transform:translateX(-3px)}
-        .news-sm{transition:all .2s ease}
-      `}</style>
+  <div style={{minHeight:'100vh',direction:'rtl',fontFamily:'Heebo, sans-serif',background:'#F4EEE9',color:'#1D1D1B'}}>
+    <style>{`
+      @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+      .v-link{color:#1D1D1B;text-decoration:none;font-size:.95rem;font-weight:400;padding:8px 12px;border-radius:8px;transition:color .18s ease;cursor:pointer}
+      .v-link:hover{color:#3764DD}
+      .v-pill{transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
+      .v-pill:hover{transform:translateY(-1px)}
+      .v-card{transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease}
+      .v-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(29,29,27,0.08);border-color:rgba(29,29,27,0.16)}
+      @media (max-width:760px){.v-nav{display:none}}
+    `}</style>
 
-      <StarField/>
-      <div style={{position:'fixed',top:-250,right:-250,width:700,height:700,background:'radial-gradient(circle,rgba(212,175,55,0.1) 0%,transparent 70%)',pointerEvents:'none',zIndex:0}}/>
-      <div style={{position:'fixed',bottom:-200,left:-200,width:600,height:600,background:'radial-gradient(circle,rgba(91,141,232,0.08) 0%,transparent 70%)',pointerEvents:'none',zIndex:0}}/>
-
-      {/* === HEADER === */}
-      <header style={{position:'sticky',top:0,zIndex:200,background:'rgba(8,11,20,0.92)',backdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        <div style={{maxWidth:1280,margin:'0 auto',height:62,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 2rem'}}>
-          <div style={{display:'flex',alignItems:'center',gap:10}}>
-            <div style={{width:34,height:34,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 10px rgba(212,175,55,0.3)'}}>
-              <span style={{color:'#0B1026',fontSize:17,fontWeight:800}}>G</span>
-            </div>
-            <div>
-              <div style={{fontWeight:700,fontSize:'0.92rem',color:'#fff',lineHeight:1.2}}>משקיעים עם גלילאו</div>
-              <div style={{fontSize:'0.58rem',color:'var(--color-accent)',letterSpacing:'0.14em',fontWeight:600,textTransform:'uppercase',opacity:0.75}}>MARKET INTELLIGENCE</div>
-            </div>
-          </div>
-          <nav style={{display:'flex',alignItems:'center',gap:4}}>
-            {[['אקדמיה','/academy'],['סקרינר','/screener'],['מאמרים','/articles'],['משקיעים גדולים','/superinvestors']].map(([label,path])=>(
-              <button key={path} className="g-sec" onClick={()=>navigate(path)} style={{padding:'0.4rem 0.85rem',borderRadius:7,background:'transparent',border:'none',color:'rgba(255,255,255,0.65)',cursor:'pointer',fontSize:'0.82rem',fontWeight:500}}>
-                {label}
-              </button>
-            ))}
-          </nav>
-          <div style={{display:'flex',gap:'0.6rem'}}>
-            <button className="g-sec" onClick={()=>navigate('/auth')} style={{padding:'0.45rem 1.1rem',borderRadius:7,background:'rgba(255,255,255,0.05)',border:'1px solid var(--color-border)',color:'rgba(255,255,255,0.8)',cursor:'pointer',fontSize:'0.82rem',fontWeight:500}}>כניסה</button>
-            <button className="g-btn" onClick={()=>navigate('/auth')} style={{padding:'0.45rem 1.1rem',borderRadius:7,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.82rem',fontWeight:700,boxShadow:'0 2px 12px rgba(212,175,55,0.3)'}}>הצטרף חינם</button>
-          </div>
+    {/* ===== HEADER ===== */}
+    <header style={{position:'sticky',top:0,zIndex:200,background:'#F4EEE9',borderBottom:'1px solid rgba(29,29,27,0.08)'}}>
+      <div style={{maxWidth:1240,margin:'0 auto',height:76,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 2rem'}}>
+        <div style={{display:'flex',alignItems:'baseline',gap:10,cursor:'pointer'}} onClick={()=>navigate('/')}>
+          <span style={{fontFamily:"'Frank Ruhl Libre', serif",fontSize:'1.6rem',fontWeight:600,lineHeight:1}}>גלילאו</span>
+          <span style={{fontSize:'.68rem',letterSpacing:'.16em',color:'#8B8B84',fontWeight:500}}>תצפיות שוק</span>
         </div>
-      </header>
-
-      {/* === TICKER ROW 1 === */}
-      <div style={{padding:'0.6rem 0',borderBottom:'1px solid rgba(255,255,255,0.05)',position:'relative',zIndex:1,background:'rgba(8,11,20,0.5)'}}>
-        <TickerRow tickers={ROW1} direction="normal" prices={prices}/>
+        <nav className="v-nav" style={{display:'flex',alignItems:'center',gap:4}}>
+          <span className="v-link" onClick={()=>navigate('/academy')}>אקדמיה</span>
+          <span className="v-link" onClick={()=>navigate('/screener')}>סקרינר</span>
+          <span className="v-link" onClick={()=>navigate('/articles')}>מאמרים</span>
+          <span className="v-link" onClick={()=>navigate('/superinvestors')}>משקיעים גדולים</span>
+          <span className="v-link" onClick={()=>navigate('/pricing')}>מסלולים</span>
+        </nav>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <button className="v-pill" onClick={()=>navigate('/auth')} style={{background:'transparent',border:'1px solid rgba(29,29,27,0.25)',borderRadius:999,padding:'0.55rem 1.3rem',fontSize:'.9rem',fontWeight:500,color:'#1D1D1B',cursor:'pointer',fontFamily:'inherit'}}>כניסה</button>
+          <button className="v-pill" onClick={()=>navigate('/auth')} style={{background:'#3764DD',border:'none',borderRadius:999,padding:'0.55rem 1.4rem',fontSize:'.9rem',fontWeight:500,color:'#fff',cursor:'pointer',fontFamily:'inherit'}}>הצטרף חינם</button>
+        </div>
       </div>
+    </header>
 
-      {/* === HERO === */}
-      <section style={{maxWidth:1280,margin:'0 auto',padding:'4.5rem 2rem 3.5rem',textAlign:'center',position:'relative',zIndex:1}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:7,padding:'0.3rem 0.9rem',borderRadius:100,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.25)',color:'var(--color-accent)',fontSize:'0.75rem',fontWeight:600,marginBottom:'1.75rem',animation:'fadeUp 0.5s ease both'}}>
-          <Zap size={11}/> פלטפורמת ההשקעות המובילה לישראלים
-        </div>
-        <h1 style={{fontSize:'clamp(2rem,4.5vw,3.6rem)',fontWeight:800,lineHeight:1.15,margin:'0 0 1.25rem',animation:'fadeUp 0.5s ease 0.1s both',letterSpacing:'-0.025em'}}>
-          השקע <span style={{background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>חכם יותר</span><br/>עם נתוני שוק אמיתיים
-        </h1>
-        <p style={{fontSize:'1.05rem',color:'rgba(255,255,255,0.52)',maxWidth:520,margin:'0 auto 2.25rem',lineHeight:1.7,animation:'fadeUp 0.5s ease 0.2s both'}}>
-          גישה למדדים בזמן אמת, ניתוח מניות מעמיק, מעקב תיק השקעות ואקדמיה פיננסית בעברית — הכל במקום אחד.
-        </p>
-        <div style={{display:'flex',gap:'0.85rem',justifyContent:'center',flexWrap:'wrap',animation:'fadeUp 0.5s ease 0.25s both'}}>
-          <button className="g-btn" onClick={()=>navigate('/auth')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.75rem 1.9rem',borderRadius:10,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.92rem',fontWeight:700,boxShadow:'0 4px 18px rgba(212,175,55,0.3)'}}>
-            התחל בחינם <ArrowLeft size={15}/>
-          </button>
-          <button className="g-sec" onClick={()=>navigate('/dashboard')} style={{display:'flex',alignItems:'center',gap:8,padding:'0.75rem 1.9rem',borderRadius:10,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.11)',color:'rgba(255,255,255,0.82)',cursor:'pointer',fontSize:'0.92rem',fontWeight:600}}>
-            צפה בדמו
-          </button>
-        </div>
-        <div style={{marginTop:'2rem',display:'flex',justifyContent:'center',alignItems:'center',gap:'0.5rem',opacity:0.38,fontSize:'0.76rem',animation:'fadeUp 0.5s ease 0.35s both'}}>
-          <Users size={12}/> נתוני שוק בזמן אמת ממקורות מוסדיים
-          <span style={{margin:'0 0.4rem'}}>·</span>
-          <Star size={12}/> גלילאו 2025
-        </div>
-      </section>
-
-      {/* === TICKER ROW 2 — reversed === */}
-      <div style={{padding:'0.6rem 0',borderTop:'1px solid rgba(255,255,255,0.05)',borderBottom:'1px solid rgba(255,255,255,0.05)',position:'relative',zIndex:1,background:'rgba(8,11,20,0.4)'}}>
-        <TickerRow tickers={ROW2} direction="reverse" prices={prices}/>
+    {/* ===== HERO ===== */}
+    <section style={{maxWidth:1240,margin:'0 auto',padding:'7rem 2rem 5rem',textAlign:'center',animation:'fadeUp .7s ease both'}}>
+      <h1 style={{fontFamily:"'Frank Ruhl Libre', serif",fontSize:'clamp(2.8rem,6vw,4.6rem)',fontWeight:500,lineHeight:1.12,margin:'0 0 1.6rem',letterSpacing:'-0.01em'}}>
+        השקע <span style={{color:'#3764DD'}}>חכם יותר</span>
+        <br/>עם נתוני שוק אמיתיים
+      </h1>
+      <p style={{maxWidth:560,margin:'0 auto 2.6rem',fontSize:'1.15rem',fontWeight:300,lineHeight:1.75,color:'#55554F'}}>
+        גישה למדדים בזמן אמת, ניתוח מניות מעמיק, מעקב תיק השקעות ואקדמיה פיננסית בעברית — הכל במקום אחד.
+      </p>
+      <div style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
+        <button className="v-pill" onClick={()=>navigate('/auth')} style={{background:'#3764DD',border:'none',borderRadius:999,padding:'0.85rem 2.2rem',fontSize:'1rem',fontWeight:500,color:'#fff',cursor:'pointer',fontFamily:'inherit'}}>התחל בחינם</button>
+        <button className="v-pill" onClick={()=>navigate('/dashboard')} style={{background:'transparent',border:'1px solid rgba(29,29,27,0.25)',borderRadius:999,padding:'0.85rem 2.2rem',fontSize:'1rem',fontWeight:500,color:'#1D1D1B',cursor:'pointer',fontFamily:'inherit'}}>צפה בדמו</button>
       </div>
+      <div style={{marginTop:'2.2rem',fontSize:'.82rem',color:'#8B8B84'}}>נתוני שוק בזמן אמת ממקורות מוסדיים · ביטול בכל עת</div>
+    </section>
 
-      {/* === FEATURES === */}
-      <section style={{maxWidth:1280,margin:'0 auto',padding:'4.5rem 2rem 2.5rem',position:'relative',zIndex:1}}>
-        <div style={{textAlign:'center',marginBottom:'2.5rem'}}>
-          <h2 style={{fontSize:'1.65rem',fontWeight:700,marginBottom:'0.6rem',letterSpacing:'-0.015em'}}>כלים מקצועיים לכל משקיע</h2>
-          <p style={{color:'rgba(255,255,255,0.42)',fontSize:'0.9rem'}}>כל מה שצריך כדי להשקיע בביטחון</p>
-        </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:'1rem'}}>
-          {FEATURES.map((f,i)=>(
-            <div key={i} className="feat" onClick={()=>setModal(f)} style={{padding:'1.5rem',borderRadius:16,background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',cursor:'pointer',boxShadow:'0 2px 12px rgba(0,0,0,0.3)'}}>
-              <div style={{width:42,height:42,borderRadius:11,background:f.color+'18',border:`1px solid ${f.color}35`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'0.9rem'}}>
-                <f.icon size={19} color={f.color}/>
-              </div>
-              <div style={{fontWeight:700,fontSize:'0.95rem',marginBottom:'0.4rem'}}>{f.title}</div>
-              <div style={{fontSize:'0.82rem',color:'rgba(255,255,255,0.42)',lineHeight:1.55}}>{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* === NEWS FEED === */}
-      <section style={{maxWidth:1280,margin:'0 auto',padding:'1rem 2rem 5rem',position:'relative',zIndex:1}}>
-        <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:'1.5rem'}}>
-          <Newspaper size={17} color='var(--color-accent)'/>
-          <h2 style={{fontSize:'1.25rem',fontWeight:700,margin:0}}>חדשות שוק</h2>
-          <div style={{marginRight:'auto',display:'flex',alignItems:'center',gap:6}}>
-            <div style={{width:7,height:7,borderRadius:'50%',background:'var(--color-success)',animation:'pulse 2s infinite'}}/>
-            <span style={{fontSize:'0.72rem',color:'rgba(255,255,255,0.35)'}}>מתעדכן בזמן אמת</span>
+    {/* ===== FEATURES ===== */}
+    <section style={{maxWidth:1240,margin:'0 auto',padding:'3rem 2rem 6rem'}}>
+      <h2 style={{fontFamily:"'Frank Ruhl Libre', serif",fontSize:'clamp(1.9rem,3.6vw,2.8rem)',fontWeight:500,textAlign:'center',margin:'0 0 .8rem'}}>
+        כלים <span style={{color:'#3764DD'}}>מקצועיים</span> לכל משקיע
+      </h2>
+      <p style={{textAlign:'center',fontWeight:300,color:'#55554F',margin:'0 0 3rem'}}>כל מה שצריך כדי להשקיע בביטחון</p>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))',gap:18}}>
+        {FEATURES.map(f=>{const Icon=f.icon; return(
+          <div key={f.title} className="v-card" onClick={()=>navigate('/auth')} style={{background:'#FFFFFF',border:'1px solid rgba(29,29,27,0.10)',borderRadius:16,padding:'1.8rem 1.5rem',cursor:'pointer'}}>
+            <div style={{width:44,height:44,borderRadius:12,background:'rgba(55,100,221,0.10)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:14,color:'#3764DD'}}><Icon size={20}/></div>
+            <div style={{fontFamily:"'Frank Ruhl Libre', serif",fontSize:'1.15rem',fontWeight:600,marginBottom:6}}>{f.title}</div>
+            <div style={{fontSize:'.9rem',fontWeight:300,lineHeight:1.65,color:'#55554F'}}>{f.desc}</div>
           </div>
-        </div>
+        )})}
+      </div>
+    </section>
 
-        {/* Featured news — with image */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
-          {/* Main featured card with image */}
-          <div onClick={()=>navigate('/articles')} style={{position:'relative',borderRadius:16,overflow:'hidden',cursor:'pointer',minHeight:260,border:'1px solid rgba(255,255,255,0.07)',transition:'transform .2s,box-shadow .2s'}}
-            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 12px 40px rgba(0,0,0,0.6)'}}
-            onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none'}}>
-            <img src={STATIC_NEWS[0].img} alt="" style={{width:'100%',height:'100%',objectFit:'cover',position:'absolute',inset:0}}/>
-            <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(8,11,20,0.97) 0%,rgba(8,11,20,0.6) 55%,rgba(8,11,20,0.1) 100%)'}}/>
-            <div style={{position:'relative',padding:'1.5rem',height:'100%',display:'flex',flexDirection:'column',justifyContent:'flex-end'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'0.6rem'}}>
-                <span style={{fontSize:'0.67rem',fontWeight:700,padding:'0.18rem 0.55rem',borderRadius:100,background:'rgba(212,175,55,0.18)',color:'var(--color-accent)',border:'1px solid rgba(212,175,55,0.3)'}}>{STATIC_NEWS[0].tag}</span>
-                <span style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)'}}>{STATIC_NEWS[0].time}</span>
-              </div>
-              <div style={{fontSize:'1.05rem',fontWeight:700,lineHeight:1.45,marginBottom:'0.5rem',color:'#fff'}}>{STATIC_NEWS[0].title}</div>
-              <div style={{fontSize:'0.8rem',color:'rgba(255,255,255,0.55)',lineHeight:1.5}}>{STATIC_NEWS[0].desc}</div>
-              <div style={{fontSize:'0.7rem',color:'rgba(255,255,255,0.3)',marginTop:'0.75rem'}}>{STATIC_NEWS[0].source}</div>
-            </div>
-          </div>
+    {/* ===== CTA ===== */}
+    <section style={{maxWidth:1240,margin:'0 auto',padding:'0 2rem 6rem'}}>
+      <div style={{background:'#3764DD',borderRadius:24,padding:'4rem 2rem',textAlign:'center',color:'#fff'}}>
+        <h2 style={{fontFamily:"'Frank Ruhl Libre', serif",fontSize:'clamp(1.8rem,3.4vw,2.6rem)',fontWeight:500,margin:'0 0 .8rem'}}>מוכנים להתחיל?</h2>
+        <p style={{fontWeight:300,opacity:.85,margin:'0 0 2rem'}}>הצטרפו למשקיעים שכבר עוקבים אחרי השוק עם גלילאו — 7 ימי ניסיון חינם.</p>
+        <button className="v-pill" onClick={()=>navigate('/auth')} style={{background:'#fff',border:'none',borderRadius:999,padding:'0.85rem 2.4rem',fontSize:'1rem',fontWeight:600,color:'#3764DD',cursor:'pointer',fontFamily:'inherit'}}>פתח חשבון חינם</button>
+      </div>
+    </section>
 
-          {/* Right column — 4 small cards */}
-          <div style={{display:'flex',flexDirection:'column',gap:'0.65rem'}}>
-            {STATIC_NEWS.slice(1).map((item,i)=>(
-              <div key={i} className="news-sm" onClick={()=>navigate('/articles')} style={{padding:'0.85rem 1rem',borderRadius:12,background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',cursor:'pointer',flex:1}}>
-                <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:'0.35rem'}}>
-                  <span style={{fontSize:'0.64rem',fontWeight:700,padding:'0.15rem 0.5rem',borderRadius:100,background:'rgba(212,175,55,0.1)',color:'var(--color-accent)',border:'1px solid rgba(212,175,55,0.18)'}}>{item.tag}</span>
-                  <span style={{fontSize:'0.66rem',color:'rgba(255,255,255,0.3)',marginRight:'auto'}}>{item.time}</span>
-                </div>
-                <div style={{fontSize:'0.84rem',fontWeight:500,color:'rgba(255,255,255,0.82)',lineHeight:1.45}}>{item.title}</div>
-                <div style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.28)',marginTop:'0.3rem'}}>{item.source}</div>
-              </div>
-            ))}
-          </div>
+    {/* ===== FOOTER ===== */}
+    <footer style={{borderTop:'1px solid rgba(29,29,27,0.10)'}}>
+      <div style={{maxWidth:1240,margin:'0 auto',padding:'2rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}}>
+        <span style={{fontSize:'.8rem',color:'#8B8B84'}}>© {new Date().getFullYear()} גלילאו — תצפיות שוק</span>
+        <div style={{display:'flex',gap:18}}>
+          <span className="v-link" style={{fontSize:'.8rem',padding:0}} onClick={()=>navigate('/terms')}>תנאי שימוש</span>
+          <span className="v-link" style={{fontSize:'.8rem',padding:0}} onClick={()=>navigate('/privacy')}>מדיניות פרטיות</span>
         </div>
-
-        <div style={{textAlign:'center',marginTop:'1.25rem'}}>
-          <button className="g-sec" onClick={()=>navigate('/articles')} style={{padding:'0.55rem 1.4rem',borderRadius:8,background:'rgba(255,255,255,0.04)',border:'1px solid var(--color-border)',color:'rgba(255,255,255,0.55)',cursor:'pointer',fontSize:'0.82rem'}}>
-            כל החדשות ←
-          </button>
-        </div>
-      </section>
-
-      {/* === CTA === */}
-      <section style={{textAlign:'center',padding:'1.5rem 2rem 6rem',position:'relative',zIndex:1}}>
-        <div style={{maxWidth:560,margin:'0 auto',padding:'2.75rem',borderRadius:22,background:'linear-gradient(135deg,rgba(212,175,55,0.07),rgba(91,141,232,0.07))',border:'1px solid rgba(212,175,55,0.14)'}}>
-          <h2 style={{fontSize:'1.55rem',fontWeight:700,marginBottom:'0.85rem'}}>מוכן להתחיל?</h2>
-          <p style={{color:'rgba(255,255,255,0.48)',marginBottom:'1.75rem',lineHeight:1.6,fontSize:'0.9rem'}}>הצטרף למשקיעים שכבר משתמשים בגלילאו לקבלת החלטות מושכלות</p>
-          <button className="g-btn" onClick={()=>navigate('/auth')} style={{padding:'0.8rem 2.2rem',borderRadius:10,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.95rem',fontWeight:700,boxShadow:'0 4px 18px rgba(212,175,55,0.3)'}}>
-            התחל בחינם ←
-          </button>
-        </div>
-      </section>
-
-      <style>{`
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-      `}</style>
-      {modal&&(
-        <div onClick={()=>setModal(null)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.78)',zIndex:600,display:'flex',alignItems:'center',justifyContent:'center',backdropFilter:'blur(6px)',animation:'fadeIn 0.2s ease'}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:'rgba(14,18,32,0.99)',border:'1px solid rgba(212,175,55,0.22)',borderRadius:22,padding:'2.5rem 2.25rem',maxWidth:400,width:'90%',textAlign:'center',boxShadow:'0 24px 80px rgba(0,0,0,0.8)',animation:'fadeUp 0.25s ease',position:'relative'}}>
-            <button onClick={()=>setModal(null)} style={{position:'absolute',top:14,left:16,background:'none',border:'none',color:'rgba(255,255,255,0.35)',fontSize:'1.2rem',cursor:'pointer',lineHeight:1}}>✕</button>
-            <div style={{width:54,height:54,borderRadius:14,background:modal.color+'1a',border:`1px solid ${modal.color}40`,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 1.2rem'}}>
-              <modal.icon size={24} color={modal.color}/>
-            </div>
-            <h3 style={{fontSize:'1.2rem',fontWeight:700,marginBottom:'0.5rem',color:'#fff'}}>{modal.title}</h3>
-            <p style={{color:'rgba(255,255,255,0.48)',fontSize:'0.86rem',lineHeight:1.65,marginBottom:'1.75rem'}}>
-              פונקציה זו זמינה למשתמשים רשומים בלבד.<br/>
-              הצטרף בחינם וקבל גישה מיידית לכל הכלים של גלילאו.
-            </p>
-            <div style={{display:'flex',gap:'0.7rem',justifyContent:'center'}}>
-              <button onClick={()=>navigate('/auth')} style={{padding:'0.62rem 1.65rem',borderRadius:9,background:'linear-gradient(135deg,var(--color-accent),var(--color-accent2))',border:'none',color:'#0B1026',cursor:'pointer',fontSize:'0.88rem',fontWeight:700,boxShadow:'0 4px 16px rgba(212,175,55,0.32)',transition:'transform .15s'}}>
-                הצטרף חינם ←
-              </button>
-              <button onClick={()=>setModal(null)} style={{padding:'0.62rem 1.1rem',borderRadius:9,background:'rgba(255,255,255,0.05)',border:'1px solid var(--color-border)',color:'rgba(255,255,255,0.65)',cursor:'pointer',fontSize:'0.88rem'}}>
-                סגור
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+        <span style={{fontSize:'.75rem',color:'#8B8B84'}}>המידע באתר אינו מהווה ייעוץ השקעות</span>
+      </div>
+    </footer>
+  </div>
+)
 }
