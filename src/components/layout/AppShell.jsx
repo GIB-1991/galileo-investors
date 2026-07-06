@@ -57,14 +57,14 @@ localStorage.setItem('galileo-theme-v3', 'light')
 
 const headerBg = darkMode
 ? 'rgba(11,16,38,0.92)'
-: 'rgba(245,240,234,0.92)'
+: '#F4EEE9'
 
 const [menuOpen, setMenuOpen] = useState(false)
 
 return (
 <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',position:'relative',zIndex:1}}>
 {/* Planets SVG - fixed, always visible */}
-<PlanetsLayer darkMode={darkMode}/>
+{darkMode && <PlanetsLayer darkMode={darkMode}/>}
 
 <style>{`@media (max-width:900px){.gx-nav{display:none!important}.gx-actions{display:none!important}.gx-hamburger{display:flex!important}}.gx-hamburger{display:none}@media (min-width:901px){.gx-drawer{display:none!important}}`}</style>
 <header style={{background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid var(--color-border)',position:'sticky',top:0,zIndex:100}}>
@@ -72,8 +72,8 @@ return (
 <Link to="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:12}}>
 <GalileoLogo size={64}/>
 <div>
-<div style={{fontWeight:800,fontSize:'1.05rem',color:'var(--color-accent)',lineHeight:1.2}}>גלילאו</div>
-<div style={{fontSize:'.7rem',color:'rgba(212,175,55,0.65)',letterSpacing:'.14em',fontWeight:500}}>תצפיות שוק</div>
+<div style={{fontWeight:700,fontSize:'1.15rem',color:'var(--color-text-primary)',lineHeight:1.2}}>גלילאו</div>
+<div style={{fontSize:'.7rem',color:'color-mix(in srgb, var(--color-accent) 65%, transparent)',letterSpacing:'.14em',fontWeight:500}}>תצפיות שוק</div>
 </div>
 </Link>
 
@@ -82,8 +82,8 @@ return (
 const Icon = item.icon
 const active = location.pathname === item.path
 return (
-<Link key={item.path} to={item.path} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 13px',borderRadius:9,textDecoration:'none',fontSize:'.83rem',fontWeight:active?600:500,color:active?'var(--color-accent)':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent',border:active?'1px solid rgba(212,175,55,0.28)':'1px solid transparent',transition:'all 180ms'}}>
-<Icon size={14}/>{item.label}
+<Link key={item.path} to={item.path} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 12px',borderRadius:8,textDecoration:'none',fontSize:'.9rem',fontWeight:active?600:400,color:active?'var(--color-accent)':'var(--color-text-primary)',background:'transparent',border:'1px solid transparent',transition:'all 180ms'}}>
+{item.label}
 </Link>
 )
 })}
@@ -99,29 +99,29 @@ onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.sty
 </a>
 ))}
 
-<div style={{width:'1px',height:20,background:'rgba(212,175,55,0.2)',margin:'0 2px'}}/>
+<div style={{width:'1px',height:20,background:'color-mix(in srgb, var(--color-accent) 20%, transparent)',margin:'0 2px'}}/>
 
 {/* Dark/Light mode button */}
 <button
 onClick={()=>setDarkMode(d=>!d)}
 title={darkMode ? 'מצב בהיר' : 'מצב כהה'}
-style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px',borderRadius:20,border:'1px solid rgba(212,175,55,0.3)',background:darkMode?'rgba(212,175,55,0.1)':'rgba(212,175,55,0.15)',cursor:'pointer',color:'var(--color-accent)',fontSize:'.75rem',fontWeight:600,transition:'all 200ms',fontFamily:'inherit'}}
-onMouseEnter={e=>e.currentTarget.style.background='rgba(212,175,55,0.25)'}
-onMouseLeave={e=>e.currentTarget.style.background=darkMode?'rgba(212,175,55,0.1)':'rgba(212,175,55,0.15)'}>
+style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px',borderRadius:20,border:'1px solid color-mix(in srgb, var(--color-accent) 30%, transparent)',background:darkMode?'color-mix(in srgb, var(--color-accent) 10%, transparent)':'color-mix(in srgb, var(--color-accent) 15%, transparent)',cursor:'pointer',color:'var(--color-accent)',fontSize:'.75rem',fontWeight:600,transition:'all 200ms',fontFamily:'inherit'}}
+onMouseEnter={e=>e.currentTarget.style.background='color-mix(in srgb, var(--color-accent) 25%, transparent)'}
+onMouseLeave={e=>e.currentTarget.style.background=darkMode?'color-mix(in srgb, var(--color-accent) 10%, transparent)':'color-mix(in srgb, var(--color-accent) 15%, transparent)'}>
 {darkMode ? <Sun size={13}/> : <Moon size={13}/>}
 {darkMode ? 'בהיר' : 'כהה'}
 </button>
 {user?.email === 'gilbitan2000@gmail.com' && (
 <a href="/admin"
-style={{display:'flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:'1px solid rgba(212,175,55,0.4)',background:'rgba(212,175,55,0.15)',color:'var(--color-accent)',textDecoration:'none',fontSize:'.75rem',fontWeight:700,flexShrink:0}}
-onMouseEnter={e=>e.currentTarget.style.background='rgba(212,175,55,0.3)'}
-onMouseLeave={e=>e.currentTarget.style.background='rgba(212,175,55,0.15)'}>
+style={{display:'flex',alignItems:'center',gap:4,padding:'5px 10px',borderRadius:8,border:'1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)',background:'color-mix(in srgb, var(--color-accent) 15%, transparent)',color:'var(--color-accent)',textDecoration:'none',fontSize:'.75rem',fontWeight:700,flexShrink:0}}
+onMouseEnter={e=>e.currentTarget.style.background='color-mix(in srgb, var(--color-accent) 30%, transparent)'}
+onMouseLeave={e=>e.currentTarget.style.background='color-mix(in srgb, var(--color-accent) 15%, transparent)'}>
 <Shield size={12}/> ניהול
 </a>
 )}
 
 {daysLeft <= 7 && (
-<Link to="/pricing" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:5,background: isAdmin?'rgba(142,124,195,0.12)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.12)':daysLeft<=2?'rgba(224,102,107,0.12)':'rgba(212,175,55,0.1)',border:'1px solid '+(isAdmin?'rgba(142,124,195,0.35)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.35)':daysLeft<=2?'rgba(224,102,107,0.35)':'rgba(212,175,55,0.3)'),borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:isAdmin?'#8E7CC3':plan==='monthly'||plan==='yearly'?'var(--color-success)':daysLeft<=2?'var(--color-danger)':'var(--color-accent)'}}>
+<Link to="/pricing" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:5,background: isAdmin?'rgba(142,124,195,0.12)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.12)':daysLeft<=2?'rgba(224,102,107,0.12)':'color-mix(in srgb, var(--color-accent) 10%, transparent)',border:'1px solid '+(isAdmin?'rgba(142,124,195,0.35)':plan==='monthly'||plan==='yearly'?'rgba(63,185,129,0.35)':daysLeft<=2?'rgba(224,102,107,0.35)':'color-mix(in srgb, var(--color-accent) 30%, transparent)'),borderRadius:20,padding:'4px 10px',fontSize:'.72rem',fontWeight:600,color:isAdmin?'#8E7CC3':plan==='monthly'||plan==='yearly'?'var(--color-success)':daysLeft<=2?'var(--color-danger)':'var(--color-accent)'}}>
 <Clock size={11}/>{isAdmin?'ניהול':plan==='monthly'?'מנוי חודשי':plan==='yearly'?'מנוי שנתי':daysLeft>0?(daysLeft+' ימי ניסיון'):'הניסיון הסתיים'}
 </Link>
 )}
@@ -134,40 +134,55 @@ onMouseLeave={e=>e.currentTarget.style.color='var(--color-text-secondary)'}>
 <LogOut size={15}/>
 </button>
 </div>
-<button className="gx-hamburger" onClick={()=>setMenuOpen(o=>!o)} title="תפריט" aria-label="תפריט" style={{display:'none',background:'none',border:'1px solid rgba(212,175,55,0.3)',borderRadius:9,width:42,height:42,alignItems:'center',justifyContent:'center',cursor:'pointer',color:'var(--color-accent)'}}>{menuOpen?<X size={22}/>:<Menu size={22}/>}</button>
+<button className="gx-hamburger" onClick={()=>setMenuOpen(o=>!o)} title="תפריט" aria-label="תפריט" style={{display:'none',background:'none',border:'1px solid color-mix(in srgb, var(--color-accent) 30%, transparent)',borderRadius:9,width:42,height:42,alignItems:'center',justifyContent:'center',cursor:'pointer',color:'var(--color-accent)'}}>{menuOpen?<X size={22}/>:<Menu size={22}/>}</button>
 </div>
 </header>
 {menuOpen && (
 <div className="gx-drawer" style={{position:'sticky',top:72,zIndex:99,background:headerBg,backdropFilter:'blur(20px)',borderBottom:'1px solid var(--color-border)',padding:'8px 1.25rem 16px',maxHeight:'calc(100vh - 72px)',overflowY:'auto'}}>
-{NAV.map(item=>{const Icon=item.icon;const active=location.pathname===item.path;return(<Link key={item.path} to={item.path} onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',fontWeight:active?600:500,color:active?'var(--color-accent)':'var(--color-text-secondary)',background:active?'rgba(212,175,55,0.12)':'transparent'}}><Icon size={18}/>{item.label}</Link>)})}
+{NAV.map(item=>{const Icon=item.icon;const active=location.pathname===item.path;return(<Link key={item.path} to={item.path} onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',fontWeight:active?600:500,color:active?'var(--color-accent)':'var(--color-text-secondary)',background:active?'color-mix(in srgb, var(--color-accent) 12%, transparent)':'transparent'}}><Icon size={18}/>{item.label}</Link>)})}
 {isAdmin && (<Link to="/admin" onClick={()=>setMenuOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,textDecoration:'none',fontSize:'1rem',color:'var(--color-text-secondary)'}}><Shield size={18}/>ניהול</Link>)}
-<div style={{height:1,background:'rgba(212,175,55,0.15)',margin:'8px 0'}}/>
+<div style={{height:1,background:'color-mix(in srgb, var(--color-accent) 15%, transparent)',margin:'8px 0'}}/>
 <button onClick={()=>setDarkMode(d=>!d)} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,width:'100%',background:'none',border:'none',cursor:'pointer',fontSize:'1rem',color:'var(--color-text-secondary)'}}>{darkMode?<Sun size={18}/>:<Moon size={18}/>}{darkMode?'מצב בהיר':'מצב כהה'}</button>
 <button onClick={()=>{setMenuOpen(false);handleSignOut()}} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 10px',borderRadius:9,width:'100%',background:'none',border:'none',cursor:'pointer',fontSize:'1rem',color:'var(--color-text-secondary)'}}><LogOut size={18}/>יציאה</button>
 </div>
 )}
 
-<main style={{flex:1,maxWidth:1300,margin:'0 auto',width:'100%',padding:'2rem 1.5rem',position:'relative',zIndex:1}}>
+<main style={{flex:1,maxWidth:1240,margin:'0 auto',width:'100%',padding:'3.5rem 2rem',position:'relative',zIndex:1}}>
 {children}
 </main>
 
-<footer style={{borderTop:'1px solid rgba(212,175,55,0.12)',background:darkMode?'rgba(11,16,38,0.88)':'rgba(240,235,220,0.88)',padding:'1.2rem 1.5rem',textAlign:'center',position:'relative',zIndex:1}}>
-<div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:20,marginBottom:8,flexWrap:'wrap'}}>
-{SOCIAL.map(s=>(
-<a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-style={{display:'flex',alignItems:'center',gap:6,fontSize:'.78rem',color:'rgba(212,175,55,0.65)',textDecoration:'none',transition:'color 200ms'}}
-onMouseEnter={e=>e.currentTarget.style.color='var(--color-accent)'}
-onMouseLeave={e=>e.currentTarget.style.color='rgba(212,175,55,0.65)'}>
-{s.icon}<span>{s.label}</span>
-</a>
-))}
-</div>
-<div style={{display:'flex',justifyContent:'center',gap:16,marginBottom:8,flexWrap:'wrap'}}>
-<Link to="/terms" style={{fontSize:'.72rem',color:'rgba(150,150,180,0.6)',textDecoration:'none'}}>תקנון ותנאי שימוש</Link>
-<Link to="/privacy" style={{fontSize:'.72rem',color:'rgba(150,150,180,0.6)',textDecoration:'none'}}>מדיניות פרטיות</Link>
-</div>
-<p style={{margin:0,fontSize:'.72rem',color:'rgba(150,150,180,0.5)'}}>אין לראות במידע המוצג באתר המלצה לפעולות בשוק ההון.</p>
-</footer>
+<footer style={{borderTop:'1px solid var(--color-border)',background:darkMode?'rgba(11,16,38,0.6)':'#F4EEE9',marginTop:'4rem'}}>
+        <div style={{maxWidth:1240,margin:'0 auto',padding:'3rem 2rem 2rem'}}>
+          <div style={{display:'flex',flexWrap:'wrap',gap:'2.5rem',justifyContent:'space-between',marginBottom:'2.5rem'}}>
+            <div style={{maxWidth:280}}>
+              <div style={{fontFamily:"'Frank Ruhl Libre', serif",fontSize:'1.5rem',fontWeight:500,marginBottom:8,color:'var(--color-text-primary)'}}>גלילאו</div>
+              <div style={{fontSize:'.85rem',color:'var(--color-text-secondary)',lineHeight:1.7}}>פלטפורמת ההשקעות של המשקיע הישראלי — נתוני שוק, ניתוח תיק, סקרינר וחדשות בעברית.</div>
+            </div>
+            <div style={{display:'flex',gap:'3.5rem',flexWrap:'wrap'}}>
+              <div>
+                <div style={{fontSize:'.75rem',fontWeight:600,letterSpacing:'.1em',color:'var(--color-text-muted)',marginBottom:12}}>מוצר</div>
+                {NAV.slice(0,5).map(n=>(<Link key={n.path} to={n.path} style={{display:'block',fontSize:'.85rem',color:'var(--color-text-secondary)',textDecoration:'none',marginBottom:8}}>{n.label}</Link>))}
+              </div>
+              <div>
+                <div style={{fontSize:'.75rem',fontWeight:600,letterSpacing:'.1em',color:'var(--color-text-muted)',marginBottom:12}}>משפטי</div>
+                <Link to="/terms" style={{display:'block',fontSize:'.85rem',color:'var(--color-text-secondary)',textDecoration:'none',marginBottom:8}}>תנאי שימוש</Link>
+                <Link to="/privacy" style={{display:'block',fontSize:'.85rem',color:'var(--color-text-secondary)',textDecoration:'none',marginBottom:8}}>מדיניות פרטיות</Link>
+                <Link to="/pricing" style={{display:'block',fontSize:'.85rem',color:'var(--color-text-secondary)',textDecoration:'none',marginBottom:8}}>מסלולים</Link>
+              </div>
+              <div>
+                <div style={{fontSize:'.75rem',fontWeight:600,letterSpacing:'.1em',color:'var(--color-text-muted)',marginBottom:12}}>עקבו אחרינו</div>
+                <div style={{display:'flex',gap:12}}>
+                  {SOCIAL.map(sc=>(<a key={sc.label} href={sc.href} target="_blank" rel="noopener noreferrer" title={sc.label} style={{color:'var(--color-text-secondary)',display:'flex'}}>{sc.icon}</a>))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{borderTop:'1px solid var(--color-border)',paddingTop:'1.2rem',display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:8}}>
+            <span style={{fontSize:'.75rem',color:'var(--color-text-muted)'}}>© {new Date().getFullYear()} גלילאו — תצפיות שוק. כל הזכויות שמורות.</span>
+            <span style={{fontSize:'.75rem',color:'var(--color-text-muted)'}}>המידע באתר אינו מהווה ייעוץ השקעות. הנתונים מוצגים לצורך מידע בלבד.</span>
+          </div>
+        </div>
+      </footer>
 </div>
 )
 }
