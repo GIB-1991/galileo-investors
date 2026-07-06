@@ -105,24 +105,24 @@ body::after {
 
 /* Light mode */
 body.light-mode {
-  background-color: #F5F0EA;
+  background-color: #F4EEE9;
   background-image: none;
   color: var(--color-text-primary);
   min-height: 100vh;
 }
 body.light-mode::before, body.light-mode::after { opacity: 0; }
 body.light-mode {
-  --color-bg: #F5F0EA;
-  --color-bg2: #EDE7DE;
+  --color-bg: #F4EEE9;
+  --color-bg2: #ECE5DC;
   --color-surface: #FFFFFF;
   --color-surface2: #FAF6F0;
   --color-border: rgba(29,29,27,0.10);
-  --color-border2: rgba(138,107,31,0.4);
+  --color-border2: rgba(55,100,221,0.4);
   --color-text-primary: #1D1D1B;
   --color-text-secondary: #55554F;
   --color-text-muted: #8B8B84;
-  --color-accent: #8F6F1F;
-  --color-accent2: #75590F;
+  --color-accent: #3764DD;
+  --color-accent2: #2C50B8;
   --color-success: #1E7A50;
   --color-danger: #C2453F;
   --color-info: #2743A6;
@@ -513,3 +513,14 @@ body.light-mode .card { box-shadow: 0 1px 2px rgba(29,29,27,0.04); }
 body.light-mode .card:hover { border-color: rgba(29,29,27,0.18); box-shadow: 0 4px 16px rgba(29,29,27,0.07); }
 body.light-mode input:focus, body.light-mode select:focus, body.light-mode textarea:focus { border-color: rgba(138,107,31,0.5); box-shadow: 0 0 0 3px rgba(138,107,31,0.08); }
 body.light-mode ::selection { background: rgba(168,132,43,0.18); }
+
+
+/* === Galileo v4: vntr editorial system === */
+h1 { font-size: clamp(2rem, 3.6vw, 3.1rem) !important; font-weight: 500 !important; line-height: 1.15 !important; }
+.article-content h1, .ProseMirror h1 { font-size: 1.7rem !important; font-weight: 700 !important; }
+h2 { font-weight: 500; }
+body.light-mode { font-weight: 300; }
+body.light-mode strong, body.light-mode b { font-weight: 600; }
+.btn-primary, .btn-secondary { padding: 0.65rem 1.5rem; }
+body.light-mode .card { border-radius: 14px; }
+body.light-mode input, body.light-mode select, body.light-mode textarea { background: #FFFFFF; }
